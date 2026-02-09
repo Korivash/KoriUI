@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌸 Kori UI
+# 🌸 Quazii UI Re-work and Re-upload FREE
 
 [![Support Discord](https://img.shields.io/badge/Support%20Discord-Join%20Now-5865F2?logo=discord&logoColor=white)](https://discord.gg/JbQQTbH4hR)
 
@@ -356,7 +356,7 @@ The CDM is a powerful tool for tracking cooldowns:
 
 ### Getting Help
 
-- **Discord**: Join the [Korivash Discord](https://discord.gg/korivash) (if available)
+- **Discord**: Join the [Korivash Discord](https://discord.gg/JbQQTbH4hR) (if available)
 - **GitHub Issues**: [Report bugs or request features](https://github.com/korivash/KoriUI/issues)
 - **Website**: Visit [korivash.com](https://korivash.com) for updates and guides
 
