@@ -1,18 +1,24 @@
+--============================================================--
+-- KoriUI Initialization
+--============================================================--
+
 -- Keybinding display name (must be global before Bindings.xml loads)
 BINDING_NAME_KORIUI_TOGGLE_OPTIONS = "Open KoriUI Options"
 
 ---@type table|AceAddon
 KoriUI = LibStub("AceAddon-3.0"):NewAddon("KoriUI", "AceConsole-3.0", "AceEvent-3.0")
+
 ---@type table<string, string>
 KoriUI.L = LibStub("AceLocale-3.0"):GetLocale("KoriUI")
 
 local L = KoriUI.L
-
----@type table
 KoriUI.DF = _G["DetailsFramework"]
 KoriUI.DEBUG_MODE = false
 
--- Version info
+--============================================================--
+-- Version & Defaults
+--============================================================--
+
 KoriUI.versionString = C_AddOns.GetAddOnMetadata("KoriUI", "Version") or "1.42"
 
 ---@type table
@@ -21,54 +27,38 @@ KoriUI.defaults = {
     char = {
         ---@type table
         debug = {
-            ---@type boolean
             reload = false
         }
     }
 }
 
+--============================================================--
+-- Initialization
+--============================================================--
+
 function KoriUI:OnInitialize()
     ---@type AceDBObject-3.0
     self.db = LibStub("AceDB-3.0"):New("KoriUI_DB", self.defaults, "Default")
 
+    -- Slash Commands
     self:RegisterChatCommand("kori", "SlashCommandOpen")
     self:RegisterChatCommand("koriui", "SlashCommandOpen")
     self:RegisterChatCommand("rl", "SlashCommandReload")
-    
-    -- Register our media files with LibSharedMedia
+
+    -- Media registration
     self:CheckMediaRegistration()
 end
 
--- Quick Keybind Mode shortcut (/kb)
-SLASH_KORIKB1 = "/kb"
-SlashCmdList["KORIKB"] = function()
-    local LibKeyBound = LibStub("LibKeyBound-1.0", true)
-    if LibKeyBound then
-        LibKeyBound:Toggle()
-    elseif QuickKeybindFrame then
-        -- Fallback to Blizzard's Quick Keybind Mode (no mousewheel support)
-        ShowUIPanel(QuickKeybindFrame)
-    else
-        print("|cff4A9EFFKoriUI:|r Quick Keybind Mode not available.")
-    end
-end
-
--- Cooldown Settings shortcut (/cdm)
-SLASH_KORIUI_CDM1 = "/cdm"
-SlashCmdList["KORIUI_CDM"] = function()
-    if CooldownViewerSettings then
-        CooldownViewerSettings:SetShown(not CooldownViewerSettings:IsShown())
-    else
-        print("|cff4A9EFFKoriUI:|r Cooldown Settings not available. Enable CDM first.")
-    end
-end
+--============================================================--
+-- Slash Commands
+--============================================================--
 
 function KoriUI:SlashCommandOpen(input)
     if input and input == "debug" then
         self.db.char.debug.reload = true
         KoriUI:SafeReload()
+        return
     elseif input and input == "editmode" then
-        -- Toggle Unit Frames Edit Mode
         if _G.KoriUI_ToggleUnitFrameEditMode then
             _G.KoriUI_ToggleUnitFrameEditMode()
         else
@@ -76,8 +66,8 @@ function KoriUI:SlashCommandOpen(input)
         end
         return
     end
-    
-    -- Default: Open custom GUI
+
+    -- Default: Open GUI
     if self.GUI then
         self.GUI:Toggle()
     else
@@ -89,25 +79,59 @@ function KoriUI:SlashCommandReload()
     KoriUI:SafeReload()
 end
 
+--============================================================--
+-- Keybind Shortcuts
+--============================================================--
+
+-- Quick Keybind Mode (/kb)
+SLASH_KORIKB1 = "/kb"
+SlashCmdList["KORIKB"] = function()
+    local LibKeyBound = LibStub("LibKeyBound-1.0", true)
+    if LibKeyBound then
+        LibKeyBound:Toggle()
+    elseif QuickKeybindFrame then
+        ShowUIPanel(QuickKeybindFrame)
+    else
+        print("|cff4A9EFFKoriUI:|r Quick Keybind Mode not available.")
+    end
+end
+
+-- Cooldown Manager Shortcut (/cdm)
+SLASH_KORIUI_CDM1 = "/cdm"
+SlashCmdList["KORIUI_CDM"] = function()
+    if CooldownViewerSettings then
+        CooldownViewerSettings:SetShown(not CooldownViewerSettings:IsShown())
+    else
+        print("|cff4A9EFFKoriUI:|r Cooldown Settings not available. Enable CDM first.")
+    end
+end
+
+--============================================================--
+-- OnEnable Lifecycle
+--============================================================--
+
 function KoriUI:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
-    
-    -- Initialize KORICore (AceDB-based integration)
+
+    -- Initialize KORICore if present
     if self.KORICore then
-        -- Show intro message if enabled (defaults to true)
-        if self.db.profile.chat.showIntroMessage ~= false then
+        if self.db.profile and self.db.profile.chat and self.db.profile.chat.showIntroMessage ~= false then
             print("|cFF1E90FFKori UI|r loaded. |cFFFFFF00/kori|r to setup.")
             print("|cFF1E90FFKORI UI REMINDER:|r")
             print("|cFF4A9EFF1.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
-            print("|cFF4A9EFF2.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Go to |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")
+            print("|cFF4A9EFF2.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Use |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")
             print("|cFF4A9EFF3.|r Use |cFFFFFF00100% Icon Size|r on CDM Essential & Utility bars via |cFFFFFF00Edit Mode|r for best results.")
             print("|cFF4A9EFF4.|r Position your |cFFFFFF00CDM bars|r in |cFFFFFF00Edit Mode|r and click |cFFFFFF00Save|r before exiting.")
         end
     end
 end
 
+--============================================================--
+-- Player World Entry
+--============================================================--
+
 function KoriUI:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
-    KoriUI:BackwardsCompat()
+    self:BackwardsCompat()
 
     -- Ensure debug table exists
     if not self.db.char.debug then
@@ -123,7 +147,24 @@ function KoriUI:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
     else
         self:DebugPrint("Debug Mode Enabled")
     end
+
+    --============================================================--
+    -- Add to Options Menu (NEW)
+    --============================================================--
+    -- In your options registration function:
+    if select(2, UnitClass("player")) == "MONK" then
+        if self.GetStaggerOptions then
+            local options = self:GetOptionsTable()
+            if options and options.args then
+                options.args.stagger = self:GetStaggerOptions()
+            end
+        end
+    end
 end
+
+--============================================================--
+-- Debug & Helper Functions
+--============================================================--
 
 function KoriUI:DebugPrint(...)
     if self.DEBUG_MODE then
@@ -131,15 +172,18 @@ function KoriUI:DebugPrint(...)
     end
 end
 
--- ADDON COMPARTMENT FUNCTIONS --
+--============================================================--
+-- Addon Compartment Functions
+--============================================================--
+
 function KoriUI_CompartmentClick()
-    -- Open the new GUI
     if KoriUI.GUI then
         KoriUI.GUI:Toggle()
     end
 end
 
 local GameTooltip = GameTooltip
+
 function KoriUI_CompartmentOnEnter(self, button)
     GameTooltip:ClearLines()
     GameTooltip:SetOwner(type(self) ~= "string" and self or button, "ANCHOR_LEFT")
@@ -151,3 +195,4 @@ end
 function KoriUI_CompartmentOnLeave()
     GameTooltip:Hide()
 end
+
