@@ -2,7 +2,7 @@
 
 # 🌸 Kori UI
 
-<img src="https://via.placeholder.com/200x200/1E90FF/FFFFFF?text=KORI+UI" alt="Kori UI Logo" width="200"/>
+[![Support Discord](https://img.shields.io/badge/Support%20Discord-Join%20Now-5865F2?logo=discord&logoColor=white)](https://discord.gg/JbQQTbH4hR)
 
 **A Premium World of Warcraft Interface Addon**
 
