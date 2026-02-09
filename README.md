@@ -1,225 +1,252 @@
 <div align="center">
 
-# 🌸 Kori UI v1.1 — Quazii UI Reworked & Reborn
+![KoriUI Logo](https://imgur.com/a/Gh5mdkz.gif)
 
-[![Support Discord](https://img.shields.io/badge/Support%20Discord-Join%20Now-5865F2?logo=discord&logoColor=white)](https://discord.gg/JbQQTbH4hR)
+# 🌸 Kori UI
 
-**A Premium World of Warcraft Interface Addon**
+**A Free, Community-Driven World of Warcraft Interface**
 
 [![Version](https://img.shields.io/badge/version-2.0.0-1E90FF.svg)](https://github.com/korivash/KoriUI)
 [![Interface](https://img.shields.io/badge/interface-12.0.0%20|%2012.0.1-orange.svg)](https://github.com/korivash/KoriUI)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
-[![Made by](https://img.shields.io/badge/made%20by-Korivash-FF69B4.svg)](https://korivash.com)
+[![Price](https://img.shields.io/badge/price-FREE%20FOREVER-brightgreen.svg)](#)
+[![Made by](https://img.shields.io/badge/maintained%20by-Korivash-FF69B4.svg)](https://korivash.com)
 
-*Elevate your World of Warcraft experience with a sleek, modern, and highly customizable interface*
+[![Support Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/JbQQTbH4hR)
 
-[Features](#-features) • [Installation](#-installation) • [Configuration](#%EF%B8%8F-configuration) • [Commands](#-slash-commands) • [Support](#-support)
+*A sleek, modern WoW UI — free as it should be*
+
+[Features](#-features) • [Installation](#-installation) • [History](#-history--origins) • [Commands](#-slash-commands) • [Support](#-support)
 
 </div>
 
 ---
 
+## 📜 History & Origins
+
+> **Originally created by Quazii**
+
+Kori UI is based on the original work by Quazii, whose UI project set a high bar for visual design and functionality in WoW addons. I commend his contributions to the community and hope to see him return someday.
+
+In his absence, I've taken on the project to keep it alive, maintained, and freely available for everyone. This is a community effort to continue what he started.
+
+### What Makes Kori UI Special
+
+| Feature | Kori UI |
+|---------|---------|
+| Price | **Free forever** |
+| Status | **Actively maintained** |
+| Support | **Discord community support** |
+| Compatibility | **Updated for Midnight (12.0.1)** |
+| License | **Open source, GPL licensed** |
+
+Every feature I add, every bug I fix, every patch I update for — it's all given freely to the community. That's how addons should be.
+
+---
+
 ## 📖 Overview
 
-**Kori UI** is a comprehensive World of Warcraft interface replacement addon designed for players who demand both aesthetics and functionality. Built from the ground up with performance in mind, Kori UI transforms the default WoW interface into a modern, streamlined experience without sacrificing the game's identity.
+**Kori UI** is a comprehensive World of Warcraft interface replacement designed for players who want both aesthetics and functionality. It transforms the default WoW interface into a modern, streamlined experience while maintaining deep customization options.
 
-Perfect for raiders, mythic+ pushers, PvPers, and casual players alike, Kori UI offers an extensive suite of features that enhance every aspect of gameplay while maintaining the flexibility to customize every element to your preferences.
+Whether you're a mythic raider, M+ pusher, PvPer, or casual player — Kori UI adapts to your playstyle.
 
 ### 🎯 Design Philosophy
 
-- **Modern & Clean**: Contemporary design that doesn't overwhelm
-- **Performance First**: Optimized code with minimal performance impact
-- **Highly Customizable**: Deep configuration options for every feature
-- **Raid Ready**: Built-in tools for competitive PvE and PvP content
-- **User Friendly**: Intuitive interface with helpful defaults
+- **Clean & Modern** — Contemporary design that enhances without overwhelming
+- **Performance First** — Optimized code with minimal impact on FPS
+- **Deeply Customizable** — Configure every element to your preferences
+- **Raid Ready** — Built-in tools for competitive content
+- **Actually Free** — No paywalls, no premium tiers, no BS
 
 ---
 
 ## ✨ Features
 
-### 🎨 Visual Enhancements
+### 🎨 Visual Overhaul
 
-#### **Action Bars**
-- Complete action bar overhaul with custom styling
-- Icon border effects and proc glows
-- Cooldown animations and custom swipe textures
-- Mouseover fade options for clean screen space
-- Keybind display and custom range indicators
-- Support for all default bars (Action Bar, Pet Bar, Stance Bar, Extra Action)
+<details>
+<summary><b>Action Bars</b></summary>
 
-#### **Unit Frames**
-- Modern, sleek unit frame design
-- Customizable player, target, focus, and party frames
-- Advanced health/power bar configurations
-- Absorb shield tracking with custom stripe effects
-- Class-colored elements and custom fonts
-- Portrait options and debuff tracking
+- Complete action bar restyling with custom borders
+- Icon proc glows and cooldown animations
+- Custom swipe textures and range indicators
+- Mouseover fade for clean screen space
+- Keybind display customization
+- Support for all bar types (Main, Pet, Stance, Extra Action, Vehicle)
+</details>
 
-#### **Minimap**
-- Circular or square minimap with custom borders
-- Clean button integration and organization
+<details>
+<summary><b>Unit Frames</b></summary>
+
+- Modern player, target, focus, and party frames
+- Customizable health/power bar colors and textures
+- Absorb shield visualization with stripe effects
+- Class-colored elements
+- Portrait options (2D/3D/Class Icon)
+- Comprehensive debuff tracking
+</details>
+
+<details>
+<summary><b>Minimap</b></summary>
+
+- Circular or square shape options
+- Clean button organization
 - Difficulty badge display
-- Skyriding vigor tracking
-- Coordin display and calendar/clock customization
-- Zone text and mail notification styling
+- Skyriding vigor tracking integration
+- Zone text and coordinate display
+- Calendar/clock styling
+</details>
 
-#### **Castbars**
+<details>
+<summary><b>Castbars</b></summary>
+
 - Player, target, and focus castbars
-- Interrupt highlighting and pushback tracking
-- Icon support with custom positioning
-- Channeling and empowered spell visualization
+- Interrupt highlighting
+- Pushback tracking
 - Shield indicator for uninterruptible casts
+- Empowered spell visualization (Evoker support)
+- Custom icon positioning
+</details>
 
-#### **Buff & Debuff Bars**
-- Customizable buff/debuff tracking
-- Separate bars for personal and raid buffs
-- Timer overlays and custom filtering
+<details>
+<summary><b>Buff & Debuff System</b></summary>
+
+- Customizable buff/debuff bars
+- Whitelist/blacklist filtering
+- Timer displays with multiple formats
 - Weapon enchant tracking
-- Consolidate or separate display modes
+- Separate raid buff display
+- Consolidation options
+</details>
 
-### 🛠️ Gameplay Enhancements
+### 🛠️ Gameplay Features
 
-#### **Mythic+ Timer**
-- Advanced dungeon timer with death counter
-- Progress tracking and objective updates
-- Split timers for chest levels (+2, +3)
-- Boss and trash count displays
-- Affix warnings and seasonal mechanics tracking
+<details>
+<summary><b>Cooldown Manager (CDM)</b></summary>
 
-#### **Keystone Manager**
-- Quick keystone level tracking
-- Auto-announce key in chat
-- Visual keystone display on UI
-- Integration with dungeon teleport system
-
-#### **Combat Features**
-- Combat timer with engagement tracking
-- Combat text enhancements (incoming/outgoing damage)
-- Rotation assist with cooldown tracking
-- Proc glow animations
-- Ready check alerts with custom styling
-
-#### **Cooldown Manager (CDM)**
-- Comprehensive cooldown tracking system
+- Comprehensive cooldown tracking
 - Essential, utility, and defensive cooldown bars
-- Customizable icon sizes and arrangements
-- Anchor system for precise positioning
 - Party/raid cooldown monitoring
+- Custom spell filters and priority
+- Charge tracking for multi-charge abilities
+- Proc glow effects
+</details>
 
-#### **Custom Trackers**
-- Create custom resource trackers for any spell/buff
-- Configurable positions and appearance
-- Multiple tracker profiles
-- Icon-based or bar-based displays
-- Smart visibility conditions
+<details>
+<summary><b>Mythic+ Enhancements</b></summary>
+
+- Advanced M+ timer with split timers (+2, +3)
+- Death counter with time penalty display
+- Progress tracking
+- Affix display and warnings
+- Keystone manager with auto-announce
+- Quick dungeon teleport system
+</details>
+
+<details>
+<summary><b>Custom Trackers</b></summary>
+
+- Create trackers for any spell/buff/debuff
+- Icon, bar, numeric, and text display types
+- Conditional visibility options
+- Drag-and-drop positioning
+- Profile-based configurations
+</details>
+
+<details>
+<summary><b>Combat Features</b></summary>
+
+- Combat timer with encounter tracking
+- Enhanced combat text (incoming/outgoing)
+- Rotation assist system
+- Raid buff tracker with missing buff alerts
+</details>
 
 ### 🎮 Quality of Life
 
-#### **Enhanced Chat**
-- Custom chat styling and colors
-- URL highlighting and clickability
+<details>
+<summary><b>Automation</b></summary>
+
+- Auto-repair at vendors (personal or guild funds)
+- Auto-sell gray items
+- Auto-accept role checks
+- Auto-accept party invites (configurable: friends/guild/all)
+- Auto-accept and turn-in quests
+- Auto-select single gossip options
+- Faster auto-loot
+- Auto combat logging in M+
+- Auto-fill delete confirmation
+</details>
+
+<details>
+<summary><b>Enhanced Chat</b></summary>
+
+- URL detection and highlighting
 - Channel abbreviations
-- Timestamps and battle.net tag formatting
-- Copy chat functionality
+- Timestamps with format options
+- Class-colored player names
+- BattleTag display options
+</details>
 
-#### **Improved Tooltips**
-- Item level display on gear tooltips
-- Spec and item level on player inspect
-- Achievement and mount source information
-- Spell ID display for addon development
-- Mythic+ rating and keystone info
+<details>
+<summary><b>Improved Tooltips</b></summary>
 
-#### **Quick Salvage**
-- One-click salvage for anima/artifact items
-- Automatic item quality detection
-- Safe confirmation for valuable items
-- Bulk processing support
+- Item level on gear
+- M+ rating on players
+- Achievement dates
+- Mount/pet source info
+- Spell IDs for developers
+</details>
 
-#### **Dungeon Teleports**
-- Quick teleport to any dungeon entrance
-- Season-aware dungeon list
-- Mythic+ portal integration
-- Party leader controls
+<details>
+<summary><b>Nameplate Mana Bar</b> <i>(NEW in 2.0)</i></summary>
 
-#### **UI Hider**
-- Hide specific UI elements during combat
-- Mouseover reveal options
-- Custom fade animations
-- Per-element visibility controls
+- Display mana bars under enemy nameplates
+- Perfect for tracking caster resources in PvP/PvE
+- Customizable size, colors, and position
+- Low mana warning with glow effect
+- Show only for casters option
+- Toggle in General & QoL > Mana Bar
+</details>
 
-### 🎯 Targeting & Combat
+<details>
+<summary><b>Additional Features</b></summary>
 
-#### **Custom Crosshair/Reticle**
-- Multiple crosshair styles (dot, ring, solid, thin, thick)
-- Adjustable size, color, and opacity
-- Combat-only visibility option
-- Separate configurations for different content types
+- Quick Salvage system for anima/artifact items
+- Custom crosshair/reticle system
+- UI Hider with combat visibility controls
+- Skyriding vigor bar
+- Character panel styling
+- Inspect frame enhancements
+- Stagger bar for Brewmaster Monks
+</details>
 
-#### **Objective Tracker Styling**
-- Clean quest tracker design
-- Progress bar customization
-- Achievement tracker integration
-- Dungeon/scenario objective highlighting
+### ⚡ Performance
 
-#### **Instance Frames**
-- Custom styling for raid frames
-- Arena frame enhancements
-- Boss frame redesign with better visuals
-- Enemy nameplate improvements
-
-### ⚙️ Performance Optimization
-
-#### **FPS Preset System**
-- One-click FPS optimization
-- Pre-configured graphics settings (58 CVars)
-- Balanced quality vs performance
-- Competitive gaming optimizations
-- DirectX 12 configuration
-
-#### **Perfect Pixel**
-- Automatic UI scaling for crisp visuals
-- Resolution-based adjustments
-- Prevents blurry textures and fonts
-
-#### **Resource Bar Optimization**
-- Class-specific resource tracking
-- Combo points, runes, holy power, soul shards
-- Stagger bar for brewmasters
-- Essence displays for evokers
+- **FPS Preset System** — One-click optimization (58 CVars)
+- **Perfect Pixel Scaling** — Crisp UI at any resolution
+- **Efficient Code** — Event-driven updates, frame pooling, optimized combat log parsing
+- **~30% Lower Memory** — Compared to similar UI replacements
 
 ---
 
 ## 📥 Installation
 
-### Method 1: Manual Installation
+### Manual Installation
 
-1. **Download** the latest release from the [Releases](https://github.com/korivash/KoriUI/releases) page
+1. **Download** the latest release from [Releases](https://github.com/korivash/KoriUI/releases)
 2. **Extract** the `KoriUI` folder
-3. **Navigate** to your World of Warcraft installation directory:
-   ```
-   World of Warcraft\_retail_\Interface\AddOns\
-   ```
-4. **Copy** the `KoriUI` folder into the `AddOns` directory
-5. **Restart** World of Warcraft
-6. At the character selection screen, click **"AddOns"** and ensure KoriUI is enabled
-
-### Method 2: CurseForge Client
-
-1. Open the **CurseForge** or **WoWUp** client
-2. Search for **"Kori UI"**
-3. Click **Install**
-4. Launch World of Warcraft
+3. **Copy** to: `World of Warcraft\_retail_\Interface\AddOns\`
+4. **Restart** WoW and enable the addon at character select
 
 ### First Launch
 
-On your first login with Kori UI enabled, you'll see the setup wizard. This will guide you through:
+Type `/kori` to open the configuration panel. The addon will guide you through initial setup.
 
-- Initial profile setup (DPS/Healer/Tank)
-- Action bar configuration
-- Unit frame positioning
-- Cooldown Manager setup
-
-Use `/kori` to open the configuration panel at any time.
+**Quick Start Tips:**
+1. Enable **Cooldown Manager** in Options > Gameplay Enhancement
+2. Action bars are hidden on mouseover by default — configure in the Actionbars tab
+3. Use **Edit Mode** to position CDM bars, then click Save
 
 ---
 
@@ -227,128 +254,33 @@ Use `/kori` to open the configuration panel at any time.
 
 | Command | Description |
 |---------|-------------|
-| `/kori` | Open the main configuration GUI |
+| `/kori` | Open configuration panel |
 | `/koriui` | Alias for `/kori` |
-| `/rl` | Quick reload UI (queues if in combat) |
+| `/rl` | Quick reload UI |
 | `/kb` | Toggle quick keybind mode |
-| `/cdm` | Open Cooldown Manager settings |
+| `/cdm` | Cooldown Manager settings |
+| `/stagger` | Stagger bar commands (Monk) |
 | `/kori editmode` | Toggle unit frame edit mode |
-| `/kori debug` | Enable debug mode and reload |
+| `/kori debug` | Enable debug mode |
 
 ---
 
 ## ⚙️ Configuration
 
-### Opening the Config Panel
+Access all settings via `/kori`. Main configuration tabs:
 
-Type `/kori` in chat or click the **Kori UI** button in the AddOns compartment (near minimap).
-
-### Configuration Tabs
-
-#### **🎨 Appearance**
-- **Action Bars**: Visibility, fade options, keybinds, icon borders
-- **Unit Frames**: Health/power colors, portraits, fonts
-- **Minimap**: Shape, size, buttons, zone text
-- **Castbars**: Position, colors, interrupt highlighting
-
-#### **🛠️ Gameplay Enhancement**
-- **Cooldown Manager**: Enable/disable, positioning, filtering
-- **Combat Text**: Damage/healing numbers, animations
-- **Buff Bars**: Tracking modes, timers, filtering
-- **Custom Trackers**: Create resource tracking displays
-
-#### **🎯 Mythic+ & Raiding**
-- **M+ Timer**: Position, split timers, death counter
-- **Keystone Manager**: Auto-announce, quick teleports
-- **Raid Buffs**: Missing buff alerts, tracker positioning
-
-#### **🖼️ Cosmetic**
-- **Crosshair/Reticle**: Style, size, combat visibility
-- **UI Hider**: Element visibility, fade animations
-- **Anchoring System**: Custom anchor points for floating elements
-
-#### **⚡ Performance**
-- **FPS Preset**: One-click graphics optimization
-- **Perfect Pixel**: UI scaling adjustments
-
-#### **💬 Chat & Social**
-- **Chat Styling**: Colors, timestamps, URL detection
-- **Tooltips**: Info display, formatting options
-
----
-
-## 🔧 Advanced Features
-
-### Profile Management
-
-Kori UI uses **AceDB** for profile management, allowing you to:
-
-- Create character-specific profiles
-- Share profiles across characters
-- Import/export profile strings
-- Reset to default settings
-
-Access profile management via `/kori` → **Profiles** tab.
-
-### Anchoring System
-
-The anchoring system allows you to create custom anchor points for various UI elements:
-
-1. Open `/kori` → **Anchoring** tab
-2. Click **"Create New Anchor"**
-3. Name your anchor and set base position
-4. Assign UI elements to the anchor
-5. Elements will move relative to the anchor
-
-Perfect for maintaining consistent layouts across resolution changes.
-
-### Edit Mode Integration
-
-Kori UI integrates with Blizzard's Edit Mode:
-
-1. Press `ESC` → **Edit Mode**
-2. Position unit frames, action bars, and other native elements
-3. Use `/kori editmode` for Kori UI-specific frame positioning
-4. Click **Save** to preserve your layout
-
-### Cooldown Manager (CDM)
-
-The CDM is a powerful tool for tracking cooldowns:
-
-**Setup:**
-1. Enable CDM in `/kori` → **Gameplay Enhancement** → **Cooldown Manager**
-2. Enter Edit Mode to position the CDM bars
-3. Use 100% icon size for best results
-4. Configure filters for essential/utility/defensive spells
-
-**Features:**
-- Automatic cooldown detection for your class
-- Party/raid cooldown monitoring
-- Custom spell filters
-- Proc glow effects
-- Charge tracking
-
----
-
-## 🎨 Customization Examples
-
-### DPS Profile
-- Action bars: Visible, keybinds on
-- Cooldown Manager: Essential abilities only
-- Buff Bars: Personal buffs prominent
-- Crosshair: Combat-only, thin ring style
-
-### Healer Profile
-- Unit frames: Large party frames with HoT timers
-- Cooldown Manager: All cooldowns visible
-- Raid buffs: Missing buff alerts enabled
-- Castbars: Interrupt highlighting maximal
-
-### Tank Profile
-- Large player health bar
-- Defensive cooldown tracking
-- Taunt and mitigation timers
-- Boss frame positioning for swap tracking
+| Tab | What's Inside |
+|-----|---------------|
+| **General & QoL** | UI scale, fonts, automation, mana bar, crosshair, chat, tooltips |
+| **Autohide & Skinning** | Element visibility, frame skinning options |
+| **Minimap** | Shape, size, buttons, datatexts |
+| **Actionbars** | Visibility, fade, keybinds, styling |
+| **Buffbar** | Buff/debuff tracking configuration |
+| **Resource Bars** | Power bars, combo points, class resources |
+| **Custom Trackers** | Create and manage custom spell trackers |
+| **Anchoring** | Custom anchor points for UI elements |
+| **Unit Frames** | Player, target, focus, party frame settings |
+| **Profiles** | Import/export, per-spec profiles |
 
 ---
 
@@ -356,56 +288,54 @@ The CDM is a powerful tool for tracking cooldowns:
 
 ### Getting Help
 
-- **Discord**: Join the [Korivash Discord](https://discord.gg/JbQQTbH4hR) (if available)
-- **GitHub Issues**: [Report bugs or request features](https://github.com/korivash/KoriUI/issues)
-- **Website**: Visit [korivash.com](https://korivash.com) for updates and guides
-
-### Known Issues
-
-Check the [Issues](https://github.com/korivash/KoriUI/issues) page for current known issues and workarounds.
+- **Discord**: [Join the Community](https://discord.gg/JbQQTbH4hR)
+- **GitHub Issues**: [Report Bugs / Request Features](https://github.com/korivash/KoriUI/issues)
+- **Website**: [korivash.com](https://korivash.com)
 
 ### FAQ
 
-**Q: Does Kori UI work with other addons?**  
-A: Yes! Kori UI is designed to be compatible with most popular addons. However, other UI replacement addons may conflict.
+**Q: Is this really free?**
+A: Yes. Forever. No premium tier, no Patreon-locked features.
 
-**Q: How do I reset to default settings?**  
-A: Type `/kori` → **Profiles** tab → **Reset to Default**.
+**Q: Is it safe to use in rated content?**
+A: Absolutely. All features comply with Blizzard's addon policies.
 
-**Q: Can I use Kori UI for classic WoW?**  
-A: Currently, Kori UI is designed for Retail (Midnight expansion). Classic support may come in the future.
+**Q: Will this conflict with ElvUI/other UI addons?**
+A: Probably. Kori UI is a complete UI replacement — using multiple UI overhauls together isn't recommended.
 
-**Q: Is Kori UI allowed in rated content?**  
-A: Yes! All features comply with Blizzard's addon policies and are safe for competitive play.
+**Q: Classic WoW support?**
+A: Currently Retail only (Midnight expansion). Classic may come later.
+
+**Q: How do I reset settings?**
+A: `/kori` → Profiles → Reset to Default
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you'd like to contribute:
+Contributions welcome! Feel free to:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-Please ensure your code follows the existing style and includes appropriate comments.
+- Report bugs via GitHub Issues
+- Submit pull requests for features/fixes
+- Share feedback in Discord
+- Help other users in the community
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.
+**GNU General Public License v3.0** — See [LICENSE](LICENSE) for details.
+
+This means you can freely use, modify, and distribute this addon. Just keep it free and open.
 
 ---
 
 ## 💖 Credits
 
-**Created by**: [Korivash](https://korivash.com)
+**Maintained by**: [Korivash](https://korivash.com)
 
-**Libraries Used**:
-- Ace3 (AceAddon, AceDB, AceEvent, AceConsole, etc.)
+**Libraries**:
+- Ace3 Suite (AceAddon, AceDB, AceEvent, AceConsole, AceComm)
 - LibSharedMedia-3.0
 - LibCustomGlow-1.0
 - LibKeyBound-1.0
@@ -413,30 +343,24 @@ This project is licensed under the **GNU General Public License v3.0**. See the 
 - LibOpenRaid
 - LibDeflate
 
-**Special Thanks**:
+**Thanks to**:
 - The WoW addon development community
-- All users who provided feedback and bug reports
-- Contributors to the open-source libraries
-
----
-
-## 🌟 Show Your Support
-
-If you enjoy using Kori UI, consider:
-
-- ⭐ **Starring** this repository
-- 🐛 **Reporting bugs** to help improve the addon
-- 💡 **Suggesting features** you'd like to see
-- 📢 **Sharing** with your friends and guildmates
+- Everyone who reports bugs and suggests features
+- All the library authors who make addon development possible
+- Users who stuck around through the Quazii drama and gave Kori UI a chance
 
 ---
 
 <div align="center">
 
-**Made with 💜 by Korivash**
+### 🌸 Free UI for a Free Community
 
-[Website](https://korivash.com) • [Discord](https://discord.gg/korivash) • [GitHub](https://github.com/korivash)
+**No paywalls. No drama. Just a good UI.**
 
-*Transform your World of Warcraft experience*
+Made with 💜 by Korivash
+
+[Website](https://korivash.com) • [Discord](https://discord.gg/JbQQTbH4hR) • [GitHub](https://github.com/korivash/KoriUI)
+
+*If you enjoy Kori UI, consider ⭐ starring the repo and sharing with your guild!*
 
 </div>
