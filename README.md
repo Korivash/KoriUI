@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌸 Quazii UI Re-work and Re-upload FREE
+# 🌸 Since Quazii Quit i am trying to maintain his project - i hope he comes back!
 
 [![Support Discord](https://img.shields.io/badge/Support%20Discord-Join%20Now-5865F2?logo=discord&logoColor=white)](https://discord.gg/JbQQTbH4hR)
 
