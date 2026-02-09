@@ -1,4 +1,4 @@
-## Interface: 120000, 120001
+## Interface: 120001
 ## Title: |cFF1E90FFKori UI (Midnight)|r
 ## IconTexture: Interface\AddOns\KoriUI\assets\koriLogo
 ## AddonCompartmentFunc: KoriUI_CompartmentClick
@@ -6,7 +6,7 @@
 ## AddonCompartmentFuncOnLeave: KoriUI_CompartmentOnLeave
 ## Notes: Installer for |cFF1E90FFKorivash|r UI
 ## Author: Korivash
-## Version: 2.0.0
+## Version: 2.0.1
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariables: KoriUI_DB, KoriUIDB

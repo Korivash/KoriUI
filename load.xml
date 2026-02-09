@@ -3,7 +3,7 @@
     <!-- Load Libs First -->
     <Include file="libs\libs.xml" />
     <!-- Localalization Files -->
-    <Include file="locales\locales.xml" />
+    <Include file="Locales\locales.xml" />
     <!-- Addon Init -->
     <Script file="init.lua" />
     <!-- Util Files -->
