@@ -31,7 +31,7 @@ function KoriUI:OnInitialize()
     ---@type AceDBObject-3.0
     self.db = LibStub("AceDB-3.0"):New("KoriUI_DB", self.defaults, "Default")
 
-    self:RegisterChatCommand("qui", "SlashCommandOpen")
+    self:RegisterChatCommand("kori", "SlashCommandOpen")
     self:RegisterChatCommand("koriui", "SlashCommandOpen")
     self:RegisterChatCommand("rl", "SlashCommandReload")
     
@@ -40,8 +40,8 @@ function KoriUI:OnInitialize()
 end
 
 -- Quick Keybind Mode shortcut (/kb)
-SLASH_QUIKB1 = "/kb"
-SlashCmdList["QUIKB"] = function()
+SLASH_KORIKB1 = "/kb"
+SlashCmdList["KORIKB"] = function()
     local LibKeyBound = LibStub("LibKeyBound-1.0", true)
     if LibKeyBound then
         LibKeyBound:Toggle()
@@ -49,7 +49,7 @@ SlashCmdList["QUIKB"] = function()
         -- Fallback to Blizzard's Quick Keybind Mode (no mousewheel support)
         ShowUIPanel(QuickKeybindFrame)
     else
-        print("|cFF0080FFKoriUI:|r Quick Keybind Mode not available.")
+        print("|cff34D399KoriUI:|r Quick Keybind Mode not available.")
     end
 end
 
@@ -59,7 +59,7 @@ SlashCmdList["KORIUI_CDM"] = function()
     if CooldownViewerSettings then
         CooldownViewerSettings:SetShown(not CooldownViewerSettings:IsShown())
     else
-        print("|cFF0080FFKoriUI:|r Cooldown Settings not available. Enable CDM first.")
+        print("|cff34D399KoriUI:|r Cooldown Settings not available. Enable CDM first.")
     end
 end
 
@@ -72,7 +72,7 @@ function KoriUI:SlashCommandOpen(input)
         if _G.KoriUI_ToggleUnitFrameEditMode then
             _G.KoriUI_ToggleUnitFrameEditMode()
         else
-            print("|cFF4169E1KoriUI:|r Unit Frames module not loaded.")
+            print("|cFF56D1FFKoriUI:|r Unit Frames module not loaded.")
         end
         return
     end
@@ -81,7 +81,7 @@ function KoriUI:SlashCommandOpen(input)
     if self.GUI then
         self.GUI:Toggle()
     else
-        print("|cFF4169E1KoriUI:|r GUI not loaded yet. Try again in a moment.")
+        print("|cFF56D1FFKoriUI:|r GUI not loaded yet. Try again in a moment.")
     end
 end
 
@@ -92,16 +92,16 @@ end
 function KoriUI:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     
-    -- Initialize QUICore (AceDB-based integration)
-    if self.QUICore then
+    -- Initialize KORICore (AceDB-based integration)
+    if self.KORICore then
         -- Show intro message if enabled (defaults to true)
         if self.db.profile.chat.showIntroMessage ~= false then
             print("|cFF1E90FFKori UI|r loaded. |cFFFFFF00/kori|r to setup.")
-            print("|cFF1E90FFKORI UI TIPS:|r")
-            print("|cFF0080FF1.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
-            print("|cFF0080FF2.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Go to |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")
-            print("|cFF0080FF3.|r Use |cFFFFFF00100% Icon Size|r on CDM Essential & Utility bars via |cFFFFFF00Edit Mode|r for best results.")
-            print("|cFF0080FF4.|r Position your |cFFFFFF00CDM bars|r in |cFFFFFF00Edit Mode|r and click |cFFFFFF00Save|r before exiting.")
+            print("|cFF1E90FFKORI UI REMINDER:|r")
+            print("|cFF34D3991.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
+            print("|cFF34D3992.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Go to |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")
+            print("|cFF34D3993.|r Use |cFFFFFF00100% Icon Size|r on CDM Essential & Utility bars via |cFFFFFF00Edit Mode|r for best results.")
+            print("|cFF34D3994.|r Position your |cFFFFFF00CDM bars|r in |cFFFFFF00Edit Mode|r and click |cFFFFFF00Save|r before exiting.")
         end
     end
 end

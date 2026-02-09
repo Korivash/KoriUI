@@ -5,9 +5,9 @@
 ]]
 
 local ADDON_NAME, ns = ...
-local QUI = KoriUI
-local GUI = QUI.GUI
-local QUICore = ns.Addon
+local KORI = KoriUI
+local GUI = KORI.GUI
+local KORICore = ns.Addon
 local C = GUI.Colors
 
 ---------------------------------------------------------------------------
@@ -235,8 +235,8 @@ end
 -- HELPER: Get database safely
 ---------------------------------------------------------------------------
 local function GetDB()
-    if QUICore and QUICore.db and QUICore.db.profile then
-        return QUICore.db.profile
+    if KORICore and KORICore.db and KORICore.db.profile then
+        return KORICore.db.profile
     end
     return nil
 end
@@ -278,7 +278,7 @@ local function RestorePreviousFPSSettings()
     -- Clear backup after successful restore
     db.fpsBackup = nil
 
-    print("|cFF0080FFKoriUI:|r Restored " .. successCount .. " previous settings.")
+    print("|cff34D399KoriUI:|r Restored " .. successCount .. " previous settings.")
     if failCount > 0 then
         print("|cffFF6B6BKoriUI:|r " .. failCount .. " settings could not be restored.")
     end
@@ -304,8 +304,8 @@ local function ApplyKorivashFPSSettings()
         end
     end
 
-    print("|cFF0080FFKoriUI:|r Your previous settings have been backed up.")
-    print("|cFF0080FFKoriUI:|r Applied " .. successCount .. " FPS settings. Use 'Restore Previous Settings' to undo.")
+    print("|cff34D399KoriUI:|r Your previous settings have been backed up.")
+    print("|cff34D399KoriUI:|r Applied " .. successCount .. " FPS settings. Use 'Restore Previous Settings' to undo.")
     if failCount > 0 then
         print("|cffFF6B6BKoriUI:|r " .. failCount .. " settings could not be applied (may require restart).")
     end
@@ -327,11 +327,11 @@ end
 -- HELPER: Refresh callbacks
 ---------------------------------------------------------------------------
 local function RefreshAll()
-    if QUICore and QUICore.RefreshAll then QUICore:RefreshAll() end
+    if KORICore and KORICore.RefreshAll then KORICore:RefreshAll() end
 end
 
 local function RefreshMinimap()
-    if QUICore and QUICore.Minimap and QUICore.Minimap.Refresh then QUICore.Minimap:Refresh() end
+    if KORICore and KORICore.Minimap and KORICore.Minimap.Refresh then KORICore.Minimap:Refresh() end
 end
 
 local function RefreshUIHider()
@@ -339,13 +339,13 @@ local function RefreshUIHider()
 end
 
 local function RefreshUnitFrames(unit)
-    if QUICore and QUICore.UnitFrames then
+    if KORICore and KORICore.UnitFrames then
         -- If unit is a string (valid unit name), update that specific frame
         -- Otherwise (nil, boolean from checkbox, etc.), refresh all frames
         if type(unit) == "string" then
-            QUICore.UnitFrames:UpdateUnitFrame(unit)
+            KORICore.UnitFrames:UpdateUnitFrame(unit)
         else
-            QUICore.UnitFrames:RefreshFrames()
+            KORICore.UnitFrames:RefreshFrames()
         end
     end
 end
@@ -380,25 +380,25 @@ local function CreateGeneralQoLPage(parent)
     -- Refresh callback for fonts/textures (refreshes everything that uses these defaults)
     local function RefreshAll()
         -- Refresh core CDM viewers
-        if QUICore and QUICore.RefreshAll then
-            QUICore:RefreshAll()
+        if KORICore and KORICore.RefreshAll then
+            KORICore:RefreshAll()
         end
         -- Refresh unit frames (use global function)
         if _G.KoriUI_RefreshUnitFrames then
             _G.KoriUI_RefreshUnitFrames()
         end
         -- Refresh power bars (recreate to apply new fonts/textures)
-        if QUICore then
-            if QUICore.UpdatePowerBar then
-                QUICore:UpdatePowerBar()
+        if KORICore then
+            if KORICore.UpdatePowerBar then
+                KORICore:UpdatePowerBar()
             end
-            if QUICore.UpdateSecondaryPowerBar then
-                QUICore:UpdateSecondaryPowerBar()
+            if KORICore.UpdateSecondaryPowerBar then
+                KORICore:UpdateSecondaryPowerBar()
             end
         end
         -- Refresh minimap/datatext
-        if QUICore and QUICore.Minimap and QUICore.Minimap.Refresh then
-            QUICore.Minimap:Refresh()
+        if KORICore and KORICore.Minimap and KORICore.Minimap.Refresh then
+            KORICore.Minimap:Refresh()
         end
         -- Refresh buff borders
         if _G.KoriUI_RefreshBuffBorders then
@@ -410,9 +410,9 @@ local function CreateGeneralQoLPage(parent)
         end
         -- Trigger CDM layout refresh
         C_Timer.After(0.1, function()
-            if QUICore and QUICore.ApplyViewerLayout then
-                QUICore:ApplyViewerLayout("EssentialCooldownViewer")
-                QUICore:ApplyViewerLayout("UtilityCooldownViewer")
+            if KORICore and KORICore.ApplyViewerLayout then
+                KORICore:ApplyViewerLayout("EssentialCooldownViewer")
+                KORICore:ApplyViewerLayout("UtilityCooldownViewer")
             end
         end)
     end
@@ -437,7 +437,7 @@ local function CreateGeneralQoLPage(parent)
             local scaleSlider = GUI:CreateFormSlider(tabContent, "Global UI Scale", 0.3, 2.0, 0.01,
                 "uiScale", db.general, function(val)
                     pcall(function() UIParent:SetScale(val) end)
-                    if QUICore and QUICore.UIMult then QUICore:UIMult() end
+                    if KORICore and KORICore.UIMult then KORICore:UIMult() end
                 end, { deferOnDrag = true, precision = 7 })
             scaleSlider:SetPoint("TOPLEFT", PADDING, y)
             scaleSlider:SetPoint("RIGHT", tabContent, "RIGHT", -PADDING, 0)
@@ -450,10 +450,10 @@ local function CreateGeneralQoLPage(parent)
             local function ApplyPreset(val, name)
                 db.general.uiScale = val
                 pcall(function() UIParent:SetScale(val) end)
-                local msg = "|cFF0080FF[KoriUI]|r UI scale set to " .. val
+                local msg = "|cff34D399[KoriUI]|r UI scale set to " .. val
                 if name then msg = msg .. " (" .. name .. ")" end
                 DEFAULT_CHAT_FRAME:AddMessage(msg)
-                if QUICore and QUICore.UIMult then QUICore:UIMult() end
+                if KORICore and KORICore.UIMult then KORICore:UIMult() end
                 scaleSlider.SetValue(val, true)
             end
 
@@ -1249,7 +1249,7 @@ local function CreateGeneralQoLPage(parent)
 
         local minimapBtnDB = db.minimapButton
         if minimapBtnDB then
-            local showMinimapIconCheck = GUI:CreateFormCheckbox(tabContent, "Hide QUI Minimap Icon", "hide", minimapBtnDB, function(dbVal)
+            local showMinimapIconCheck = GUI:CreateFormCheckbox(tabContent, "Hide KORI Minimap Icon", "hide", minimapBtnDB, function(dbVal)
                 local LibDBIcon = LibStub("LibDBIcon-1.0", true)
                 if LibDBIcon then
                     if dbVal then
@@ -1264,7 +1264,7 @@ local function CreateGeneralQoLPage(parent)
             y = y - FORM_ROW
         end
 
-        local panelAlphaSlider = GUI:CreateFormSlider(tabContent, "QUI Panel Transparency", 0.3, 1.0, 0.01, "configPanelAlpha", db, function(val)
+        local panelAlphaSlider = GUI:CreateFormSlider(tabContent, "KORI Panel Transparency", 0.3, 1.0, 0.01, "configPanelAlpha", db, function(val)
             local mainFrame = GUI.MainFrame
             if mainFrame then
                 local bgColor = GUI.Colors.bg
@@ -1763,8 +1763,8 @@ local function CreateGeneralQoLPage(parent)
 
         y = y - 20  -- Spacing between sections
 
-        -- ========== QUI CROSSHAIR SECTION ==========
-        local crossHeader = GUI:CreateSectionHeader(tabContent, "QUI Crosshair")
+        -- ========== KORI CROSSHAIR SECTION ==========
+        local crossHeader = GUI:CreateSectionHeader(tabContent, "KORI Crosshair")
         crossHeader:SetPoint("TOPLEFT", PADDING, y)
         y = y - crossHeader.gap
 
@@ -1998,11 +1998,11 @@ local function CreateGeneralQoLPage(parent)
             local chat = db.chat
 
             -- SECTION: Enable/Disable
-            local enableHeader = GUI:CreateSectionHeader(tabContent, "Enable/Disable QUI Chat Module")
+            local enableHeader = GUI:CreateSectionHeader(tabContent, "Enable/Disable KORI Chat Module")
             enableHeader:SetPoint("TOPLEFT", PADDING, y)
             y = y - enableHeader.gap
 
-            local enableCheck = GUI:CreateFormCheckbox(tabContent, "QUI Chat Module", "enabled", chat, RefreshChat)
+            local enableCheck = GUI:CreateFormCheckbox(tabContent, "KORI Chat Module", "enabled", chat, RefreshChat)
             enableCheck:SetPoint("TOPLEFT", PADDING, y)
             enableCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PADDING, 0)
             y = y - FORM_ROW
@@ -2023,7 +2023,7 @@ local function CreateGeneralQoLPage(parent)
             introCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PADDING, 0)
             y = y - FORM_ROW
 
-            local introInfo = GUI:CreateLabel(tabContent, "Display the QUI reminder tips when you log in.", 10, C.textMuted)
+            local introInfo = GUI:CreateLabel(tabContent, "Display the KORI reminder tips when you log in.", 10, C.textMuted)
             introInfo:SetPoint("TOPLEFT", PADDING, y)
             introInfo:SetPoint("RIGHT", tabContent, "RIGHT", -PADDING, 0)
             introInfo:SetJustifyH("LEFT")
@@ -2233,11 +2233,11 @@ local function CreateGeneralQoLPage(parent)
 
         -- SECTION: Enable/Disable
         GUI:SetSearchSection("Enable/Disable")
-        local enableHeader = GUI:CreateSectionHeader(tabContent, "Enable/Disable QUI Tooltip Module")
+        local enableHeader = GUI:CreateSectionHeader(tabContent, "Enable/Disable KORI Tooltip Module")
         enableHeader:SetPoint("TOPLEFT", PADDING, y)
         y = y - enableHeader.gap
 
-        local enableCheck = GUI:CreateFormCheckbox(tabContent, "QUI Tooltip Module", "enabled", tooltip, RefreshTooltips)
+        local enableCheck = GUI:CreateFormCheckbox(tabContent, "KORI Tooltip Module", "enabled", tooltip, RefreshTooltips)
         enableCheck:SetPoint("TOPLEFT", PADDING, y)
         enableCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PADDING, 0)
         y = y - FORM_ROW
@@ -2375,11 +2375,11 @@ local function CreateGeneralQoLPage(parent)
         local FORM_ROW = 32
 
         -- SECTION: Enable/Disable
-        local enableHeader = GUI:CreateSectionHeader(tabContent, "Enable/Disable QUI Character Module")
+        local enableHeader = GUI:CreateSectionHeader(tabContent, "Enable/Disable KORI Character Module")
         enableHeader:SetPoint("TOPLEFT", PADDING, y)
         y = y - enableHeader.gap
 
-        local enableCheck = GUI:CreateFormCheckbox(tabContent, "QUI Character Module",
+        local enableCheck = GUI:CreateFormCheckbox(tabContent, "KORI Character Module",
             "enabled", char, function(val)
                 GUI:ShowConfirmation({
                     title = "Reload Required",
@@ -2434,7 +2434,7 @@ local function CreateGeneralQoLPage(parent)
         if char.inspectEnabled == nil then char.inspectEnabled = true end
 
         local inspectEnabled = GUI:CreateFormCheckbox(tabContent, "Enable Inspect Overlays", "inspectEnabled", char, function()
-            print("|cFF4169E1KoriUI:|r Inspect overlay change requires /reload to take effect.")
+            print("|cFF56D1FFKoriUI:|r Inspect overlay change requires /reload to take effect.")
         end)
         inspectEnabled:SetPoint("TOPLEFT", PADDING, y)
         inspectEnabled:SetPoint("RIGHT", tabContent, "RIGHT", -PADDING, 0)
@@ -3033,7 +3033,7 @@ local function CreateAutohidesPage(parent)
             gameMenuCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             y = y - FORM_ROW
 
-            local addQUIButtonCheck = GUI:CreateFormCheckbox(tabContent, "Add Kori UI Button", "addKoriUIButton", general, function()
+            local addKORIButtonCheck = GUI:CreateFormCheckbox(tabContent, "Add Kori UI Button", "addKoriUIButton", general, function()
                 GUI:ShowConfirmation({
                     title = "Reload UI?",
                     message = "Button changes require a reload to take effect.",
@@ -3042,8 +3042,8 @@ local function CreateAutohidesPage(parent)
                     onAccept = function() KoriUI:SafeReload() end,
                 })
             end)
-            addQUIButtonCheck:SetPoint("TOPLEFT", PAD, y)
-            addQUIButtonCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
+            addKORIButtonCheck:SetPoint("TOPLEFT", PAD, y)
+            addKORIButtonCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             y = y - FORM_ROW
 
             local gameMenuFontSlider = GUI:CreateFormSlider(tabContent, "Button Font Size", 8, 18, 1, "gameMenuFontSize", general, function()
@@ -3068,7 +3068,7 @@ local function CreateAutohidesPage(parent)
             readyCheckHeader:SetPoint("TOPLEFT", PAD, y)
             y = y - readyCheckHeader.gap
 
-            local readyCheckDesc = GUI:CreateLabel(tabContent, "Skin the ready check popup with QUI styling.", 11, C.textMuted)
+            local readyCheckDesc = GUI:CreateLabel(tabContent, "Skin the ready check popup with KORI styling.", 11, C.textMuted)
             readyCheckDesc:SetPoint("TOPLEFT", PAD, y)
             readyCheckDesc:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             readyCheckDesc:SetJustifyH("LEFT")
@@ -3100,7 +3100,7 @@ local function CreateAutohidesPage(parent)
             local rcResetBtn = GUI:CreateButton(tabContent, "Reset Position", 140, 28, function()
                 if _G.KoriUI_ResetReadyCheckPosition then
                     _G.KoriUI_ResetReadyCheckPosition()
-                    print("|cFF4169E1[QUI]|r Ready Check position reset to default.")
+                    print("|cFF56D1FF[KORI]|r Ready Check position reset to default.")
                 end
             end)
             rcResetBtn:SetPoint("LEFT", rcMoveBtn, "RIGHT", 10, 0)
@@ -3117,7 +3117,7 @@ local function CreateAutohidesPage(parent)
             header:SetPoint("TOPLEFT", PAD, y)
             y = y - header.gap
 
-            local desc = GUI:CreateLabel(tabContent, "Skin the M+ keystone insertion window with QUI styling.", 11, C.textMuted)
+            local desc = GUI:CreateLabel(tabContent, "Skin the M+ keystone insertion window with KORI styling.", 11, C.textMuted)
             desc:SetPoint("TOPLEFT", PAD, y)
             desc:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             desc:SetJustifyH("LEFT")
@@ -3216,9 +3216,9 @@ local function CreateAutohidesPage(parent)
 
             -- Toggle movers button
             local moverBtn = GUI:CreateButton(tabContent, "Toggle Position Movers", 200, 28, function()
-                local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-                if QUICore and QUICore.Alerts then
-                    QUICore.Alerts:ToggleMovers()
+                local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+                if KORICore and KORICore.Alerts then
+                    KORICore.Alerts:ToggleMovers()
                 end
             end)
             moverBtn:SetPoint("TOPLEFT", PAD, y)
@@ -3261,7 +3261,7 @@ local function CreateAutohidesPage(parent)
             lootHeader:SetPoint("TOPLEFT", PAD, y)
             y = y - lootHeader.gap
 
-            local lootDesc = GUI:CreateLabel(tabContent, "Replace Blizzard's loot window with a custom QUI-styled frame.", 11, C.textMuted)
+            local lootDesc = GUI:CreateLabel(tabContent, "Replace Blizzard's loot window with a custom KORI-styled frame.", 11, C.textMuted)
             lootDesc:SetPoint("TOPLEFT", PAD, y)
             lootDesc:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             lootDesc:SetJustifyH("LEFT")
@@ -3303,7 +3303,7 @@ local function CreateAutohidesPage(parent)
             rollHeader:SetPoint("TOPLEFT", PAD, y)
             y = y - rollHeader.gap
 
-            local rollDesc = GUI:CreateLabel(tabContent, "Replace Blizzard's loot roll frames with custom QUI-styled frames.", 11, C.textMuted)
+            local rollDesc = GUI:CreateLabel(tabContent, "Replace Blizzard's loot roll frames with custom KORI-styled frames.", 11, C.textMuted)
             rollDesc:SetPoint("TOPLEFT", PAD, y)
             rollDesc:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             rollDesc:SetJustifyH("LEFT")
@@ -3326,10 +3326,10 @@ local function CreateAutohidesPage(parent)
 
             -- Helper to refresh roll preview live when settings change
             local function RefreshRollPreview()
-                local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-                if QUICore and QUICore.Loot and QUICore.Loot:IsRollPreviewActive() then
-                    QUICore.Loot:HideRollPreview()
-                    QUICore.Loot:ShowRollPreview()
+                local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+                if KORICore and KORICore.Loot and KORICore.Loot:IsRollPreviewActive() then
+                    KORICore.Loot:HideRollPreview()
+                    KORICore.Loot:ShowRollPreview()
                 end
             end
 
@@ -3354,9 +3354,9 @@ local function CreateAutohidesPage(parent)
 
             -- Toggle movers button
             local rollMoverBtn = GUI:CreateButton(tabContent, "Toggle Position Movers", 200, 28, function()
-                local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-                if QUICore and QUICore.Loot then
-                    QUICore.Loot:ToggleMovers()
+                local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+                if KORICore and KORICore.Loot then
+                    KORICore.Loot:ToggleMovers()
                 end
             end)
             rollMoverBtn:SetPoint("TOPLEFT", PAD, y)
@@ -3379,7 +3379,7 @@ local function CreateAutohidesPage(parent)
             historyHeader:SetPoint("TOPLEFT", PAD, y)
             y = y - historyHeader.gap
 
-            local historyDesc = GUI:CreateLabel(tabContent, "Apply QUI styling to the loot roll results panel.", 11, C.textMuted)
+            local historyDesc = GUI:CreateLabel(tabContent, "Apply KORI styling to the loot roll results panel.", 11, C.textMuted)
             historyDesc:SetPoint("TOPLEFT", PAD, y)
             historyDesc:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             historyDesc:SetJustifyH("LEFT")
@@ -3403,9 +3403,9 @@ local function CreateAutohidesPage(parent)
             y = y - 10  -- Extra padding before next section
 
             -- ═══════════════════════════════════════════════════════════════
-            -- QUI M+ TIMER SECTION
+            -- KORI M+ TIMER SECTION
             -- ═══════════════════════════════════════════════════════════════
-            GUI:SetSearchSection("QUI M+ Timer")
+            GUI:SetSearchSection("KORI M+ Timer")
 
             local mplusTimer = db.mplusTimer
             if not mplusTimer then
@@ -3427,11 +3427,11 @@ local function CreateAutohidesPage(parent)
             if mplusTimer.showBorder == nil then mplusTimer.showBorder = true end
             if mplusTimer.scale == nil then mplusTimer.scale = 1.0 end
 
-            local quiMplusHeader = GUI:CreateSectionHeader(tabContent, "QUI M+ Timer")
+            local quiMplusHeader = GUI:CreateSectionHeader(tabContent, "KORI M+ Timer")
             quiMplusHeader:SetPoint("TOPLEFT", PAD, y)
             y = y - quiMplusHeader.gap
 
-            local quiMplusDesc = GUI:CreateLabel(tabContent, "Custom M+ timer with QUI styling. Replaces the Blizzard timer with a clean, compact frame.", 11, C.textMuted)
+            local quiMplusDesc = GUI:CreateLabel(tabContent, "Custom M+ timer with KORI styling. Replaces the Blizzard timer with a clean, compact frame.", 11, C.textMuted)
             quiMplusDesc:SetPoint("TOPLEFT", PAD, y)
             quiMplusDesc:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             quiMplusDesc:SetJustifyH("LEFT")
@@ -3447,7 +3447,7 @@ local function CreateAutohidesPage(parent)
             quiMplusNote:SetHeight(20)
             y = y - 28
 
-            local quiMplusCheck = GUI:CreateFormCheckbox(tabContent, "Enable QUI M+ Timer", "enabled", mplusTimer, function()
+            local quiMplusCheck = GUI:CreateFormCheckbox(tabContent, "Enable KORI M+ Timer", "enabled", mplusTimer, function()
                 GUI:ShowConfirmation({
                     title = "Reload UI?",
                     message = "Timer changes require a reload to take effect.",
@@ -3676,7 +3676,7 @@ local function CreateAutohidesPage(parent)
             objTrackerWip:SetJustifyH("LEFT")
             y = y - 18
 
-            local objTrackerDesc = GUI:CreateLabel(tabContent, "Apply QUI styling to quest objectives, achievement tracking, and bonus objectives.", 11, C.textMuted)
+            local objTrackerDesc = GUI:CreateLabel(tabContent, "Apply KORI styling to quest objectives, achievement tracking, and bonus objectives.", 11, C.textMuted)
             objTrackerDesc:SetPoint("TOPLEFT", PAD, y)
             objTrackerDesc:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             objTrackerDesc:SetJustifyH("LEFT")
@@ -3871,12 +3871,12 @@ local function CreateMinimapPage(parent)
             generalHeader:SetPoint("TOPLEFT", PAD, y)
             y = y - generalHeader.gap
 
-            local enableCheck = GUI:CreateFormCheckbox(tabContent, "Enable QUI Minimap", "enabled", mm, RefreshMinimap)
+            local enableCheck = GUI:CreateFormCheckbox(tabContent, "Enable KORI Minimap", "enabled", mm, RefreshMinimap)
             enableCheck:SetPoint("TOPLEFT", PAD, y)
             enableCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             y = y - FORM_ROW
 
-            local lockCheck = GUI:CreateFormCheckbox(tabContent, "Lock QUI Minimap", "lock", mm, RefreshMinimap)
+            local lockCheck = GUI:CreateFormCheckbox(tabContent, "Lock KORI Minimap", "lock", mm, RefreshMinimap)
             lockCheck:SetPoint("TOPLEFT", PAD, y)
             lockCheck:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
             y = y - FORM_ROW
@@ -4156,10 +4156,10 @@ local function CreateMinimapPage(parent)
             y = y - 10
 
             -- Build datatext options from registry (no section header - flows from Vertical Offset)
-            -- NOTE: Use QUICore.Datatexts:GetAll() for consistent behavior with extra panels (#89)
+            -- NOTE: Use KORICore.Datatexts:GetAll() for consistent behavior with extra panels (#89)
             local dtOptions = {{value = "", text = "(empty)"}}
-            if QUICore and QUICore.Datatexts then
-                local allDatatexts = QUICore.Datatexts:GetAll()
+            if KORICore and KORICore.Datatexts then
+                local allDatatexts = KORICore.Datatexts:GetAll()
                 for _, datatextDef in ipairs(allDatatexts) do
                     table.insert(dtOptions, {value = datatextDef.id, text = datatextDef.displayName})
                 end
@@ -4317,8 +4317,8 @@ local function CreateMinimapPage(parent)
                 {value = "full", text = "Full (Spec / Loadout)"},
             }, "specDisplayMode", dt, function()
                 -- Refresh all datatexts to apply the new display mode immediately
-                if QUICore and QUICore.Datatexts and QUICore.Datatexts.UpdateAll then
-                    QUICore.Datatexts:UpdateAll()
+                if KORICore and KORICore.Datatexts and KORICore.Datatexts.UpdateAll then
+                    KORICore.Datatexts:UpdateAll()
                 end
             end)
             specDisplayDropdown:SetPoint("TOPLEFT", PAD, y)
@@ -4363,8 +4363,8 @@ local function CreateMinimapPage(parent)
             local useClassColor = GUI:CreateFormCheckbox(tabContent, "Use Class Color", "useClassColor", dt, function()
                 RefreshMinimap()
                 -- Also update custom datapanels
-                if QUICore and QUICore.Datatexts and QUICore.Datatexts.UpdateAll then
-                    QUICore.Datatexts:UpdateAll()
+                if KORICore and KORICore.Datatexts and KORICore.Datatexts.UpdateAll then
+                    KORICore.Datatexts:UpdateAll()
                 end
             end)
             useClassColor:SetPoint("TOPLEFT", PAD, y)
@@ -4374,8 +4374,8 @@ local function CreateMinimapPage(parent)
             local valueColor = GUI:CreateFormColorPicker(tabContent, "Custom Text Color", "valueColor", dt, function()
                 RefreshMinimap()
                 -- Also update custom datapanels
-                if QUICore and QUICore.Datatexts and QUICore.Datatexts.UpdateAll then
-                    QUICore.Datatexts:UpdateAll()
+                if KORICore and KORICore.Datatexts and KORICore.Datatexts.UpdateAll then
+                    KORICore.Datatexts:UpdateAll()
                 end
             end)
             valueColor:SetPoint("TOPLEFT", PAD, y)
@@ -4526,8 +4526,8 @@ local function CreateMinimapPage(parent)
 
                         -- Build datatext options
                         local datatextOptions = {{value = "", text = "(empty)"}}
-                        if QUICore and QUICore.Datatexts then
-                            local allDatatexts = QUICore.Datatexts:GetAll()
+                        if KORICore and KORICore.Datatexts then
+                            local allDatatexts = KORICore.Datatexts:GetAll()
                             for _, datatextDef in ipairs(allDatatexts) do
                                 table.insert(datatextOptions, {
                                     value = datatextDef.id,
@@ -4551,8 +4551,8 @@ local function CreateMinimapPage(parent)
 
                         local slotDropdown = GUI:CreateDropdown(editFrame, "", datatextOptions, "value", slotWrapper, function()
                             panelConfig.slots[slotIdx] = slotWrapper.value
-                            if QUICore and QUICore.Datapanels then
-                                QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                            if KORICore and KORICore.Datapanels then
+                                KORICore.Datapanels:UpdatePanel(panelConfig.id)
                             end
                         end)
                         slotDropdown:SetPoint("LEFT", slotLabel, "RIGHT", 10, 0)
@@ -4569,8 +4569,8 @@ local function CreateMinimapPage(parent)
                             if val and noLabelCb then
                                 noLabelCb.SetValue(false)
                             end
-                            if QUICore and QUICore.Datapanels then
-                                QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                            if KORICore and KORICore.Datapanels then
+                                KORICore.Datapanels:UpdatePanel(panelConfig.id)
                             end
                         end)
                         shortLabelCb:SetSize(70, 20)  -- Compact for inline display
@@ -4582,8 +4582,8 @@ local function CreateMinimapPage(parent)
                             if val and shortLabelCb then
                                 shortLabelCb.SetValue(false)
                             end
-                            if QUICore and QUICore.Datapanels then
-                                QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                            if KORICore and KORICore.Datapanels then
+                                KORICore.Datapanels:UpdatePanel(panelConfig.id)
                             end
                         end)
                         noLabelCb:SetSize(60, 20)  -- Compact inline layout (vs minimap's full-width form checkboxes)
@@ -4631,8 +4631,8 @@ local function CreateMinimapPage(parent)
                     
                     -- Width slider
                     local widthSlider = GUI:CreateSlider(editFrame, "Width", 100, 800, 1, "width", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                     end)
                     widthSlider:SetPoint("TOPLEFT", editPad, editY)
@@ -4640,8 +4640,8 @@ local function CreateMinimapPage(parent)
                     
                     -- Height slider
                     local heightSlider = GUI:CreateSlider(editFrame, "Height", 16, 50, 1, "height", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                     end)
                     heightSlider:SetPoint("LEFT", widthSlider, "RIGHT", 10, 0)
@@ -4655,8 +4655,8 @@ local function CreateMinimapPage(parent)
                     
                     -- Font size slider
                     local fontSlider = GUI:CreateSlider(editFrame, "Font Size", 8, 18, 1, "fontSize", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                     end)
                     fontSlider:SetPoint("LEFT", slotsSlider, "RIGHT", 10, 0)
@@ -4665,8 +4665,8 @@ local function CreateMinimapPage(parent)
                     
                     -- Background opacity slider
                     local opacitySlider = GUI:CreateSlider(editFrame, "Background Opacity", 0, 100, 5, "bgOpacity", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                     end)
                     opacitySlider:SetPoint("TOPLEFT", editPad, editY)
@@ -4674,8 +4674,8 @@ local function CreateMinimapPage(parent)
                     
                     -- Border size slider (0=hidden) (#90)
                     local borderSlider = GUI:CreateSlider(editFrame, "Border (0=hidden)", 0, 8, 1, "borderSize", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                     end)
                     borderSlider:SetPoint("LEFT", opacitySlider, "RIGHT", 10, 0)
@@ -4684,8 +4684,8 @@ local function CreateMinimapPage(parent)
 
                     -- Border color picker (#90)
                     local borderColorPicker = GUI:CreateColorPicker(editFrame, "Border Color", "borderColor", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                     end)
                     borderColorPicker:SetPoint("TOPLEFT", editPad, editY)
@@ -4693,8 +4693,8 @@ local function CreateMinimapPage(parent)
 
                     -- Lock toggle
                     local lockCheck = GUI:CreateCheckbox(editFrame, "Lock Position (prevents dragging)", "locked", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:SetLocked(panelConfig.id, panelConfig.locked)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:SetLocked(panelConfig.id, panelConfig.locked)
                         end
                     end)
                     lockCheck:SetPoint("TOPLEFT", editPad, editY)
@@ -4709,8 +4709,8 @@ local function CreateMinimapPage(parent)
                         end
                         
                         -- Update panel
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                         
                         -- Update dropdown visibility based on new numSlots value
@@ -4781,8 +4781,8 @@ local function CreateMinimapPage(parent)
                     
                     -- Enable toggle
                     local enableCheck = GUI:CreateCheckbox(panelFrame, "Enabled", "enabled", panelConfig, function()
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:UpdatePanel(panelConfig.id)
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:UpdatePanel(panelConfig.id)
                         end
                     end)
                     enableCheck:SetPoint("RIGHT", -80, 0)
@@ -4790,9 +4790,9 @@ local function CreateMinimapPage(parent)
                     -- Delete button
                     local delBtn = GUI:CreateButton(panelFrame, "Delete", 60, 22, function()
                         table.remove(db.quiDatatexts.panels, i)
-                        if QUICore and QUICore.Datapanels then
-                            QUICore.Datapanels:DeletePanel(panelConfig.id)
-                            QUICore.Datapanels:RefreshAll()
+                        if KORICore and KORICore.Datapanels then
+                            KORICore.Datapanels:DeletePanel(panelConfig.id)
+                            KORICore.Datapanels:RefreshAll()
                         end
                         -- Rebuild the tab to reflect changes
                         GUI:ShowConfirmation({
@@ -4832,8 +4832,8 @@ local function CreateMinimapPage(parent)
                 }
                 table.insert(db.quiDatatexts.panels, newPanel)
                 
-                if QUICore and QUICore.Datapanels then
-                    QUICore.Datapanels:RefreshAll()
+                if KORICore and KORICore.Datapanels then
+                    KORICore.Datapanels:RefreshAll()
                 end
                 
                 -- Rebuild the tab to show the new panel
@@ -4865,7 +4865,7 @@ local function CreateMinimapPage(parent)
 end
 
 ---------------------------------------------------------------------------
--- PAGE: CDM Setup (New Cooldown Display Manager - QUI NCDM)
+-- PAGE: CDM Setup (New Cooldown Display Manager - KORI NCDM)
 -- Per-row configuration for Essential, Utility, and Buff viewers
 ---------------------------------------------------------------------------
 
@@ -5777,10 +5777,10 @@ local function CreateCDMSetupPage(parent)
 
         -- Callback to refresh power bars
         local function RefreshPowerBars()
-            if _G.KoriUI and _G.KoriUI.QUICore then
-                local QUICore = _G.KoriUI.QUICore
-                if QUICore.UpdatePowerBar then QUICore:UpdatePowerBar() end
-                if QUICore.UpdateSecondaryPowerBar then QUICore:UpdateSecondaryPowerBar() end
+            if _G.KoriUI and _G.KoriUI.KORICore then
+                local KORICore = _G.KoriUI.KORICore
+                if KORICore.UpdatePowerBar then KORICore:UpdatePowerBar() end
+                if KORICore.UpdateSecondaryPowerBar then KORICore:UpdateSecondaryPowerBar() end
             end
         end
         
@@ -6001,10 +6001,10 @@ local function CreateCDMSetupPage(parent)
                         yOffsetPrimarySlider.SetValue(primary.offsetY, true)
                     end
                 else
-                    print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                    print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                 end
             else
-                print("|cFF4169E1KoriUI:|r Essential Cooldowns viewer not found or not visible.")
+                print("|cFF56D1FFKoriUI:|r Essential Cooldowns viewer not found or not visible.")
             end
         end)
 
@@ -6093,10 +6093,10 @@ local function CreateCDMSetupPage(parent)
                         yOffsetPrimarySlider.SetValue(primary.offsetY, true)
                     end
                 else
-                    print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                    print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                 end
             else
-                print("|cFF4169E1KoriUI:|r Utility Cooldowns viewer not found or not visible.")
+                print("|cFF56D1FFKoriUI:|r Utility Cooldowns viewer not found or not visible.")
             end
         end)
         y = y - FORM_ROW
@@ -6253,10 +6253,10 @@ local function CreateCDMSetupPage(parent)
                             yOffsetPrimarySlider.SetValue(primary.offsetY, true)
                         end
                     else
-                        print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                        print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                     end
                 else
-                    print("|cFF4169E1KoriUI:|r Essential Cooldowns viewer not found or not visible.")
+                    print("|cFF56D1FFKoriUI:|r Essential Cooldowns viewer not found or not visible.")
                 end
             end
         end)
@@ -6328,10 +6328,10 @@ local function CreateCDMSetupPage(parent)
                             yOffsetPrimarySlider.SetValue(primary.offsetY, true)
                         end
                     else
-                        print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                        print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                     end
                 else
-                    print("|cFF4169E1KoriUI:|r Utility Cooldowns viewer not found or not visible.")
+                    print("|cFF56D1FFKoriUI:|r Utility Cooldowns viewer not found or not visible.")
                 end
             end
         end)
@@ -6474,8 +6474,8 @@ local function CreateCDMSetupPage(parent)
         y = y - FORM_ROW
 
         -- Register sliders for real-time sync during Edit Mode
-        if _G.KoriUI and _G.KoriUI.QUICore and _G.KoriUI.QUICore.RegisterPowerBarEditModeSliders then
-            _G.KoriUI.QUICore:RegisterPowerBarEditModeSliders("primary", xOffsetPrimarySlider, yOffsetPrimarySlider)
+        if _G.KoriUI and _G.KoriUI.KORICore and _G.KoriUI.KORICore.RegisterPowerBarEditModeSliders then
+            _G.KoriUI.KORICore:RegisterPowerBarEditModeSliders("primary", xOffsetPrimarySlider, yOffsetPrimarySlider)
         end
 
         -- Text sliders
@@ -6633,10 +6633,10 @@ local function CreateCDMSetupPage(parent)
                     if widthSecondarySlider and widthSecondarySlider.SetValue then widthSecondarySlider.SetValue(secondary.width, true) end
                     if yOffsetSecondarySlider and yOffsetSecondarySlider.SetValue then yOffsetSecondarySlider.SetValue(secondary.offsetY, true) end
                 else
-                    print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                    print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                 end
             else
-                print("|cFF4169E1KoriUI:|r Essential Cooldowns viewer not found or not visible.")
+                print("|cFF56D1FFKoriUI:|r Essential Cooldowns viewer not found or not visible.")
             end
         end)
 
@@ -6711,10 +6711,10 @@ local function CreateCDMSetupPage(parent)
                     if widthSecondarySlider and widthSecondarySlider.SetValue then widthSecondarySlider.SetValue(secondary.width, true) end
                     if yOffsetSecondarySlider and yOffsetSecondarySlider.SetValue then yOffsetSecondarySlider.SetValue(secondary.offsetY, true) end
                 else
-                    print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                    print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                 end
             else
-                print("|cFF4169E1KoriUI:|r Utility Cooldowns viewer not found or not visible.")
+                print("|cFF56D1FFKoriUI:|r Utility Cooldowns viewer not found or not visible.")
             end
         end)
 
@@ -6742,9 +6742,9 @@ local function CreateCDMSetupPage(parent)
             self:SetBackdropBorderColor(C.border[1], C.border[2], C.border[3], 1)
         end)
         snapSecPrimaryBtn:SetScript("OnClick", function()
-            local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-            local primaryBar = QUICore and QUICore.powerBar
-            local primaryCfg = QUICore and QUICore.db and QUICore.db.profile.powerBar
+            local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+            local primaryBar = KORICore and KORICore.powerBar
+            local primaryCfg = KORICore and KORICore.db and KORICore.db.profile.powerBar
             if primaryBar and primaryBar:IsShown() and primaryCfg then
                 local primaryCenterX, primaryCenterY = primaryBar:GetCenter()
                 local screenCenterX, screenCenterY = UIParent:GetCenter()
@@ -6787,10 +6787,10 @@ local function CreateCDMSetupPage(parent)
                     if widthSecondarySlider and widthSecondarySlider.SetValue then widthSecondarySlider.SetValue(secondary.width, true) end
                     if yOffsetSecondarySlider and yOffsetSecondarySlider.SetValue then yOffsetSecondarySlider.SetValue(secondary.offsetY, true) end
                 else
-                    print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                    print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                 end
             else
-                print("|cFF4169E1KoriUI:|r Primary Class Resource Bar not found or not visible. Enable it first.")
+                print("|cFF56D1FFKoriUI:|r Primary Class Resource Bar not found or not visible. Enable it first.")
             end
         end)
         y = y - FORM_ROW
@@ -6968,10 +6968,10 @@ local function CreateCDMSetupPage(parent)
                         if widthSecondarySlider and widthSecondarySlider.SetValue then widthSecondarySlider.SetValue(secondary.width, true) end
                         if yOffsetSecondarySlider and yOffsetSecondarySlider.SetValue then yOffsetSecondarySlider.SetValue(secondary.offsetY, true) end
                     else
-                        print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                        print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                     end
                 else
-                    print("|cFF4169E1KoriUI:|r Essential Cooldowns viewer not found or not visible.")
+                    print("|cFF56D1FFKoriUI:|r Essential Cooldowns viewer not found or not visible.")
                 end
             end
         end)
@@ -7031,10 +7031,10 @@ local function CreateCDMSetupPage(parent)
                         if widthSecondarySlider and widthSecondarySlider.SetValue then widthSecondarySlider.SetValue(secondary.width, true) end
                         if yOffsetSecondarySlider and yOffsetSecondarySlider.SetValue then yOffsetSecondarySlider.SetValue(secondary.offsetY, true) end
                     else
-                        print("|cFF4169E1KoriUI:|r Could not get screen positions. Try again.")
+                        print("|cFF56D1FFKoriUI:|r Could not get screen positions. Try again.")
                     end
                 else
-                    print("|cFF4169E1KoriUI:|r Utility Cooldowns viewer not found or not visible.")
+                    print("|cFF56D1FFKoriUI:|r Utility Cooldowns viewer not found or not visible.")
                 end
             end
         end)
@@ -7045,9 +7045,9 @@ local function CreateCDMSetupPage(parent)
                 secondary.lockedToPrimary = false
                 UpdateSecLockButtonStates()
             else
-                local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-                local primaryBar = QUICore and QUICore.powerBar
-                local primaryCfg = QUICore and QUICore.db and QUICore.db.profile.powerBar
+                local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+                local primaryBar = KORICore and KORICore.powerBar
+                local primaryCfg = KORICore and KORICore.db and KORICore.db.profile.powerBar
                 if primaryBar and primaryBar:IsShown() and primaryCfg then
                     local primaryCenterX, primaryCenterY = primaryBar:GetCenter()
                     local screenCenterX, screenCenterY = UIParent:GetCenter()
@@ -7086,7 +7086,7 @@ local function CreateCDMSetupPage(parent)
                     if widthSecondarySlider and widthSecondarySlider.SetValue then widthSecondarySlider.SetValue(secondary.width, true) end
                     if yOffsetSecondarySlider and yOffsetSecondarySlider.SetValue then yOffsetSecondarySlider.SetValue(secondary.offsetY, true) end
                 else
-                    print("|cFF4169E1KoriUI:|r Primary Class Resource Bar not found or not visible. Enable it first.")
+                    print("|cFF56D1FFKoriUI:|r Primary Class Resource Bar not found or not visible. Enable it first.")
                 end
             end
         end)
@@ -7238,8 +7238,8 @@ local function CreateCDMSetupPage(parent)
         y = y - FORM_ROW
 
         -- Register sliders for real-time sync during Edit Mode
-        if _G.KoriUI and _G.KoriUI.QUICore and _G.KoriUI.QUICore.RegisterPowerBarEditModeSliders then
-            _G.KoriUI.QUICore:RegisterPowerBarEditModeSliders("secondary", xOffsetSecondarySlider, yOffsetSecondarySlider)
+        if _G.KoriUI and _G.KoriUI.KORICore and _G.KoriUI.KORICore.RegisterPowerBarEditModeSliders then
+            _G.KoriUI.KORICore:RegisterPowerBarEditModeSliders("secondary", xOffsetSecondarySlider, yOffsetSecondarySlider)
         end
 
         -- Text sliders
@@ -7376,7 +7376,7 @@ local function CreateCDMSetupPage(parent)
                 end
             end
             RefreshPowerBars()
-            print("|cFF4169E1KoriUI:|r Resource colors reset to defaults.")
+            print("|cFF56D1FFKoriUI:|r Resource colors reset to defaults.")
         end)
         y = y - FORM_ROW
 
@@ -8323,15 +8323,15 @@ end
 
 -- Refresh callback for Custom Trackers
 local function RefreshCustomTrackers()
-    if QUICore and QUICore.CustomTrackers then
-        QUICore.CustomTrackers:RefreshAll()
+    if KORICore and KORICore.CustomTrackers then
+        KORICore.CustomTrackers:RefreshAll()
     end
 end
 
 -- Refresh bar position when anchor settings change
 local function RefreshTrackerPosition(barID)
-    if QUICore and QUICore.CustomTrackers then
-        QUICore.CustomTrackers:RefreshBarPosition(barID)
+    if KORICore and KORICore.CustomTrackers then
+        KORICore.CustomTrackers:RefreshBarPosition(barID)
     end
 end
 
@@ -8415,7 +8415,7 @@ local function CreateCustomTrackersPage(parent)
             if cursorType == "item" then
                 local itemID = id1
                 if itemID then
-                    local trackerModule = QUI and QUI.QUICore and QUI.QUICore.CustomTrackers
+                    local trackerModule = KORI and KORI.KORICore and KORI.KORICore.CustomTrackers
                     if trackerModule then
                         trackerModule:AddEntry(barID, "item", itemID)
                         ClearCursor()
@@ -8447,7 +8447,7 @@ local function CreateCustomTrackersPage(parent)
                 end
 
                 if spellID then
-                    local trackerModule = QUI and QUI.QUICore and QUI.QUICore.CustomTrackers
+                    local trackerModule = KORI and KORI.KORICore and KORI.KORICore.CustomTrackers
                     if trackerModule then
                         trackerModule:AddEntry(barID, "spell", spellID)
                         ClearCursor()
@@ -8509,8 +8509,8 @@ local function CreateCustomTrackersPage(parent)
 
         -- Refresh callback for this bar
         local function RefreshThisBar()
-            if QUICore and QUICore.CustomTrackers then
-                QUICore.CustomTrackers:UpdateBar(barConfig.id)
+            if KORICore and KORICore.CustomTrackers then
+                KORICore.CustomTrackers:UpdateBar(barConfig.id)
             end
         end
 
@@ -8551,7 +8551,7 @@ local function CreateCustomTrackersPage(parent)
         nameLabel:SetText("Bar Name")
         nameLabel:SetTextColor(C.text[1], C.text[2], C.text[3], 1)
 
-        -- Custom styled editbox (matches QUI dropdown styling)
+        -- Custom styled editbox (matches KORI dropdown styling)
         local nameInputBg = CreateFrame("Frame", nil, nameContainer, "BackdropTemplate")
         nameInputBg:SetPoint("LEFT", nameContainer, "LEFT", 180, 0)
         nameInputBg:SetSize(200, 24)
@@ -8614,8 +8614,8 @@ local function CreateCustomTrackersPage(parent)
                         end
                     end
                     -- Delete the active bar frame
-                    if QUICore and QUICore.CustomTrackers then
-                        QUICore.CustomTrackers:DeleteBar(barConfig.id)
+                    if KORICore and KORICore.CustomTrackers then
+                        KORICore.CustomTrackers:DeleteBar(barConfig.id)
                     end
                     -- Prompt reload to rebuild tabs
                     GUI:ShowConfirmation({
@@ -8644,7 +8644,7 @@ local function CreateCustomTrackersPage(parent)
         local copyFromDropdown = nil
 
         -- Get tracker module reference
-        local trackerModule = QUICore and QUICore.CustomTrackers
+        local trackerModule = KORICore and KORICore.CustomTrackers
 
         -- Helper to get current spec key (always uses actual current spec)
         local function getCurrentSpecKey()
@@ -8710,7 +8710,7 @@ local function CreateCustomTrackersPage(parent)
 
             -- Use GetBarEntries for spec-aware loading (always uses current spec)
             local entries
-            local trackerMod = QUICore and QUICore.CustomTrackers
+            local trackerMod = KORICore and KORICore.CustomTrackers
             if trackerMod and trackerMod.GetBarEntries then
                 -- Pass nil to use current spec
                 entries = trackerMod.GetBarEntries(barConfig, nil)
@@ -8796,8 +8796,8 @@ local function CreateCustomTrackersPage(parent)
                             self.entry.customName = nil  -- Clear custom name since we resolved
                             resolved = true
                             -- Refresh the bar to use new spell
-                            if QUICore and QUICore.CustomTrackers then
-                                QUICore.CustomTrackers:UpdateBar(self.barConfig.id)
+                            if KORICore and KORICore.CustomTrackers then
+                                KORICore.CustomTrackers:UpdateBar(self.barConfig.id)
                             end
                             -- Update display to show resolved name
                             self:SetText(GetEntryDisplayName(self.entry))
@@ -8819,8 +8819,8 @@ local function CreateCustomTrackersPage(parent)
                             self.entry.customName = nil
                             resolved = true
                             -- Refresh the bar
-                            if QUICore and QUICore.CustomTrackers then
-                                QUICore.CustomTrackers:UpdateBar(self.barConfig.id)
+                            if KORICore and KORICore.CustomTrackers then
+                                KORICore.CustomTrackers:UpdateBar(self.barConfig.id)
                             end
                             -- Update display
                             self:SetText(GetEntryDisplayName(self.entry))
@@ -8909,8 +8909,8 @@ local function CreateCustomTrackersPage(parent)
 
                 -- Move Up button (anchored after fixed-width name)
                 local upBtn = CreateChevronButton(entryFrame, "up", function()
-                    if QUICore and QUICore.CustomTrackers then
-                        QUICore.CustomTrackers:MoveEntry(barConfig.id, j, -1, nil)
+                    if KORICore and KORICore.CustomTrackers then
+                        KORICore.CustomTrackers:MoveEntry(barConfig.id, j, -1, nil)
                     end
                     RefreshEntryList()
                 end)
@@ -8922,8 +8922,8 @@ local function CreateCustomTrackersPage(parent)
 
                 -- Move Down button
                 local downBtn = CreateChevronButton(entryFrame, "down", function()
-                    if QUICore and QUICore.CustomTrackers then
-                        QUICore.CustomTrackers:MoveEntry(barConfig.id, j, 1, nil)
+                    if KORICore and KORICore.CustomTrackers then
+                        KORICore.CustomTrackers:MoveEntry(barConfig.id, j, 1, nil)
                     end
                     RefreshEntryList()
                 end)
@@ -8956,8 +8956,8 @@ local function CreateCustomTrackersPage(parent)
                     xText:SetTextColor(C.accent[1], C.accent[2], C.accent[3], 0.7)
                 end)
                 removeBtn:SetScript("OnClick", function()
-                    if QUICore and QUICore.CustomTrackers then
-                        QUICore.CustomTrackers:RemoveEntry(barConfig.id, entry.type, entry.id, nil)
+                    if KORICore and KORICore.CustomTrackers then
+                        KORICore.CustomTrackers:RemoveEntry(barConfig.id, entry.type, entry.id, nil)
                     end
                     RefreshEntryList()
                 end)
@@ -9092,7 +9092,7 @@ local function CreateCustomTrackersPage(parent)
         -- Toggle lock: click same button to unlock
         local function LockToPlayer(corner)
             if barConfig.lockedToPlayer and barConfig.lockPosition == corner then
-                local bar = QUICore and QUICore.CustomTrackers and QUICore.CustomTrackers.activeBars and QUICore.CustomTrackers.activeBars[barConfig.id]
+                local bar = KORICore and KORICore.CustomTrackers and KORICore.CustomTrackers.activeBars and KORICore.CustomTrackers.activeBars[barConfig.id]
                 if bar then
                     local scX, scY = UIParent:GetCenter()
                     local bX, bY = bar:GetCenter()
@@ -9108,7 +9108,7 @@ local function CreateCustomTrackersPage(parent)
             else
                 local playerFrame = _G["KORI_Player"]
                 if not playerFrame then
-                    print("|cffff6666[QUI]|r Player frame not found")
+                    print("|cffff6666[KORI]|r Player frame not found")
                     return
                 end
                 if barConfig.lockedToTarget then
@@ -9221,7 +9221,7 @@ local function CreateCustomTrackersPage(parent)
 
         local function LockToTarget(corner)
             if barConfig.lockedToTarget and barConfig.targetLockPosition == corner then
-                local bar = QUICore and QUICore.CustomTrackers and QUICore.CustomTrackers.activeBars and QUICore.CustomTrackers.activeBars[barConfig.id]
+                local bar = KORICore and KORICore.CustomTrackers and KORICore.CustomTrackers.activeBars and KORICore.CustomTrackers.activeBars[barConfig.id]
                 if bar then
                     local scX, scY = UIParent:GetCenter()
                     local bX, bY = bar:GetCenter()
@@ -9237,7 +9237,7 @@ local function CreateCustomTrackersPage(parent)
             else
                 local targetFrame = _G["KORI_Target"]
                 if not targetFrame then
-                    print("|cffff6666[QUI]|r Target frame not found")
+                    print("|cffff6666[KORI]|r Target frame not found")
                     return
                 end
                 if barConfig.lockedToPlayer then
@@ -9772,7 +9772,7 @@ local function CreateCustomTrackersPage(parent)
         builder = function(tabContent)
             GUI:SetSearchContext({tabIndex = 9, tabName = "Custom Items/Spells/Buffs", subTabIndex = 1, subTabName = "Spell Scanner"})
             local y = -10
-            local scanner = QUI.SpellScanner
+            local scanner = KORI.SpellScanner
             local scannedListFrame  -- Forward declaration for refresh
 
             -- Header
@@ -9842,15 +9842,15 @@ local function CreateCustomTrackersPage(parent)
 
             -- Auto-Scan Toggle (persistent setting) - using proper switch toggle
             -- Ensure spellScanner db exists with proper defaults
-            if not QUI.db.global.spellScanner then
-                QUI.db.global.spellScanner = { spells = {}, items = {}, autoScan = false }
+            if not KORI.db.global.spellScanner then
+                KORI.db.global.spellScanner = { spells = {}, items = {}, autoScan = false }
             end
             -- Ensure autoScan key exists (could be nil from older version)
-            if QUI.db.global.spellScanner.autoScan == nil then
-                QUI.db.global.spellScanner.autoScan = false
+            if KORI.db.global.spellScanner.autoScan == nil then
+                KORI.db.global.spellScanner.autoScan = false
             end
 
-            local autoScanToggle = GUI:CreateFormToggle(tabContent, "Auto-Scan (silent)", "autoScan", QUI.db.global.spellScanner, function(val)
+            local autoScanToggle = GUI:CreateFormToggle(tabContent, "Auto-Scan (silent)", "autoScan", KORI.db.global.spellScanner, function(val)
                 if scanner then
                     scanner.autoScan = val  -- Keep runtime state in sync
                 end
@@ -9875,7 +9875,7 @@ local function CreateCustomTrackersPage(parent)
                     child:SetParent(nil)
                 end
 
-                local scannerDB = QUI.db and QUI.db.global and QUI.db.global.spellScanner
+                local scannerDB = KORI.db and KORI.db.global and KORI.db.global.spellScanner
                 local listY = 0
                 local rowHeight = 30
 
@@ -9993,7 +9993,7 @@ local function CreateCustomTrackersPage(parent)
                     acceptText = "Clear All",
                     cancelText = "Cancel",
                     onAccept = function()
-                        local scannerDB = QUI.db and QUI.db.global and QUI.db.global.spellScanner
+                        local scannerDB = KORI.db and KORI.db.global and KORI.db.global.spellScanner
                         if scannerDB then
                             scannerDB.spells = {}
                             scannerDB.items = {}
@@ -10066,8 +10066,8 @@ local function CreateCustomTrackersPage(parent)
                 entries = {},
             }
             table.insert(db.customTrackers.bars, newBar)
-            if QUICore and QUICore.CustomTrackers then
-                QUICore.CustomTrackers:RefreshAll()
+            if KORICore and KORICore.CustomTrackers then
+                KORICore.CustomTrackers:RefreshAll()
             end
             GUI:ShowConfirmation({
                 title = "Reload UI?",
@@ -10127,8 +10127,8 @@ local function CreateCustomTrackersPage(parent)
                         entries = {},
                     }
                     table.insert(db.customTrackers.bars, newBar)
-                    if QUICore and QUICore.CustomTrackers then
-                        QUICore.CustomTrackers:RefreshAll()
+                    if KORICore and KORICore.CustomTrackers then
+                        KORICore.CustomTrackers:RefreshAll()
                     end
                     GUI:ShowConfirmation({
                         title = "Reload UI?",
@@ -10415,7 +10415,7 @@ local function CreateUnitFramesPage(parent)
         -- TOOLTIPS SECTION
         y = y - 10
 
-        local tooltipHeader = GUI:CreateSectionHeader(tabContent, "Tooltips on QUI Unitframes")
+        local tooltipHeader = GUI:CreateSectionHeader(tabContent, "Tooltips on KORI Unitframes")
         tooltipHeader:SetPoint("TOPLEFT", PAD, y)
         y = y - tooltipHeader.gap
 
@@ -10799,7 +10799,7 @@ local function CreateUnitFramesPage(parent)
                 enabled = true,
                 color = { 0.2, 0.8, 0.8 },
                 opacity = 0.7,
-                texture = "QUI Stripes",
+                texture = "KORI Stripes",
             }
         end
 
@@ -12138,7 +12138,7 @@ local function CreateActionBarsPage(parent)
         generalHeader:SetPoint("TOPLEFT", PAD, y)
         y = y - generalHeader.gap
 
-        local enableCheck = GUI:CreateFormCheckbox(tabContent, "Enable QUI Action Bars",
+        local enableCheck = GUI:CreateFormCheckbox(tabContent, "Enable KORI Action Bars",
             "enabled", actionBars, function(val)
                 GUI:ShowConfirmation({
                     title = "Reload Required",
@@ -12156,7 +12156,7 @@ local function CreateActionBarsPage(parent)
         y = y - FORM_ROW
 
         local tipText = GUI:CreateLabel(tabContent,
-            "QUI hooks into Blizzard action bars to skin them. Position and resize bars via Edit Mode (Blizzard minimum padding: 2px). If you need actionbar paging (stance/form swapping), want to use action bars as your CDM, or prefer more control - disable QUI Action Bars and use a dedicated addon (e.g., Bartender4, Dominos).",
+            "KORI hooks into Blizzard action bars to skin them. Position and resize bars via Edit Mode (Blizzard minimum padding: 2px). If you need actionbar paging (stance/form swapping), want to use action bars as your CDM, or prefer more control - disable KORI Action Bars and use a dedicated addon (e.g., Bartender4, Dominos).",
             11, C.warning)
         tipText:SetPoint("TOPLEFT", PAD, y)
         tipText:SetPoint("RIGHT", tabContent, "RIGHT", -PAD, 0)
@@ -13097,7 +13097,7 @@ local function BuildImportExportTab(tabContent)
     local y = -10
     local PAD = 10
 
-    GUI:SetSearchContext({tabIndex = 13, tabName = "QUI Import/Export", subTabIndex = 1, subTabName = "Import/Export"})
+    GUI:SetSearchContext({tabIndex = 13, tabName = "KORI Import/Export", subTabIndex = 1, subTabName = "Import/Export"})
 
     local info = GUI:CreateLabel(tabContent, "Import and export KoriUI profiles", 11, C.textMuted)
     info:SetPoint("TOPLEFT", PAD, y)
@@ -13148,12 +13148,12 @@ local function BuildImportExportTab(tabContent)
 
     -- Populate export string
     local function RefreshExportString()
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        if QUICore and QUICore.ExportProfileToString then
-            local str = QUICore:ExportProfileToString()
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        if KORICore and KORICore.ExportProfileToString then
+            local str = KORICore:ExportProfileToString()
             exportEditBox:SetText(str or "Error generating export string")
         else
-            exportEditBox:SetText("QUICore not available")
+            exportEditBox:SetText("KORICore not available")
         end
     end
     RefreshExportString()
@@ -13233,17 +13233,17 @@ local function BuildImportExportTab(tabContent)
             print("|cffff0000KoriUI: No import string provided.|r")
             return
         end
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        if QUICore and QUICore.ImportProfileFromString then
-            local ok, err = QUICore:ImportProfileFromString(str)
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        if KORICore and KORICore.ImportProfileFromString then
+            local ok, err = KORICore:ImportProfileFromString(str)
             if ok then
-                print("|cFF0080FFKoriUI:|r Profile imported successfully!")
-                print("|cFF0080FFKoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
+                print("|cff34D399KoriUI:|r Profile imported successfully!")
+                print("|cff34D399KoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
             else
                 print("|cffff0000KoriUI: Import failed: " .. (err or "Unknown error") .. "|r")
             end
         else
-            print("|cffff0000KoriUI: QUICore not available for import.|r")
+            print("|cffff0000KoriUI: KORICore not available for import.|r")
         end
     end)
     importBtn:SetPoint("TOPLEFT", PAD, y)
@@ -13260,7 +13260,7 @@ local function BuildKorivashStringsTab(tabContent)
     local PAD = 10
     local BOX_HEIGHT = 70
 
-    GUI:SetSearchContext({tabIndex = 13, tabName = "QUI Import/Export", subTabIndex = 2, subTabName = "Korivash's Strings"})
+    GUI:SetSearchContext({tabIndex = 13, tabName = "KORI Import/Export", subTabIndex = 2, subTabName = "Korivash's Strings"})
 
     local info = GUI:CreateLabel(tabContent, "Korivash's personal import strings - select all and copy", 11, C.textMuted)
     info:SetPoint("TOPLEFT", PAD, y)
@@ -13312,15 +13312,15 @@ local function BuildKorivashStringsTab(tabContent)
     y = y - 40
 
     -- =====================================================
-    -- QUI IMPORT/EXPORT STRING - DEFAULT PROFILE
+    -- KORI IMPORT/EXPORT STRING - DEFAULT PROFILE
     -- =====================================================
-    local quiHeader = GUI:CreateSectionHeader(tabContent, "QUI Import/Export String - Default Profile")
+    local quiHeader = GUI:CreateSectionHeader(tabContent, "KORI Import/Export String - Default Profile")
     quiHeader:SetPoint("TOPLEFT", PAD, y)
     y = y - quiHeader.gap
 
     local quiString = ""
-    if _G.KoriUI and _G.KoriUI.imports and _G.KoriUI.imports.QUIProfile then
-        quiString = _G.KoriUI.imports.QUIProfile.data or ""
+    if _G.KoriUI and _G.KoriUI.imports and _G.KoriUI.imports.KORIProfile then
+        quiString = _G.KoriUI.imports.KORIProfile.data or ""
     end
 
     local quiContainer = CreateScrollableTextBox(tabContent, BOX_HEIGHT, quiString)
@@ -13340,15 +13340,15 @@ local function BuildKorivashStringsTab(tabContent)
     y = y - 40
 
     -- =====================================================
-    -- QUI IMPORT/EXPORT STRING - DARK MODE
+    -- KORI IMPORT/EXPORT STRING - DARK MODE
     -- =====================================================
-    local quiDarkHeader = GUI:CreateSectionHeader(tabContent, "QUI Import/Export String - Dark Mode")
+    local quiDarkHeader = GUI:CreateSectionHeader(tabContent, "KORI Import/Export String - Dark Mode")
     quiDarkHeader:SetPoint("TOPLEFT", PAD, y)
     y = y - quiDarkHeader.gap
 
     local quiDarkString = ""
-    if _G.KoriUI and _G.KoriUI.imports and _G.KoriUI.imports.QUIProfileDarkMode then
-        quiDarkString = _G.KoriUI.imports.QUIProfileDarkMode.data or ""
+    if _G.KoriUI and _G.KoriUI.imports and _G.KoriUI.imports.KORIProfileDarkMode then
+        quiDarkString = _G.KoriUI.imports.KORIProfileDarkMode.data or ""
     end
 
     local quiDarkContainer = CreateScrollableTextBox(tabContent, BOX_HEIGHT, quiDarkString)
@@ -13399,7 +13399,7 @@ local function BuildKorivashStringsTab(tabContent)
 end
 
 ---------------------------------------------------------------------------
--- PAGE: QUI Import/Export (with sub-tabs)
+-- PAGE: KORI Import/Export (with sub-tabs)
 ---------------------------------------------------------------------------
 local function CreateImportExportPage(parent)
     local scroll, content = CreateScrollableContent(parent)
@@ -13424,8 +13424,8 @@ local function CreateSpecProfilesPage(parent)
     local PAD = PADDING
     local FORM_ROW = 32
 
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local db = QUICore and QUICore.db
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local db = KORICore and KORICore.db
 
     local info = GUI:CreateLabel(content, "Manage profiles and auto-switch based on specialization", 11, C.textMuted)
     info:SetPoint("TOPLEFT", PAD, y)
@@ -13462,8 +13462,8 @@ local function CreateSpecProfilesPage(parent)
     -- Function to refresh profile display - called on show and via timer
     -- Note: This gets replaced later after profileDropdown is created
     local function RefreshProfileDisplay()
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        local freshDB = QUICore and QUICore.db
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        local freshDB = KORICore and KORICore.db
         if freshDB then
             local currentName = freshDB:GetCurrentProfile()
             currentProfileName:SetText(currentName or "Unknown")
@@ -13514,12 +13514,12 @@ local function CreateSpecProfilesPage(parent)
                 cancelText = "Cancel",
                 isDestructive = true,
                 onAccept = function()
-                    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-                    local dbRef = QUICore and QUICore.db
+                    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+                    local dbRef = KORICore and KORICore.db
                     if dbRef then
                         dbRef:ResetProfile()
-                        print("|cFF0080FFKoriUI:|r Profile reset to defaults.")
-                        print("|cFF0080FFKoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
+                        print("|cff34D399KoriUI:|r Profile reset to defaults.")
+                        print("|cff34D399KoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
                     end
                 end,
             })
@@ -13648,8 +13648,8 @@ local function CreateSpecProfilesPage(parent)
             child:SetParent(nil)
         end
 
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        local freshDB = QUICore and QUICore.db
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        local freshDB = KORICore and KORICore.db
         if not freshDB then return end
 
         local profiles = freshDB:GetProfiles()
@@ -13687,7 +13687,7 @@ local function CreateSpecProfilesPage(parent)
                     freshDB:SetProfile(profileName)
                     profileDropdownText:SetText(profileName)
                     currentProfileName:SetText(profileName)
-                    print("|cFF0080FFKoriUI:|r Switched to profile: " .. profileName)
+                    print("|cff34D399KoriUI:|r Switched to profile: " .. profileName)
                 end
                 profileMenu:Hide()
             end)
@@ -13704,7 +13704,7 @@ local function CreateSpecProfilesPage(parent)
     end)
 
     -- Set initial text
-    local initCore = _G.KoriUI and _G.KoriUI.QUICore
+    local initCore = _G.KoriUI and _G.KoriUI.KORICore
     local initDB = initCore and initCore.db
     local initProfile = initDB and initDB:GetCurrentProfile() or "Default"
     profileDropdownText:SetText(initProfile)
@@ -13712,8 +13712,8 @@ local function CreateSpecProfilesPage(parent)
     -- Update RefreshProfileDisplay to use our custom dropdown
     local oldRefresh = RefreshProfileDisplay
     RefreshProfileDisplay = function()
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        local freshDB = QUICore and QUICore.db
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        local freshDB = KORICore and KORICore.db
         if freshDB then
             local currentName = freshDB:GetCurrentProfile()
             currentProfileName:SetText(currentName or "Unknown")
@@ -13800,7 +13800,7 @@ local function CreateSpecProfilesPage(parent)
             currentProfileName:SetText(newName)
             profileDropdownText:SetText(newName)
             newProfileBox:SetText("")
-            print("|cFF0080FFKoriUI:|r Created new profile: " .. newName)
+            print("|cff34D399KoriUI:|r Created new profile: " .. newName)
         end
     end)
     y = y - FORM_ROW - 10
@@ -13823,7 +13823,7 @@ local function CreateSpecProfilesPage(parent)
     local copyDropdown = GUI:CreateFormDropdown(content, "Copy From", GetProfileList(), "selected", copyWrapper, function(value)
         if db and value and value ~= "" then
             db:CopyProfile(value)
-            print("|cFF0080FFKoriUI:|r Copied settings from: " .. value)
+            print("|cff34D399KoriUI:|r Copied settings from: " .. value)
             copyWrapper.selected = ""
         end
     end)
@@ -13864,7 +13864,7 @@ local function CreateSpecProfilesPage(parent)
                     isDestructive = true,
                     onAccept = function()
                         db:DeleteProfile(profileToDelete, true)
-                        print("|cFF0080FFKoriUI:|r Deleted profile: " .. profileToDelete)
+                        print("|cff34D399KoriUI:|r Deleted profile: " .. profileToDelete)
                         deleteWrapper.selected = ""
                     end,
                 })
@@ -13889,7 +13889,7 @@ local function CreateSpecProfilesPage(parent)
         local enableCheckbox = GUI:CreateFormCheckbox(content, "Enable Spec Profiles", "enabled", enableWrapper,
             function()
                 db:SetDualSpecEnabled(enableWrapper.enabled)
-                print("|cFF0080FFKoriUI:|r Spec auto-switch " .. (enableWrapper.enabled and "enabled" or "disabled"))
+                print("|cff34D399KoriUI:|r Spec auto-switch " .. (enableWrapper.enabled and "enabled" or "disabled"))
             end)
         enableCheckbox:SetPoint("TOPLEFT", PAD, y)
         enableCheckbox:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
@@ -13922,7 +13922,7 @@ local function CreateSpecProfilesPage(parent)
                 local specDropdown = GUI:CreateFormDropdown(content, displayName, GetProfileList(), "selected", specWrapper, function(value)
                     if value and value ~= "" then
                         db:SetDualSpecProfile(value, i)
-                        print("|cFF0080FFKoriUI:|r " .. specName .. " will use profile: " .. value)
+                        print("|cff34D399KoriUI:|r " .. specName .. " will use profile: " .. value)
                     end
                 end)
                 specDropdown:SetPoint("TOPLEFT", PAD, y)
@@ -14005,8 +14005,8 @@ local function CreateHUDLayeringPage(parent)
     local PAD = PADDING
     local FORM_ROW = 32
 
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local db = QUICore and QUICore.db and QUICore.db.profile
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local db = KORICore and KORICore.db and KORICore.db.profile
 
     -- Helper to get hudLayering table (with fallback initialization)
     local function GetLayeringDB()
@@ -14037,11 +14037,11 @@ local function CreateHUDLayeringPage(parent)
     end
 
     local function RefreshPowerBars()
-        if QUICore and QUICore.UpdatePowerBar then
-            QUICore:UpdatePowerBar()
+        if KORICore and KORICore.UpdatePowerBar then
+            KORICore:UpdatePowerBar()
         end
-        if QUICore and QUICore.UpdateSecondaryPowerBar then
-            QUICore:UpdateSecondaryPowerBar()
+        if KORICore and KORICore.UpdateSecondaryPowerBar then
+            KORICore:UpdateSecondaryPowerBar()
         end
     end
 
@@ -14248,7 +14248,7 @@ function GUI:InitializeOptions()
     -- Row 3: Utilities + Action Buttons
     GUI:AddTab(frame, "HUD Layering", CreateHUDLayeringPage)
     GUI:AddTab(frame, "Spec Profiles", CreateSpecProfilesPage)
-    GUI:AddTab(frame, "QUI Import/Export", CreateImportExportPage)
+    GUI:AddTab(frame, "KORI Import/Export", CreateImportExportPage)
     GUI:AddTab(frame, "Search", CreateSearchPage)
     GUI._searchTabIndex = #frame.tabs  -- Store Search tab index for ForceLoadAllTabs trigger
 
@@ -14256,7 +14256,7 @@ function GUI:InitializeOptions()
         if CooldownViewerSettings then
             CooldownViewerSettings:SetShown(not CooldownViewerSettings:IsShown())
         else
-            print("|cFF4169E1KoriUI:|r Cooldown Settings not available. Enable Cooldown Manager in Options > Gameplay Enhancement.")
+            print("|cFF56D1FFKoriUI:|r Cooldown Settings not available. Enable Cooldown Manager in Options > Gameplay Enhancement.")
         end
     end)
 

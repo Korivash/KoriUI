@@ -1,23 +1,23 @@
 --- KoriUI Loot & Roll Frames
---- Custom loot window and roll frames with QUI styling
+--- Custom loot window and roll frames with KORI styling
 --- Replaces Blizzard's LootFrame and GroupLootFrame
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 
 local tinsert, tremove = tinsert, tremove
 
 -- Module reference
 local Loot = {}
-QUICore.Loot = Loot
+KORICore.Loot = Loot
 
--- Helper to get theme colors from QUI skin system
+-- Helper to get theme colors from KORI skin system
 local function GetThemeColors()
-    local QUI = _G.KoriUI
-    if QUI and QUI.GetSkinColor and QUI.GetSkinBgColor then
-        local sr, sg, sb, sa = QUI:GetSkinColor()
-        local bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    local KORI = _G.KoriUI
+    if KORI and KORI.GetSkinColor and KORI.GetSkinBgColor then
+        local sr, sg, sb, sa = KORI:GetSkinColor()
+        local bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
         return {bgr, bgg, bgb, bga}, {sr, sg, sb, sa}, {0.95, 0.96, 0.97, 1}
     end
     -- Fallback colors
@@ -66,12 +66,12 @@ local StartRoll
 ---=================================================================================
 
 local function GetGeneralFont()
-    local db = QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local db = KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     return (db and db.font) or "Korivash"
 end
 
 local function GetDB()
-    return QUICore.db and QUICore.db.profile or {}
+    return KORICore.db and KORICore.db.profile or {}
 end
 
 local function IsUncollectedTransmog(itemLink)
@@ -191,7 +191,7 @@ local function CreateLootWindow()
     frame:EnableMouse(true)
     frame:Hide()
 
-    -- QUI backdrop
+    -- KORI backdrop
     frame:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         edgeFile = "Interface\\Buttons\\WHITE8x8",
@@ -726,7 +726,7 @@ local lootHistorySkinned = false
 
 -- Skin individual loot history item elements
 local function SkinLootHistoryElement(button)
-    if button.QUISkinned then return end
+    if button.KORISkinned then return end
 
     -- Strip background textures
     if button.BackgroundArtFrame then
@@ -751,7 +751,7 @@ local function SkinLootHistoryElement(button)
             if item.PushedTexture then item.PushedTexture:SetAlpha(0) end
             if item.HighlightTexture then item.HighlightTexture:SetAlpha(0) end
 
-            -- Create QUI-style icon border
+            -- Create KORI-style icon border
             if not item.quiBorder then
                 item.quiBorder = CreateFrame("Frame", nil, item, "BackdropTemplate")
                 item.quiBorder:SetPoint("TOPLEFT", icon, "TOPLEFT", -1, 1)
@@ -776,7 +776,7 @@ local function SkinLootHistoryElement(button)
         end
     end
 
-    button.QUISkinned = true
+    button.KORISkinned = true
 end
 
 -- Handle scrollbox updates to skin new elements
@@ -802,7 +802,7 @@ local function SkinGroupLootHistoryFrame()
         HistoryFrame.Bg:SetAlpha(0)
     end
 
-    -- Apply QUI backdrop
+    -- Apply KORI backdrop
     if not HistoryFrame.quiBackdrop then
         HistoryFrame.quiBackdrop = CreateFrame("Frame", nil, HistoryFrame, "BackdropTemplate")
         HistoryFrame.quiBackdrop:SetAllPoints()
@@ -927,7 +927,7 @@ function Loot:ApplyLootHistoryTheme()
         return
     end
 
-    -- Enabled - apply QUI skin
+    -- Enabled - apply KORI skin
     if not HistoryFrame.quiBackdrop then return end
 
     local bgColor, borderColor, textColor = GetThemeColors()
@@ -1205,8 +1205,8 @@ end
 
 -- Register global refresh function for RefreshAllSkinning()
 _G.KoriUI_RefreshLootColors = function()
-    if QUICore and QUICore.Loot then
-        QUICore.Loot:RefreshColors()
+    if KORICore and KORICore.Loot then
+        KORICore.Loot:RefreshColors()
     end
 end
 
@@ -1455,10 +1455,10 @@ function Loot:ToggleMovers()
         self:EnableEditMode()
     end
 end
-local EDIT_BORDER_COLOR = { 0.2, 0.8, 0.8, 1 }  -- Cyan/teal to match QUI style
+local EDIT_BORDER_COLOR = { 0.2, 0.8, 0.8, 1 }  -- Cyan/teal to match KORI style
 local EDIT_BORDER_SIZE = 2
 
--- Create border highlight around a frame (matching QUI player frame style)
+-- Create border highlight around a frame (matching KORI player frame style)
 local function CreateEditModeBorder(frame)
     if frame.editBorder then return frame.editBorder end
 
@@ -1528,7 +1528,7 @@ function Loot:EnableEditMode()
             local label = lootFrame:CreateFontString(nil, "OVERLAY")
             label:SetFont(LSM:Fetch("font", GetGeneralFont()), 10, "OUTLINE")
             label:SetPoint("BOTTOM", lootFrame, "TOP", 0, 4)
-            label:SetText("QUI Loot Window")
+            label:SetText("KORI Loot Window")
             label:SetTextColor(0.2, 0.8, 0.8)  -- Match border color
             lootFrame.editLabel = label
         end
@@ -1545,7 +1545,7 @@ function Loot:EnableEditMode()
             local label = rollFrame:CreateFontString(nil, "OVERLAY")
             label:SetFont(LSM:Fetch("font", GetGeneralFont()), 10, "OUTLINE")
             label:SetPoint("BOTTOM", rollFrame, "TOP", 0, 4)
-            label:SetText("QUI Roll Frame")
+            label:SetText("KORI Roll Frame")
             label:SetTextColor(0.2, 0.8, 0.8)  -- Match border color
             rollFrame.editLabel = label
         end
@@ -1596,11 +1596,11 @@ end
 --- MODULE INITIALIZATION HOOK
 ---=================================================================================
 
--- Initialize when QUICore is enabled
+-- Initialize when KORICore is enabled
 local initFrame = CreateFrame("Frame")
 initFrame:RegisterEvent("PLAYER_LOGIN")
 initFrame:SetScript("OnEvent", function(self, event)
-    -- Defer initialization to let QUICore load first
+    -- Defer initialization to let KORICore load first
     C_Timer.After(0.5, function()
         local db = GetDB()
         if db.loot or db.lootRoll then

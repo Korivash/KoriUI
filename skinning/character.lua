@@ -1,5 +1,5 @@
 local addonName, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 
 ---------------------------------------------------------------------------
 -- CHARACTER FRAME SKINNING
@@ -8,7 +8,7 @@ local QUICore = ns.Addon
 
 -- Module reference
 local CharacterSkinning = {}
-QUICore.CharacterSkinning = CharacterSkinning
+KORICore.CharacterSkinning = CharacterSkinning
 
 -- Configuration constants (centralized for easy adjustment)
 local CONFIG = {
@@ -16,7 +16,7 @@ local CONFIG = {
     PANEL_HEIGHT_EXTENSION = 50,  -- Extra height for stats panel
 }
 
--- Static colors (text only - bg/border from QUI skin system)
+-- Static colors (text only - bg/border from KORI skin system)
 local COLORS = {
     text = { 0.9, 0.9, 0.9, 1 },
 }
@@ -25,18 +25,18 @@ local COLORS = {
 local customBg = nil
 
 ---------------------------------------------------------------------------
--- Helper: Get skin colors from QUI system
+-- Helper: Get skin colors from KORI system
 ---------------------------------------------------------------------------
 local function GetSkinColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1      -- Fallback mint
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95  -- Fallback dark
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
@@ -47,8 +47,8 @@ end
 ---------------------------------------------------------------------------
 local function GetFontPath()
     local LSM = LibStub and LibStub("LibSharedMedia-3.0", true)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.character
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.character
     return (LSM and settings and LSM:Fetch("font", settings.font or "Korivash")) or STANDARD_TEXT_FONT
 end
 
@@ -56,8 +56,8 @@ end
 -- Helper: Check if skinning is enabled
 ---------------------------------------------------------------------------
 local function IsSkinningEnabled()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     return settings and settings.skinCharacterFrame
 end
 
@@ -351,8 +351,8 @@ local function SetupCharacterFrameSkinning()
         PaperDollFrame:HookScript("OnShow", function()
             if IsSkinningEnabled() then
                 -- Check if character pane customization will handle extension
-                local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-                local charSettings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.character
+                local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+                local charSettings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.character
                 -- Default to true if setting not found (matches kori_character.lua defaults)
                 local charPaneEnabled = charSettings and charSettings.enabled
                 if charPaneEnabled == nil then charPaneEnabled = true end
@@ -366,8 +366,8 @@ local function SetupCharacterFrameSkinning()
         end)
         -- Handle if already shown
         if PaperDollFrame:IsShown() then
-            local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-            local charSettings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.character
+            local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+            local charSettings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.character
             -- Default to true if setting not found (matches kori_character.lua defaults)
             local charPaneEnabled = charSettings and charSettings.enabled
             if charPaneEnabled == nil then charPaneEnabled = true end

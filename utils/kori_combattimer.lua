@@ -3,8 +3,8 @@
 -- Displays elapsed time in combat (resets on combat exit)
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 ---------------------------------------------------------------------------
 -- State tracking
@@ -21,9 +21,9 @@ local CombatTimerState = {
 -- Get settings from database
 ---------------------------------------------------------------------------
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.combatTimer then
-        return QUICore.db.profile.combatTimer
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.combatTimer then
+        return KORICore.db.profile.combatTimer
     end
     return nil
 end
@@ -185,9 +185,9 @@ end
 -- Get global addon font setting
 ---------------------------------------------------------------------------
 local function GetGlobalFont()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general and QUICore.db.profile.general.font then
-        return QUICore.db.profile.general.font
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general and KORICore.db.profile.general.font then
+        return KORICore.db.profile.general.font
     end
     return "Korivash"
 end
@@ -482,7 +482,7 @@ _G.KoriUI_RefreshCombatTimer = RefreshCombatTimer
 _G.KoriUI_ToggleCombatTimerPreview = TogglePreview
 _G.KoriUI_IsCombatTimerPreviewMode = IsPreviewMode
 
-QUI.CombatTimer = {
+KORI.CombatTimer = {
     Refresh = RefreshCombatTimer,
     TogglePreview = TogglePreview,
     IsPreviewMode = IsPreviewMode,

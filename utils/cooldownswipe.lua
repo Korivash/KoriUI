@@ -1,12 +1,12 @@
 -- cooldownswipe.lua
 -- Granular cooldown swipe control: Buff Duration / GCD / Cooldown swipes
 
-local _, QUI = ...
+local _, KORI = ...
 
 -- Get settings from AceDB
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return {
             showBuffSwipe = true,
             showBuffIconSwipe = false,
@@ -14,7 +14,7 @@ local function GetSettings()
             showCooldownSwipe = true,
         }
     end
-    local cs = QUICore.db.profile.cooldownSwipe
+    local cs = KORICore.db.profile.cooldownSwipe
     if not cs then
         cs = {
             showBuffSwipe = true,
@@ -22,7 +22,7 @@ local function GetSettings()
             showGCDSwipe = true,
             showCooldownSwipe = true,
         }
-        QUICore.db.profile.cooldownSwipe = cs
+        KORICore.db.profile.cooldownSwipe = cs
     end
     return cs
 end
@@ -35,10 +35,10 @@ local function HookSetCooldown(icon)
     icon._KORI_SetCooldownHooked = true
 
     -- Store parent reference on Cooldown frame for hook access
-    icon.Cooldown._QUIParentIcon = icon
+    icon.Cooldown._KORIParentIcon = icon
 
     hooksecurefunc(icon.Cooldown, "SetCooldown", function(self)
-        local parentIcon = self._QUIParentIcon
+        local parentIcon = self._KORIParentIcon
         if not parentIcon then return end
 
         -- Skip if we're the ones calling SetCooldown (recursion guard)
@@ -134,8 +134,8 @@ eventFrame:SetScript("OnEvent", function(self, event, arg)
     end
 end)
 
--- Export to QUI namespace
-QUI.CooldownSwipe = {
+-- Export to KORI namespace
+KORI.CooldownSwipe = {
     Apply = ApplyAllSettings,
     GetSettings = GetSettings,
 }

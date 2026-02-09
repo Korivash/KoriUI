@@ -2,7 +2,7 @@ local addonName, ns = ...
 
 ---------------------------------------------------------------------------
 -- OBJECTIVE TRACKER SKINNING
--- Applies QUI color scheme with dynamic content-height backdrop
+-- Applies KORI color scheme with dynamic content-height backdrop
 ---------------------------------------------------------------------------
 
 local FONT_FLAGS = "OUTLINE"
@@ -12,22 +12,22 @@ local pendingBackdropUpdate = false
 
 -- Get settings
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     return settings
 end
 
 -- Get skinning colors
 local function GetColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
@@ -60,13 +60,13 @@ local function StyleQuestPOIIcon(button)
 
     -- Stop any existing LibCustomGlow effects (cleanup from previous versions)
     if LCG and LCG.PixelGlow_Stop then
-        LCG.PixelGlow_Stop(button, "_QUIQuestGlow")
+        LCG.PixelGlow_Stop(button, "_KORIQuestGlow")
     end
 
     button.quiStyled = true
 end
 
--- Style completion checkmark with QUI color
+-- Style completion checkmark with KORI color
 local function StyleCompletionCheck(check)
     if not check or check.quiStyled then return end
 
@@ -129,7 +129,7 @@ local function SkinTrackerHeader(header)
     end
 end
 
--- Sync QUI max height with Blizzard's editModeHeight so truncation matches backdrop
+-- Sync KORI max height with Blizzard's editModeHeight so truncation matches backdrop
 local function SyncBlizzardHeight()
     local TrackerFrame = _G.ObjectiveTrackerFrame
     if not TrackerFrame then return end
@@ -356,12 +356,12 @@ local function HidePOIButtonGlows()
                         end
                         -- Stop any LibCustomGlow effects (cleanup)
                         if LCG and LCG.PixelGlow_Stop and block.poiButton then
-                            LCG.PixelGlow_Stop(block.poiButton, "_QUIQuestGlow")
+                            LCG.PixelGlow_Stop(block.poiButton, "_KORIQuestGlow")
                         end
                         -- Also check ItemButton which StyleQuestPOIIcon targets
                         local itemButton = block.ItemButton or block.itemButton
                         if LCG and LCG.PixelGlow_Stop and itemButton then
-                            LCG.PixelGlow_Stop(itemButton, "_QUIQuestGlow")
+                            LCG.PixelGlow_Stop(itemButton, "_KORIQuestGlow")
                         end
                     end
                 end
@@ -412,8 +412,8 @@ local function KillNineSlice(nineSlice)
     end
 end
 
--- Apply QUI backdrop
-local function ApplyQUIBackdrop(trackerFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+-- Apply KORI backdrop
+local function ApplyKORIBackdrop(trackerFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     if not trackerFrame then return end
 
     -- Kill Blizzard's NineSlice completely
@@ -445,7 +445,7 @@ local function ApplyQUIBackdrop(trackerFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga
         opacity = bga or 0.95
     end
 
-    -- Create QUI backdrop (anchors will be set by UpdateBackdropAnchors)
+    -- Create KORI backdrop (anchors will be set by UpdateBackdropAnchors)
     if not trackerFrame.quiBackdrop then
         trackerFrame.quiBackdrop = CreateFrame("Frame", nil, trackerFrame, "BackdropTemplate")
         trackerFrame.quiBackdrop:SetFrameLevel(math.max(trackerFrame:GetFrameLevel() - 1, 0))
@@ -474,8 +474,8 @@ end
 
 -- Get font path
 local function GetFontPath()
-    local QUI = _G.KoriUI
-    return QUI and QUI.GetGlobalFont and QUI:GetGlobalFont() or STANDARD_TEXT_FONT
+    local KORI = _G.KoriUI
+    return KORI and KORI.GetGlobalFont and KORI:GetGlobalFont() or STANDARD_TEXT_FONT
 end
 
 -- Apply font and color to a single line (objective text)
@@ -606,8 +606,8 @@ local function SkinObjectiveTracker()
     -- Apply max width setting
     ApplyMaxWidth(settings)
 
-    -- Apply QUI backdrop with our colors/opacity
-    ApplyQUIBackdrop(TrackerFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+    -- Apply KORI backdrop with our colors/opacity
+    ApplyKORIBackdrop(TrackerFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
 
     -- Apply font size and color settings
     local moduleFontSize = settings.objectiveTrackerModuleFontSize or 12

@@ -2,17 +2,17 @@
 -- Provides checkboxes to hide various Blizzard UI elements
 -- Settings persist across sessions and apply on reload/login
 
-local _, QUI = ...
+local _, KORI = ...
 
 -- Get settings from AceDB
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return nil
     end
     -- Ensure uiHider table exists
-    if not QUICore.db.profile.uiHider then
-        QUICore.db.profile.uiHider = {
+    if not KORICore.db.profile.uiHider then
+        KORICore.db.profile.uiHider = {
             hideObjectiveTrackerAlways = false,
             hideObjectiveTrackerInstanceTypes = {
                 mythicPlus = false,
@@ -41,7 +41,7 @@ local function GetSettings()
     end
     
     -- Backwards compatibility: migrate old hideObjectiveTracker to hideObjectiveTrackerAlways
-    local uiHider = QUICore.db.profile.uiHider
+    local uiHider = KORICore.db.profile.uiHider
     if uiHider.hideObjectiveTracker ~= nil then
         if uiHider.hideObjectiveTrackerAlways == nil then
             uiHider.hideObjectiveTrackerAlways = uiHider.hideObjectiveTracker
@@ -511,7 +511,7 @@ end
                 end)
             end
         end
-        -- else: Do nothing - let other addons/Blizzard manage the bar when QUI isn't hiding
+        -- else: Do nothing - let other addons/Blizzard manage the bar when KORI isn't hiding
     end
 
     -- UIErrorsFrame (red error messages like "Out of range", "Not enough mana")
@@ -611,8 +611,8 @@ eventFrame:SetScript("OnEvent", function(self, event, addon)
     end
 end)
 
--- Export to QUI namespace
-QUI.UIHider = {
+-- Export to KORI namespace
+KORI.UIHider = {
     ApplySettings = ApplyHideSettings,
 }
 

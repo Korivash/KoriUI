@@ -4,18 +4,18 @@
 -- 1. Hides Blizzard Red/Flash Effects (Pandemic, ProcStartFlipbook, Finish)
 -- 2. Hides ALL Overlay Glows (golden proc glows, spell activation alerts, etc.)
 
-local _, QUI = ...
+local _, KORI = ...
 
 -- Get settings from AceDB
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return { hideEssential = true, hideUtility = true }
     end
-    if not QUICore.db.profile.cooldownEffects then
-        QUICore.db.profile.cooldownEffects = { hideEssential = true, hideUtility = true }
+    if not KORICore.db.profile.cooldownEffects then
+        KORICore.db.profile.cooldownEffects = { hideEssential = true, hideUtility = true }
     end
-    return QUICore.db.profile.cooldownEffects
+    return KORICore.db.profile.cooldownEffects
 end
 
 -- ======================================================
@@ -158,7 +158,7 @@ end
 
 -- ======================================================
 -- Hook Blizzard Glows globally on Cooldown Viewers - ONLY Essential/Utility
--- (Custom QUI glows are handled separately in customglows.lua using LibCustomGlow)
+-- (Custom KORI glows are handled separately in customglows.lua using LibCustomGlow)
 -- ======================================================
 -- Hide any existing Blizzard glows on all viewer icons
 local function HideExistingBlizzardGlows()
@@ -249,9 +249,9 @@ eventFrame:SetScript("OnEvent", function(self, event, arg)
 end)
 
 -- ======================================================
--- Export to QUI namespace
+-- Export to KORI namespace
 -- ======================================================
-QUI.CooldownEffects = {
+KORI.CooldownEffects = {
     HideCooldownEffects = HideCooldownEffects,
     HideAllGlows = HideAllGlows,
     ApplyToAllViewers = ApplyToAllViewers,

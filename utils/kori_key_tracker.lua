@@ -1,7 +1,7 @@
 local addonName, ns = ...
 
 ---------------------------------------------------------------------------
--- QUI KEY TRACKER MODULE
+-- KORI KEY TRACKER MODULE
 -- Shows party keystones on PVEFrame (Group Finder)
 -- Requires LibOpenRaid for keystone sharing between party members
 ---------------------------------------------------------------------------
@@ -17,8 +17,8 @@ end
 ---------------------------------------------------------------------------
 
 local function IsEnabled()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     return settings and settings.keyTrackerEnabled ~= false
 end
 
@@ -36,8 +36,8 @@ local FRAME_WIDTH = 170
 
 -- Font size setting access
 local function GetFontSize()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     return settings and settings.keyTrackerFontSize or 9
 end
 
@@ -50,10 +50,10 @@ local INITIAL_KEYSTONE_REQUEST_DELAY = 5
 
 -- Skinning colors (retrieved dynamically)
 local function GetSkinColors()
-    local QUI = _G.KoriUI
-    if QUI and QUI.GetSkinColor and QUI.GetSkinBgColor then
-        local sr, sg, sb, sa = QUI:GetSkinColor()
-        local bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    local KORI = _G.KoriUI
+    if KORI and KORI.GetSkinColor and KORI.GetSkinBgColor then
+        local sr, sg, sb, sa = KORI:GetSkinColor()
+        local bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
         return sr, sg, sb, sa, bgr, bgg, bgb, bga
     end
     -- Fallback colors
@@ -135,7 +135,7 @@ end
 ---------------------------------------------------------------------------
 
 -- Create frame parented to UIParent initially, will reparent when PVEFrame loads
-local KeyTrackerFrame = CreateFrame("Frame", "QUIKeyTrackerFrame", UIParent, "BackdropTemplate")
+local KeyTrackerFrame = CreateFrame("Frame", "KORIKeyTrackerFrame", UIParent, "BackdropTemplate")
 KeyTrackerFrame:SetFrameStrata("HIGH")
 KeyTrackerFrame:SetSize(FRAME_WIDTH, HEADER_HEIGHT)
 KeyTrackerFrame:SetBackdrop({
@@ -160,7 +160,7 @@ local function UpdateTitleColor()
     title:SetText("|cff" .. string.format("%02x%02x%02x", sr*255, sg*255, sb*255) .. "Party Keys|r")
 end
 
--- Apply skin colors (consolidated - called after QUI is loaded)
+-- Apply skin colors (consolidated - called after KORI is loaded)
 local function ApplySkinColors()
     local sr, sg, sb, sa, bgr, bgg, bgb, bga = GetSkinColors()
     KeyTrackerFrame:SetBackdropColor(bgr, bgg, bgb, bga)
@@ -602,7 +602,7 @@ end
 KeyTrackerFrame:SetScript("OnMouseUp", function(self, button)
     if button == "RightButton" and not InCombatLockdown() then
         RequestKeystones()
-        print("|cFF4169E1KoriUI:|r Refreshing party keys...")
+        print("|cFF56D1FFKoriUI:|r Refreshing party keys...")
     end
 end)
 

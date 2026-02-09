@@ -2,7 +2,7 @@
 -- Displays a standalone icon showing Blizzard's next recommended ability
 -- Uses C_AssistedCombat API (Starter Build / Rotation Helper)
 
-local ADDON_NAME, QUI = ...
+local ADDON_NAME, KORI = ...
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- Locals for performance
@@ -46,8 +46,8 @@ local CreateIconFrame, RefreshIconFrame, UpdateIconDisplay, UpdateVisibility
 --------------------------------------------------------------------------------
 
 local function FormatKeybind(keybind)
-    if QUI.FormatKeybind then
-        return QUI.FormatKeybind(keybind)
+    if KORI.FormatKeybind then
+        return KORI.FormatKeybind(keybind)
     end
     return keybind -- fallback if not available
 end
@@ -57,9 +57,9 @@ local function GetKeybindForSpell(spellID)
 
     local keybind = nil
 
-    -- Use QUI.Keybinds if available (from keybinds.lua)
-    if QUI.Keybinds and QUI.Keybinds.GetKeybindForSpell then
-        keybind = QUI.Keybinds.GetKeybindForSpell(spellID)
+    -- Use KORI.Keybinds if available (from keybinds.lua)
+    if KORI.Keybinds and KORI.Keybinds.GetKeybindForSpell then
+        keybind = KORI.Keybinds.GetKeybindForSpell(spellID)
 
         -- If no keybind found, try finding the BASE spell (for proc abilities)
         -- e.g., Thunder Blast -> Thunder Clap
@@ -68,7 +68,7 @@ local function GetKeybindForSpell(spellID)
                 return FindBaseSpellByID and FindBaseSpellByID(spellID)
             end)
             if ok and baseSpellID and baseSpellID ~= spellID then
-                keybind = QUI.Keybinds.GetKeybindForSpell(baseSpellID)
+                keybind = KORI.Keybinds.GetKeybindForSpell(baseSpellID)
             end
         end
 
@@ -78,7 +78,7 @@ local function GetKeybindForSpell(spellID)
                 return C_Spell.GetOverrideSpell and C_Spell.GetOverrideSpell(spellID)
             end)
             if ok and overrideID and overrideID ~= spellID then
-                keybind = QUI.Keybinds.GetKeybindForSpell(overrideID)
+                keybind = KORI.Keybinds.GetKeybindForSpell(overrideID)
             end
         end
 
@@ -151,9 +151,9 @@ end
 --------------------------------------------------------------------------------
 
 local function GetDB()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile then
-        return QUICore.db.profile.rotationAssistIcon
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile then
+        return KORICore.db.profile.rotationAssistIcon
     end
     return nil
 end
@@ -440,8 +440,8 @@ RefreshIconFrame = function()
 
     -- Border (uses SafeSetBackdrop to avoid secret value errors during combat)
     local inset = 0
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local SafeSetBackdrop = QUICore and QUICore.SafeSetBackdrop
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local SafeSetBackdrop = KORICore and KORICore.SafeSetBackdrop
 
     if db.showBorder then
         local borderColor = db.borderColor or { 0, 0, 0, 1 }
@@ -499,9 +499,9 @@ RefreshIconFrame = function()
         -- Get font: use keybindFont if set, otherwise fall back to general.font
         local fontName = db.keybindFont
         if not fontName then
-            local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-            if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-                fontName = QUICore.db.profile.general.font
+            local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+            if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+                fontName = KORICore.db.profile.general.font
             end
         end
         local fontPath = LSM:Fetch("font", fontName) or STANDARD_TEXT_FONT
@@ -590,7 +590,7 @@ _G.KoriUI_RefreshRotationAssistIcon = RefreshRotationAssistIcon
 -- Export
 --------------------------------------------------------------------------------
 
-QUI.RotationAssistIcon = {
+KORI.RotationAssistIcon = {
     Refresh = RefreshRotationAssistIcon,
     GetFrame = function() return iconFrame end,
 }

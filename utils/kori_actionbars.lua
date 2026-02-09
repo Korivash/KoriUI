@@ -1,5 +1,5 @@
 --[[
-    QUI Action Bars - Button Skinning and Fade System
+    KORI Action Bars - Button Skinning and Fade System
     Hooks Blizzard action buttons for visual customization
 ]]
 
@@ -118,11 +118,11 @@ local function SafeHasAction(action)
 end
 
 local function GetDB()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return nil
     end
-    return QUICore.db.profile.actionBars
+    return KORICore.db.profile.actionBars
 end
 
 local function GetGlobalSettings()
@@ -338,10 +338,10 @@ local extraButtonMoversVisible = false
 
 -- Get settings for a specific extra button type
 local function GetExtraButtonDB(buttonType)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then return nil end
-    return QUICore.db.profile.actionBars and QUICore.db.profile.actionBars.bars
-        and QUICore.db.profile.actionBars.bars[buttonType]
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then return nil end
+    return KORICore.db.profile.actionBars and KORICore.db.profile.actionBars.bars
+        and KORICore.db.profile.actionBars.bars[buttonType]
 end
 
 -- Create holder frame and mover overlay for an extra button type
@@ -376,7 +376,7 @@ local function CreateExtraButtonHolder(buttonType, displayName)
         edgeFile = "Interface\\Buttons\\WHITE8x8",
         edgeSize = 2,
     })
-    mover:SetBackdropColor(0.2, 0.8, 0.6, 0.5)  -- QUI mint color
+    mover:SetBackdropColor(0.2, 0.8, 0.6, 0.5)  -- KORI mint color
     mover:SetBackdropBorderColor(0.2, 1.0, 0.6, 1)
     mover:EnableMouse(true)
     mover:SetMovable(true)
@@ -516,7 +516,7 @@ local function HookExtraButtonPositioning()
     end
 
     -- Remove from Blizzard's managed frame container to prevent Edit Mode interference
-    -- Only do this if QUI is actually managing these frames (at least one feature enabled)
+    -- Only do this if KORI is actually managing these frames (at least one feature enabled)
     local extraSettings = GetExtraButtonDB("extraActionButton")
     local zoneSettings = GetExtraButtonDB("zoneAbility")
     local quiManagingFrames = (extraSettings and extraSettings.enabled) or (zoneSettings and zoneSettings.enabled)
@@ -651,7 +651,7 @@ end
 -- BUTTON SKINNING
 ---------------------------------------------------------------------------
 
--- Apply QUI skin to a single button
+-- Apply KORI skin to a single button
 local function SkinButton(button, settings)
     if not button or not settings or not settings.skinEnabled then return end
 
@@ -835,9 +835,9 @@ local function UpdateKeybindText(button, settings)
     -- Apply styling
     local fontPath = "Fonts\\FRIZQT__.TTF"
     local outline = "OUTLINE"
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         if general.font and LSM then
             fontPath = LSM:Fetch("font", general.font) or fontPath
         end
@@ -874,9 +874,9 @@ local function UpdateMacroText(button, settings)
     -- Apply styling
     local fontPath = "Fonts\\FRIZQT__.TTF"
     local outline = "OUTLINE"
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         if general.font and LSM then
             fontPath = LSM:Fetch("font", general.font) or fontPath
         end
@@ -913,9 +913,9 @@ local function UpdateCountText(button, settings)
     -- Apply styling
     local fontPath = "Fonts\\FRIZQT__.TTF"
     local outline = "OUTLINE"
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         if general.font and LSM then
             fontPath = LSM:Fetch("font", general.font) or fontPath
         end
@@ -985,8 +985,8 @@ local function UpdateEmptySlotVisibility(button, settings)
     end
 end
 
--- One-time migration: if QUI lockButtons was true, apply it to Blizzard CVar
--- This preserves existing user settings after the fix that stops QUI from overwriting Blizzard's setting
+-- One-time migration: if KORI lockButtons was true, apply it to Blizzard CVar
+-- This preserves existing user settings after the fix that stops KORI from overwriting Blizzard's setting
 local function MigrateLockSetting()
     local settings = GetGlobalSettings()
     if not settings then return end
@@ -999,7 +999,7 @@ local function MigrateLockSetting()
 end
 
 -- Apply button lock - syncs LOCK_ACTIONBAR global from Blizzard's CVar
--- NOTE: No longer overwrites Blizzard's CVar - QUI options panel now syncs directly with it
+-- NOTE: No longer overwrites Blizzard's CVar - KORI options panel now syncs directly with it
 local function ApplyButtonLock()
     local locked = GetCVar('lockActionBars') == '1'
     LOCK_ACTIONBAR = locked and '1' or '0'
@@ -1995,7 +1995,7 @@ C_Timer.After(1, SetupEditModeHooks)
 -- EXPOSE MODULE
 ---------------------------------------------------------------------------
 
-local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-if QUICore then
-    QUICore.ActionBars = ActionBars
+local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+if KORICore then
+    KORICore.ActionBars = ActionBars
 end

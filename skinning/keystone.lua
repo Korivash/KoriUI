@@ -4,7 +4,7 @@ local addonName, ns = ...
 -- KEYSTONE FRAME SKINNING
 ---------------------------------------------------------------------------
 
--- Static colors (text only - bg comes from QUI:GetSkinBgColor())
+-- Static colors (text only - bg comes from KORI:GetSkinBgColor())
 local COLORS = {
     text = { 0.9, 0.9, 0.9, 1 },
     textMuted = { 0.6, 0.6, 0.6, 1 },
@@ -13,7 +13,7 @@ local COLORS = {
 local FONT_FLAGS = "OUTLINE"
 
 -- Create a styled backdrop for frames
-local function CreateQUIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+local function CreateKORIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     if not frame.quiBackdrop then
         frame.quiBackdrop = CreateFrame("Frame", nil, frame, "BackdropTemplate")
         frame.quiBackdrop:SetAllPoints()
@@ -31,7 +31,7 @@ local function CreateQUIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     frame.quiBackdrop:SetBackdropBorderColor(sr, sg, sb, sa)
 end
 
--- Style a button with QUI theme
+-- Style a button with KORI theme
 local function StyleButton(button, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     if not button then return end
 
@@ -132,30 +132,30 @@ end
 
 -- Main skinning function
 local function SkinKeystoneFrame()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     if not settings or not settings.skinKeystoneFrame then return end
 
     local keystoneFrame = _G.ChallengesKeystoneFrame
     if not keystoneFrame or keystoneFrame.quiSkinned then return end
 
-    -- Get skin colors from QUI system
-    local QUI = _G.KoriUI
+    -- Get skin colors from KORI system
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa
     local bgr, bgg, bgb, bga
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     else
         sr, sg, sb, sa = 0.2, 1.0, 0.6, 1  -- Fallback mint
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     else
         bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95  -- Fallback dark
     end
 
     -- Create backdrop
-    CreateQUIBackdrop(keystoneFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+    CreateKORIBackdrop(keystoneFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
 
     -- Hide Blizzard decorations via hooks
     hooksecurefunc(keystoneFrame, "Reset", HideBlizzardDecorations)
@@ -213,15 +213,15 @@ local function RefreshKeystoneColors()
     if not keystoneFrame or not keystoneFrame.quiSkinned then return end
 
     -- Get current colors
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     -- Update main frame backdrop

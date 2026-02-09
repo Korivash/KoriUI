@@ -1,11 +1,11 @@
 --[[
-    QUI Anchoring Module
+    KORI Anchoring Module
     Unified anchoring system for castbars, unit frames, and custom frames
     Supports 9-point anchoring with X/Y offsets and dynamic anchor target registration
 ]]
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 
 ---------------------------------------------------------------------------
 -- MODULE TABLE
@@ -33,7 +33,7 @@ end
 
 -- Helper function wrappers (with fallbacks)
 local function Scale(x)
-    return Helpers.Scale and Helpers.Scale(x) or (QUICore and QUICore.Scale and QUICore:Scale(x) or x)
+    return Helpers.Scale and Helpers.Scale(x) or (KORICore and KORICore.Scale and KORICore:Scale(x) or x)
 end
 
 ---------------------------------------------------------------------------

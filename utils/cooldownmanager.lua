@@ -3,7 +3,7 @@
 -- Removes padding from cooldown icons and handles icon layout
 -- Note: Swipe visibility is handled by cooldownswipe.lua
 
-local _, QUI = ...
+local _, KORI = ...
 
 -- Local variables
 local viewerPending = {}
@@ -159,8 +159,8 @@ end
 -- Swipe visibility is now handled centrally by cooldownswipe.lua
 -- This file only handles icon layout (padding removal, scaling, positioning)
 
--- Export function to QUI namespace
-QUI.CooldownManager = {
+-- Export function to KORI namespace
+KORI.CooldownManager = {
     RemovePadding = RemovePadding,
     ScheduleUpdate = ScheduleUpdate,
 }

@@ -1,17 +1,17 @@
 -- buffborders.lua
 -- Adds configurable black borders around buff/debuff icons in the top right
 
-local _, QUI = ...
+local _, KORI = ...
 
 -- Get settings from AceDB
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return nil
     end
     -- Ensure buffBorders table exists
-    if not QUICore.db.profile.buffBorders then
-        QUICore.db.profile.buffBorders = {
+    if not KORICore.db.profile.buffBorders then
+        KORICore.db.profile.buffBorders = {
             enableBuffs = true,
             enableDebuffs = true,
             hideBuffFrame = false,
@@ -21,7 +21,7 @@ local function GetSettings()
             fontOutline = true,
         }
     end
-    return QUICore.db.profile.buffBorders
+    return KORICore.db.profile.buffBorders
 end
 
 -- Border colors
@@ -127,9 +127,9 @@ local function ApplyFontSettings(button)
     local generalFont = "Fonts\\FRIZQT__.TTF"
     local generalOutline = "OUTLINE"
 
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         if general.font and LSM then
             generalFont = LSM:Fetch("font", general.font) or generalFont
         end
@@ -286,8 +286,8 @@ end)
 -- Hook aura updates on first load
 C_Timer.After(2, HookAuraUpdates)
 
--- Export to QUI namespace
-QUI.BuffBorders = {
+-- Export to KORI namespace
+KORI.BuffBorders = {
     Apply = ApplyBuffBorders,
     AddBorder = AddBorderToButton,
 }

@@ -36,8 +36,8 @@ local SalvageLookupLastAttempt = 0
 local SALVAGE_CACHE_VERSION = 1
 
 local function GetAceDB()
-    local QUI = _G.KoriUI
-    return QUI and QUI.db
+    local KORI = _G.KoriUI
+    return KORI and KORI.db
 end
 
 local function LoadSalvageLookupFromDB()
@@ -209,9 +209,9 @@ end
 -- HELPER: Get settings
 ---------------------------------------------------------------------------
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general.quickSalvage
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general.quickSalvage
     end
     return nil
 end

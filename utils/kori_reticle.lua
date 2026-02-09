@@ -3,8 +3,8 @@
 -- GCD tracker ring that follows the mouse cursor with center reticle
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 -- Locals
 local UIParent = UIParent
@@ -59,9 +59,9 @@ local RETICLE_OPTIONS = {
 ---------------------------------------------------------------------------
 local function GetSettings()
     if cachedSettings then return cachedSettings end
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.reticle then
-        cachedSettings = QUICore.db.profile.reticle
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.reticle then
+        cachedSettings = KORICore.db.profile.reticle
         return cachedSettings
     end
     return nil
@@ -491,7 +491,7 @@ end
 ---------------------------------------------------------------------------
 -- Module API
 ---------------------------------------------------------------------------
-QUI.Reticle = {
+KORI.Reticle = {
     Update = UpdateReticle,
     Create = CreateReticle,
     Refresh = UpdateReticle,

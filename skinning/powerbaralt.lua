@@ -4,7 +4,7 @@ local addonName, ns = ...
 -- PLAYER POWER BAR ALT SKINNING
 ---------------------------------------------------------------------------
 -- Replaces the encounter/quest-specific power bar (PlayerPowerBarAlt)
--- with a clean QUI-styled bar. Used for: Atramedes sound, Cho'gall
+-- with a clean KORI-styled bar. Used for: Atramedes sound, Cho'gall
 -- corruption, Darkmoon games, etc.
 --
 -- Approach: Hide Blizzard's bar, create custom replacement
@@ -24,7 +24,7 @@ local GetUnitPowerBarStrings = GetUnitPowerBarStrings
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
 
 -- Module state
-local QUIAltPowerBar = nil
+local KORIAltPowerBar = nil
 local powerBarMover = nil
 local isEnabled = false
 
@@ -33,8 +33,8 @@ local isEnabled = false
 ---------------------------------------------------------------------------
 
 local function GetDB()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    return QUICore and QUICore.db and QUICore.db.profile or {}
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    return KORICore and KORICore.db and KORICore.db.profile or {}
 end
 
 local function GetBarPosition()
@@ -140,17 +140,17 @@ end
 -- BAR CREATION
 ---------------------------------------------------------------------------
 
-local function CreateQUIAltPowerBar()
+local function CreateKORIAltPowerBar()
     -- Get skin colors
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     -- Create the status bar
@@ -250,25 +250,25 @@ end
 ---------------------------------------------------------------------------
 
 local function RefreshPowerBarAltColors()
-    if not QUIAltPowerBar then return end
+    if not KORIAltPowerBar then return end
 
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
-    QUIAltPowerBar:SetStatusBarColor(sr, sg, sb)
-    QUIAltPowerBar.backdrop:SetBackdropColor(bgr, bgg, bgb, bga)
-    QUIAltPowerBar.backdrop:SetBackdropBorderColor(sr, sg, sb, sa)
+    KORIAltPowerBar:SetStatusBarColor(sr, sg, sb)
+    KORIAltPowerBar.backdrop:SetBackdropColor(bgr, bgg, bgb, bga)
+    KORIAltPowerBar.backdrop:SetBackdropBorderColor(sr, sg, sb, sa)
 
-    QUIAltPowerBar.quiSkinColor = { sr, sg, sb, sa }
-    QUIAltPowerBar.quiBgColor = { bgr, bgg, bgb, bga }
+    KORIAltPowerBar.quiSkinColor = { sr, sg, sb, sa }
+    KORIAltPowerBar.quiBgColor = { bgr, bgg, bgb, bga }
 
     -- Update mover colors if it exists
     if powerBarMover then
@@ -285,19 +285,19 @@ _G.KoriUI_RefreshPowerBarAltColors = RefreshPowerBarAltColors
 
 local function CreateMover()
     if powerBarMover then return end
-    if not QUIAltPowerBar then return end
+    if not KORIAltPowerBar then return end
 
     -- Get skin colors for mover
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
 
     -- Create mover overlay
     powerBarMover = CreateFrame("Frame", "KoriUI_AltPowerBarMover", UIParent, "BackdropTemplate")
     powerBarMover:SetSize(BAR_WIDTH + 4, BAR_HEIGHT + 4)
-    powerBarMover:SetPoint("CENTER", QUIAltPowerBar, "CENTER")
+    powerBarMover:SetPoint("CENTER", KORIAltPowerBar, "CENTER")
     powerBarMover:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         edgeFile = "Interface\\Buttons\\WHITE8x8",
@@ -320,17 +320,17 @@ local function CreateMover()
 
     -- Drag handlers
     powerBarMover:SetScript("OnDragStart", function(self)
-        QUIAltPowerBar:StartMoving()
+        KORIAltPowerBar:StartMoving()
     end)
 
     powerBarMover:SetScript("OnDragStop", function(self)
-        QUIAltPowerBar:StopMovingOrSizing()
+        KORIAltPowerBar:StopMovingOrSizing()
         -- Save position
-        local point, _, relPoint, x, y = QUIAltPowerBar:GetPoint()
+        local point, _, relPoint, x, y = KORIAltPowerBar:GetPoint()
         SaveBarPosition(point, relPoint, x, y)
         -- Re-anchor mover to bar
         self:ClearAllPoints()
-        self:SetPoint("CENTER", QUIAltPowerBar, "CENTER")
+        self:SetPoint("CENTER", KORIAltPowerBar, "CENTER")
     end)
 end
 
@@ -343,13 +343,13 @@ local function ShowMover()
     if powerBarMover then
         powerBarMover:Show()
         -- Show the bar too so user can see what they're positioning
-        if QUIAltPowerBar then
-            QUIAltPowerBar:Show()
+        if KORIAltPowerBar then
+            KORIAltPowerBar:Show()
             -- Show placeholder if no active power bar
-            if not QUIAltPowerBar.powerName then
-                QUIAltPowerBar.text:SetText("Encounter Power Bar")
-                QUIAltPowerBar:SetMinMaxValues(0, 100)
-                QUIAltPowerBar:SetValue(50)
+            if not KORIAltPowerBar.powerName then
+                KORIAltPowerBar.text:SetText("Encounter Power Bar")
+                KORIAltPowerBar:SetMinMaxValues(0, 100)
+                KORIAltPowerBar:SetValue(50)
             end
         end
     end
@@ -360,8 +360,8 @@ local function HideMover()
         powerBarMover:Hide()
     end
     -- Re-update bar visibility based on actual power state
-    if QUIAltPowerBar then
-        UpdateBar(QUIAltPowerBar)
+    if KORIAltPowerBar then
+        UpdateBar(KORIAltPowerBar)
     end
 end
 
@@ -381,8 +381,8 @@ _G.KoriUI_TogglePowerBarAltMover = ToggleMover
 ---------------------------------------------------------------------------
 
 local function Initialize()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
 
     if not settings or not settings.skinPowerBarAlt then return end
     if isEnabled then return end
@@ -391,10 +391,10 @@ local function Initialize()
     HideBlizzardBar()
 
     -- Create our bar
-    QUIAltPowerBar = CreateQUIAltPowerBar()
+    KORIAltPowerBar = CreateKORIAltPowerBar()
 
     -- Initial update
-    UpdateBar(QUIAltPowerBar)
+    UpdateBar(KORIAltPowerBar)
 
     isEnabled = true
 end
@@ -403,6 +403,6 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-    -- Delay slightly to ensure QUI is loaded
+    -- Delay slightly to ensure KORI is loaded
     C_Timer.After(0.1, Initialize)
 end)

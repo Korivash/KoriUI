@@ -1,5 +1,5 @@
 --[[
-    QUI Anchoring Options Module
+    KORI Anchoring Options Module
     Reusable UI components for anchoring and snapping options
     Provides anchor dropdown, snap buttons, and offset controls
 ]]
@@ -11,9 +11,9 @@ ns.KORI_Anchoring_Options = KORI_Anchoring_Options
 
 -- Helper to get GUI (lazy load to avoid initialization order issues)
 local function GetGUI()
-    local QUI = _G.KoriUI
-    if QUI and QUI.GUI then
-        return QUI.GUI
+    local KORI = _G.KoriUI
+    if KORI and KORI.GUI then
+        return KORI.GUI
     end
     return nil
 end

@@ -3,7 +3,7 @@
 -- Uses Blizzard's SpellActivationAlert system for proper sizing
 -- Falls back to LibCustomGlow for additional glow styles
 
-local _, QUI = ...
+local _, KORI = ...
 
 -- Get LibCustomGlow for fallback styles
 local LCG = LibStub and LibStub("LibCustomGlow-1.0", true)
@@ -39,19 +39,19 @@ local GlowTemplates = {
 -- Settings Access
 -- ======================================================
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return nil
     end
-    return QUICore.db.profile.customGlow
+    return KORICore.db.profile.customGlow
 end
 
 local function GetEffectsSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return { hideEssential = true, hideUtility = true }
     end
-    return QUICore.db.profile.cooldownEffects or { hideEssential = true, hideUtility = true }
+    return KORICore.db.profile.cooldownEffects or { hideEssential = true, hideUtility = true }
 end
 
 -- ======================================================
@@ -147,7 +147,7 @@ local function CustomizeBlizzardGlow(button, viewerSettings)
     end
     
     -- Mark as customized
-    button._QUICustomGlowActive = true
+    button._KORICustomGlowActive = true
     activeGlowIcons[button] = true
     
     return true
@@ -175,8 +175,8 @@ local function ApplyLibCustomGlow(icon, viewerSettings)
     if glowType == "Pixel Glow" then
         -- Pixel Glow: animated lines around the border
         -- Parameters: frame, color, numLines, frequency, length, thickness, xOffset, yOffset, border, key
-        LCG.PixelGlow_Start(icon, color, lines, frequency, nil, thickness, 0, 0, true, "_QUICustomGlow")
-        local glowFrame = icon["_PixelGlow_QUICustomGlow"]
+        LCG.PixelGlow_Start(icon, color, lines, frequency, nil, thickness, 0, 0, true, "_KORICustomGlow")
+        local glowFrame = icon["_PixelGlow_KORICustomGlow"]
         if glowFrame then
             glowFrame:ClearAllPoints()
             -- Apply offset: negative expands outward, positive shrinks inward
@@ -187,8 +187,8 @@ local function ApplyLibCustomGlow(icon, viewerSettings)
     elseif glowType == "Autocast Shine" then
         -- Autocast Shine: orbiting sparkle spots
         -- Parameters: frame, color, numSpots, frequency, scale, xOffset, yOffset, key
-        LCG.AutoCastGlow_Start(icon, color, lines, frequency, scale, 0, 0, "_QUICustomGlow")
-        local glowFrame = icon["_AutoCastGlow_QUICustomGlow"]
+        LCG.AutoCastGlow_Start(icon, color, lines, frequency, scale, 0, 0, "_KORICustomGlow")
+        local glowFrame = icon["_AutoCastGlow_KORICustomGlow"]
         if glowFrame then
             glowFrame:ClearAllPoints()
             glowFrame:SetPoint("TOPLEFT", icon, "TOPLEFT", -xOffset, xOffset)
@@ -197,7 +197,7 @@ local function ApplyLibCustomGlow(icon, viewerSettings)
     end
 
     -- Flag already set by StartGlow, just ensure it's there
-    icon._QUICustomGlowActive = true
+    icon._KORICustomGlowActive = true
     activeGlowIcons[icon] = true
 
     return true
@@ -210,7 +210,7 @@ local function StartGlow(icon)
     if not icon then return end
     
     -- Already has our glow? Skip
-    if icon._QUICustomGlowActive then return end
+    if icon._KORICustomGlowActive then return end
     
     local viewerType = GetViewerType(icon)
     if not viewerType then return end
@@ -220,7 +220,7 @@ local function StartGlow(icon)
     
     -- Always use LibCustomGlow since we hide Blizzard's SpellActivationAlert
     -- Set the flag FIRST so cooldowneffects.lua doesn't interfere
-    icon._QUICustomGlowActive = true
+    icon._KORICustomGlowActive = true
     activeGlowIcons[icon] = true
     
     ApplyLibCustomGlow(icon, viewerSettings)
@@ -232,11 +232,11 @@ function StopGlow(icon)
 
     -- Stop LibCustomGlow effects
     if LCG then
-        pcall(LCG.PixelGlow_Stop, icon, "_QUICustomGlow")
-        pcall(LCG.AutoCastGlow_Stop, icon, "_QUICustomGlow")
+        pcall(LCG.PixelGlow_Stop, icon, "_KORICustomGlow")
+        pcall(LCG.AutoCastGlow_Stop, icon, "_KORICustomGlow")
     end
 
-    icon._QUICustomGlowActive = nil
+    icon._KORICustomGlowActive = nil
     activeGlowIcons[icon] = nil
 end
 
@@ -249,7 +249,7 @@ end
 -- Hook individual CDM icon's glow methods
 local function HookCDMIcon(icon)
     if not icon then return end
-    if icon._QUIGlowHooked then return end
+    if icon._KORIGlowHooked then return end
 
     local viewerType = GetViewerType(icon)
     if not viewerType then return end
@@ -332,7 +332,7 @@ local function HookCDMIcon(icon)
         end)
     end
 
-    icon._QUIGlowHooked = true
+    icon._KORIGlowHooked = true
 end
 
 -- Hook all icons in a viewer
@@ -357,13 +357,13 @@ local function SetupViewerHooking(viewerName, trackerKey)
     HookViewerIcons(viewerName)
 
     -- Watch for new icons via layout changes
-    if not viewer._QUIGlowLayoutHooked then
+    if not viewer._KORIGlowLayoutHooked then
         viewer:HookScript("OnSizeChanged", function()
             C_Timer.After(0.1, function()
                 HookViewerIcons(viewerName)
             end)
         end)
-        viewer._QUIGlowLayoutHooked = true
+        viewer._KORIGlowLayoutHooked = true
     end
 end
 
@@ -469,9 +469,9 @@ initFrame:SetScript("OnEvent", function(self, event, arg)
 end)
 
 -- ======================================================
--- Export to QUI namespace
+-- Export to KORI namespace
 -- ======================================================
-QUI.CustomGlows = {
+KORI.CustomGlows = {
     StartGlow = StartGlow,
     StopGlow = StopGlow,
     RefreshAllGlows = RefreshAllGlows,

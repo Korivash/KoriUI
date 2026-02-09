@@ -11,8 +11,8 @@ local addonName, ns = ...
 ---------------------------------------------------------------------------
 
 local function IsEnabled()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     return settings and settings.mplusTeleportEnabled ~= false
 end
 

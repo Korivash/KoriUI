@@ -2,7 +2,7 @@ local addonName, ns = ...
 
 ---------------------------------------------------------------------------
 -- READY CHECK FRAME SKINNING
--- QUI skinning for ReadyCheckFrame
+-- KORI skinning for ReadyCheckFrame
 ---------------------------------------------------------------------------
 
 local FONT_FLAGS = "OUTLINE"
@@ -15,9 +15,9 @@ local readyCheckMover = nil
 ---------------------------------------------------------------------------
 
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general
     end
     return nil
 end
@@ -74,10 +74,10 @@ local function CreateMover()
     if not frame then return end
 
     -- Get skin colors for mover
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
 
     -- Create mover overlay
@@ -152,24 +152,24 @@ _G.KoriUI_ToggleReadyCheckMover = ToggleMover
 -- HELPER FUNCTIONS
 ---------------------------------------------------------------------------
 
--- Get QUI skin colors with fallback
+-- Get KORI skin colors with fallback
 local function GetSkinColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1  -- Fallback mint
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95  -- Fallback dark
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
 end
 
--- Create QUI-styled backdrop on a frame
-local function CreateQUIBackdrop(frame)
+-- Create KORI-styled backdrop on a frame
+local function CreateKORIBackdrop(frame)
     if frame.quiBackdrop then return frame.quiBackdrop end
 
     local backdrop = CreateFrame("Frame", nil, frame, "BackdropTemplate")
@@ -188,7 +188,7 @@ local function CreateQUIBackdrop(frame)
     return backdrop
 end
 
--- Style a button with QUI look
+-- Style a button with KORI look
 local function SkinButton(button, sr, sg, sb, bgr, bgg, bgb, bga)
     if not button or button.quiSkinned then return end
 
@@ -213,7 +213,7 @@ local function SkinButton(button, sr, sg, sb, bgr, bgg, bgb, bga)
     end
 
     -- Create backdrop
-    local backdrop = CreateQUIBackdrop(button)
+    local backdrop = CreateKORIBackdrop(button)
     local btnBgr = math.min(bgr + 0.07, 1)  -- Slightly lighter for buttons
     local btnBgg = math.min(bgg + 0.07, 1)
     local btnBgb = math.min(bgb + 0.07, 1)
@@ -320,8 +320,8 @@ end
 ---------------------------------------------------------------------------
 
 local function SkinReadyCheckFrame()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     if not settings or not settings.skinReadyCheck then return end
 
     local frame = _G.ReadyCheckFrame
@@ -334,9 +334,9 @@ local function SkinReadyCheckFrame()
     -- Hide Blizzard decorations
     HideBlizzardDecorations()
 
-    -- Create QUI backdrop on ListenerFrame (where the content is)
+    -- Create KORI backdrop on ListenerFrame (where the content is)
     local targetFrame = listenerFrame or frame
-    local backdrop = CreateQUIBackdrop(targetFrame)
+    local backdrop = CreateKORIBackdrop(targetFrame)
     backdrop:SetBackdropColor(bgr, bgg, bgb, bga)
     backdrop:SetBackdropBorderColor(sr, sg, sb, sa)
 

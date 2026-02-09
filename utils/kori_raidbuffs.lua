@@ -1,9 +1,9 @@
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local IsSecretValue = function(v) return ns.Utils and ns.Utils.IsSecretValue and ns.Utils.IsSecretValue(v) or false end
 
 ---------------------------------------------------------------------------
--- QUI Missing Raid Buffs Display
+-- KORI Missing Raid Buffs Display
 -- Shows missing raid buffs when a buff-providing class is in group
 ---------------------------------------------------------------------------
 
@@ -99,8 +99,8 @@ local previewBuffs = nil  -- Cached preview buffs (don't reshuffle on every upda
 ---------------------------------------------------------------------------
 
 local function GetSettings()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.raidBuffs then
-        return QUICore.db.profile.raidBuffs
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.raidBuffs then
+        return KORICore.db.profile.raidBuffs
     end
     return {
         enabled = true,
@@ -536,15 +536,15 @@ end
 local function ApplySkin()
     if not mainFrame then return end
 
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     -- Apply skin to label bar
@@ -778,7 +778,7 @@ function KORI_RaidBuffs:Debug()
     local settings = GetSettings()
     local lines = {}
     local playerClass = SafeUnitClass("player")
-    table.insert(lines, "QUI RaidBuffs Debug")
+    table.insert(lines, "KORI RaidBuffs Debug")
     table.insert(lines, "Provider Mode: " .. (settings.providerMode and "ON" or "OFF"))
     table.insert(lines, "Player Class: " .. (playerClass or "UNKNOWN"))
     table.insert(lines, "In Group: " .. (IsInGroup() and "YES" or "NO"))
@@ -877,8 +877,8 @@ function KORI_RaidBuffs:Debug()
 end
 
 -- Slash command for debug
-SLASH_QUIRAIDBUFFS1 = "/koribuffs"
-SlashCmdList["QUIRAIDBUFFS"] = function()
+SLASH_KORIRAIDBUFFS1 = "/koribuffs"
+SlashCmdList["KORIRAIDBUFFS"] = function()
     if ns.RaidBuffs then
         ns.RaidBuffs:Debug()
     end

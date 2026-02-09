@@ -3,8 +3,8 @@
 -- Displays +Combat or -Combat when entering/leaving combat
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 ---------------------------------------------------------------------------
 -- State tracking for fade animation
@@ -22,9 +22,9 @@ local CombatTextState = {
 -- Get settings from database
 ---------------------------------------------------------------------------
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.combatText then
-        return QUICore.db.profile.combatText
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.combatText then
+        return KORICore.db.profile.combatText
     end
     return nil
 end
@@ -44,7 +44,7 @@ local function CreateTextFrame()
     local text = frame:CreateFontString(nil, "OVERLAY")
     text:SetPoint("CENTER", frame, "CENTER", 0, 0)
     text:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")
-    text:SetTextColor(0.204, 0.827, 0.6, 1)  -- QUI mint accent
+    text:SetTextColor(0.204, 0.827, 0.6, 1)  -- KORI mint accent
     text:SetJustifyH("CENTER")
     frame.text = text
 
@@ -265,7 +265,7 @@ _G.KoriUI_PreviewCombatText = function(message)
     end)
 end
 
-QUI.CombatText = {
+KORI.CombatText = {
     Refresh = RefreshCombatText,
     Show = ShowCombatText,
     Preview = _G.KoriUI_PreviewCombatText,

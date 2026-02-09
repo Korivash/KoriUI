@@ -1,11 +1,11 @@
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- Pixel-perfect scaling helper
 local function Scale(x)
-    if QUICore and QUICore.Scale then
-        return QUICore:Scale(x)
+    if KORICore and KORICore.Scale then
+        return KORICore:Scale(x)
     end
     return x
 end
@@ -21,8 +21,8 @@ local PowerBarEditMode = {
 
 -- Helper to get texture from general settings (falls back to default)
 local function GetDefaultTexture()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general.texture or "Korivash"
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general.texture or "Korivash"
     end
     return "Korivash"
 end
@@ -37,8 +37,8 @@ end
 
 -- Helper to get font from general settings
 local function GetGeneralFont()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         local fontName = general.font or "Friz Quadrata TT"
         return LSM:Fetch("font", fontName) or "Fonts\\FRIZQT__.TTF"
     end
@@ -46,21 +46,21 @@ local function GetGeneralFont()
 end
 
 local function GetGeneralFontOutline()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general.fontOutline or "OUTLINE"
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general.fontOutline or "OUTLINE"
     end
     return "OUTLINE"
 end
 
 -- Register slider references for real-time sync during edit mode
-function QUICore:RegisterPowerBarEditModeSliders(barKey, xSlider, ySlider)
+function KORICore:RegisterPowerBarEditModeSliders(barKey, xSlider, ySlider)
     PowerBarEditMode.sliders[barKey] = PowerBarEditMode.sliders[barKey] or {}
     PowerBarEditMode.sliders[barKey].x = xSlider
     PowerBarEditMode.sliders[barKey].y = ySlider
 end
 
 -- Update sliders when position changes during edit mode
-function QUICore:NotifyPowerBarPositionChanged(barKey, offsetX, offsetY)
+function KORICore:NotifyPowerBarPositionChanged(barKey, offsetX, offsetY)
     local sliders = PowerBarEditMode.sliders[barKey]
     if sliders then
         if sliders.x and sliders.x.SetValue then
@@ -293,8 +293,8 @@ end
 
 local function GetResourceColor(resource)
     -- Check for custom power colors first
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local pc = QUICore and QUICore.db and QUICore.db.profile.powerColors
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local pc = KORICore and KORICore.db and KORICore.db.profile.powerColors
 
     if pc then
         local customColor = nil
@@ -577,7 +577,7 @@ local function CreatePowerBarNudgeButton(parent, direction, deltaX, deltaY, barK
     end)
 
     btn:SetScript("OnClick", function()
-        local cfg = (barKey == "primary") and QUICore.db.profile.powerBar or QUICore.db.profile.secondaryPowerBar
+        local cfg = (barKey == "primary") and KORICore.db.profile.powerBar or KORICore.db.profile.secondaryPowerBar
         local shift = IsShiftKeyDown()
         local step = shift and 10 or 1
         cfg.offsetX = (cfg.offsetX or 0) + (deltaX * step)
@@ -589,13 +589,13 @@ local function CreatePowerBarNudgeButton(parent, direction, deltaX, deltaY, barK
 
         -- Refresh the bar position
         if barKey == "primary" then
-            QUICore:UpdatePowerBar()
+            KORICore:UpdatePowerBar()
         else
-            QUICore:UpdateSecondaryPowerBar()
+            KORICore:UpdateSecondaryPowerBar()
         end
 
         -- Notify options panel
-        QUICore:NotifyPowerBarPositionChanged(barKey, cfg.offsetX, cfg.offsetY)
+        KORICore:NotifyPowerBarPositionChanged(barKey, cfg.offsetX, cfg.offsetY)
     end)
 
     return btn
@@ -654,7 +654,7 @@ local function CreatePowerBarEditOverlay(bar, barKey)
 end
 
 -- Enable edit mode for power bars
-function QUICore:EnablePowerBarEditMode()
+function KORICore:EnablePowerBarEditMode()
     if InCombatLockdown() then return end
     PowerBarEditMode.active = true
 
@@ -695,8 +695,8 @@ function QUICore:EnablePowerBarEditMode()
             -- Click handler to select this element and show its arrows
             bar:SetScript("OnMouseDown", function(self, button)
                 if button == "LeftButton" and PowerBarEditMode.active then
-                    if QUICore and QUICore.SelectEditModeElement then
-                        QUICore:SelectEditModeElement("powerbar", self._editModeBarKey)
+                    if KORICore and KORICore.SelectEditModeElement then
+                        KORICore:SelectEditModeElement("powerbar", self._editModeBarKey)
                     end
                 end
             end)
@@ -726,7 +726,7 @@ function QUICore:EnablePowerBarEditMode()
                             cfg.useRawPixels = true -- Pixel-perfect mode
 
                             -- Notify options panel
-                            QUICore:NotifyPowerBarPositionChanged(barKey, offsetX, offsetY)
+                            KORICore:NotifyPowerBarPositionChanged(barKey, offsetX, offsetY)
                         end
                     end)
                 end
@@ -750,7 +750,7 @@ function QUICore:EnablePowerBarEditMode()
                     cfg.useRawPixels = true
 
                     -- Notify options panel
-                    QUICore:NotifyPowerBarPositionChanged(barKey, offsetX, offsetY)
+                    KORICore:NotifyPowerBarPositionChanged(barKey, offsetX, offsetY)
                 end
             end)
         end
@@ -758,7 +758,7 @@ function QUICore:EnablePowerBarEditMode()
 end
 
 -- Disable edit mode for power bars
-function QUICore:DisablePowerBarEditMode()
+function KORICore:DisablePowerBarEditMode()
     PowerBarEditMode.active = false
 
     -- Clear Edit Mode selection if a power bar was selected
@@ -799,7 +799,7 @@ end
 
 -- PRIMARY POWER BAR
 
-function QUICore:GetPowerBar()
+function KORICore:GetPowerBar()
     if self.powerBar then return self.powerBar end
 
     local cfg = self.db.profile.powerBar
@@ -879,7 +879,7 @@ function QUICore:GetPowerBar()
     return bar
 end
 
-function QUICore:UpdatePowerBar()
+function KORICore:UpdatePowerBar()
     local cfg = self.db.profile.powerBar
     if not cfg.enabled then
         if self.powerBar then self.powerBar:Hide() end
@@ -1088,7 +1088,7 @@ function QUICore:UpdatePowerBar()
     end
 end
 
-function QUICore:UpdatePowerBarTicks(bar, resource, max)
+function KORICore:UpdatePowerBarTicks(bar, resource, max)
     local cfg = self.db.profile.powerBar
 
     -- Hide all ticks first
@@ -1153,10 +1153,10 @@ end
 
 -- Global callback for NCDM to update locked power bar width and position
 _G.KoriUI_UpdateLockedPowerBar = function()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db then return end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db then return end
 
-    local cfg = QUICore.db.profile.powerBar
+    local cfg = KORICore.db.profile.powerBar
     if not cfg.enabled or not cfg.lockedToEssential then return end
 
     local essentialViewer = _G.EssentialCooldownViewer
@@ -1229,16 +1229,16 @@ _G.KoriUI_UpdateLockedPowerBar = function()
     end
 
     if needsUpdate then
-        QUICore:UpdatePowerBar()
+        KORICore:UpdatePowerBar()
     end
 end
 
 -- Global callback for NCDM to update power bar locked to Utility
 _G.KoriUI_UpdateLockedPowerBarToUtility = function()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db then return end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db then return end
 
-    local cfg = QUICore.db.profile.powerBar
+    local cfg = KORICore.db.profile.powerBar
     if not cfg.enabled or not cfg.lockedToUtility then return end
 
     local utilityViewer = _G.UtilityCooldownViewer
@@ -1311,7 +1311,7 @@ _G.KoriUI_UpdateLockedPowerBarToUtility = function()
     end
 
     if needsUpdate then
-        QUICore:UpdatePowerBar()
+        KORICore:UpdatePowerBar()
     end
 end
 
@@ -1326,10 +1326,10 @@ local cachedPrimaryDimensions = {
 
 -- Global callback for NCDM to update SECONDARY power bar locked to Essential
 _G.KoriUI_UpdateLockedSecondaryPowerBar = function()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db then return end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db then return end
 
-    local cfg = QUICore.db.profile.secondaryPowerBar
+    local cfg = KORICore.db.profile.secondaryPowerBar
     if not cfg.enabled or not cfg.lockedToEssential then return end
 
     local essentialViewer = _G.EssentialCooldownViewer
@@ -1409,16 +1409,16 @@ _G.KoriUI_UpdateLockedSecondaryPowerBar = function()
     end
 
     if needsUpdate then
-        QUICore:UpdateSecondaryPowerBar()
+        KORICore:UpdateSecondaryPowerBar()
     end
 end
 
 -- Global callback for NCDM to update SECONDARY power bar locked to Utility
 _G.KoriUI_UpdateLockedSecondaryPowerBarToUtility = function()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db then return end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db then return end
 
-    local cfg = QUICore.db.profile.secondaryPowerBar
+    local cfg = KORICore.db.profile.secondaryPowerBar
     if not cfg.enabled or not cfg.lockedToUtility then return end
 
     local utilityViewer = _G.UtilityCooldownViewer
@@ -1497,13 +1497,13 @@ _G.KoriUI_UpdateLockedSecondaryPowerBarToUtility = function()
     end
 
     if needsUpdate then
-        QUICore:UpdateSecondaryPowerBar()
+        KORICore:UpdateSecondaryPowerBar()
     end
 end
 
 -- SECONDARY POWER BAR
 
-function QUICore:GetSecondaryPowerBar()
+function KORICore:GetSecondaryPowerBar()
     if self.secondaryPowerBar then return self.secondaryPowerBar end
 
     local cfg = self.db.profile.secondaryPowerBar
@@ -1592,7 +1592,7 @@ function QUICore:GetSecondaryPowerBar()
     return bar
 end
 
-function QUICore:CreateFragmentedPowerBars(bar, resource, isVertical)
+function KORICore:CreateFragmentedPowerBars(bar, resource, isVertical)
     local cfg = self.db.profile.secondaryPowerBar
     local maxPower = UnitPowerMax("player", resource)
 
@@ -1618,7 +1618,7 @@ function QUICore:CreateFragmentedPowerBars(bar, resource, isVertical)
     end
 end
 
-function QUICore:UpdateFragmentedPowerDisplay(bar, resource, isVertical)
+function KORICore:UpdateFragmentedPowerDisplay(bar, resource, isVertical)
     local cfg = self.db.profile.secondaryPowerBar
     local maxPower = UnitPowerMax("player", resource)
     if maxPower <= 0 then return end
@@ -1839,7 +1839,7 @@ local function RuneTimerOnUpdate(bar, delta)
                 local frac = math.max(0, math.min(1, (now - start) / duration))
                 runeFrame:SetValue(frac)
                 if runeText then
-                    local cfg = QUICore.db.profile.secondaryPowerBar
+                    local cfg = KORICore.db.profile.secondaryPowerBar
                     if cfg.showFragmentedPowerBarText ~= false then
                         runeText:SetText(string.format("%.1f", remaining))
                     else
@@ -1857,7 +1857,7 @@ local function RuneTimerOnUpdate(bar, delta)
     end
 end
 
-function QUICore:UpdateSecondaryPowerBarTicks(bar, resource, max)
+function KORICore:UpdateSecondaryPowerBarTicks(bar, resource, max)
     local cfg = self.db.profile.secondaryPowerBar
 
     -- Hide all ticks first
@@ -1939,7 +1939,7 @@ function QUICore:UpdateSecondaryPowerBarTicks(bar, resource, max)
 end
 
 
-function QUICore:UpdateSecondaryPowerBar()
+function KORICore:UpdateSecondaryPowerBar()
     local cfg = self.db.profile.secondaryPowerBar
     if not cfg.enabled then
         if self.secondaryPowerBar then self.secondaryPowerBar:Hide() end
@@ -2445,7 +2445,7 @@ end
 
 -- EVENT HANDLER
 
-function QUICore:OnUnitPower(_, unit)
+function KORICore:OnUnitPower(_, unit)
     -- Be forgiving: if unit is nil or not "player", still update.
     -- It's cheap and avoids missing power updates.
     if unit and unit ~= "player" then
@@ -2475,8 +2475,8 @@ end
 
 -- REFRESH
 
-local oldRefreshAll = QUICore.RefreshAll
-function QUICore:RefreshAll()
+local oldRefreshAll = KORICore.RefreshAll
+function KORICore:RefreshAll()
     if oldRefreshAll then
         oldRefreshAll(self)
     end
@@ -2496,7 +2496,7 @@ end
 -- EVENT-DRIVEN RUNE UPDATES
 -- RUNE_POWER_UPDATE triggers full layout refresh; smooth timer enabled while runes recharge
 
-function QUICore:OnRunePowerUpdate()
+function KORICore:OnRunePowerUpdate()
     local now = GetTime()
     if now - lastSecondaryUpdate < UPDATE_THROTTLE then
         return
@@ -2567,16 +2567,16 @@ local function InitializeResourceBars(self)
 
     -- Hook Blizzard Edit Mode for power bars
     C_Timer.After(0.6, function()
-        if EditModeManagerFrame and not QUICore._powerBarEditModeHooked then
-            QUICore._powerBarEditModeHooked = true
+        if EditModeManagerFrame and not KORICore._powerBarEditModeHooked then
+            KORICore._powerBarEditModeHooked = true
             hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function()
                 if not InCombatLockdown() then
-                    QUICore:EnablePowerBarEditMode()
+                    KORICore:EnablePowerBarEditMode()
                 end
             end)
             hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
                 if not InCombatLockdown() then
-                    QUICore:DisablePowerBarEditMode()
+                    KORICore:DisablePowerBarEditMode()
                 end
             end)
         end
@@ -2584,7 +2584,7 @@ local function InitializeResourceBars(self)
 end
 
 
-function QUICore:OnSpecChanged()
+function KORICore:OnSpecChanged()
     -- Ensure Demon Hunter soul bar is spawned when spec changes
     EnsureDemonHunterSoulBar()
 
@@ -2592,14 +2592,14 @@ function QUICore:OnSpecChanged()
     self:UpdateSecondaryPowerBar()
 end
 
-function QUICore:OnShapeshiftChanged()
+function KORICore:OnShapeshiftChanged()
     -- Druid form changes affect primary/secondary resources
     self:UpdatePowerBar()
     self:UpdateSecondaryPowerBar()
 end
 -- Hook into that shit
-local oldOnEnable = QUICore.OnEnable
-function QUICore:OnEnable()
+local oldOnEnable = KORICore.OnEnable
+function KORICore:OnEnable()
     if oldOnEnable then
         oldOnEnable(self)
     end

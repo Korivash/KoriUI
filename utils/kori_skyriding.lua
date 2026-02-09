@@ -3,8 +3,8 @@
 -- Unified continuous vigor bar with segment markers
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 local LSM = LibStub("LibSharedMedia-3.0")
 local IsSecretValue = function(v) return ns.Utils and ns.Utils.IsSecretValue and ns.Utils.IsSecretValue(v) or false end
@@ -59,17 +59,17 @@ local DOT_TEXTURE = "Interface\\AddOns\\KoriUI\\assets\\cursor\\kori_reticle_dot
 -- Settings Helper
 ---------------------------------------------------------------------------
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.skyriding then
-        return QUICore.db.profile.skyriding
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.skyriding then
+        return KORICore.db.profile.skyriding
     end
     return nil
 end
 
 local function Scale(x)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.Scale then
-        return QUICore:Scale(x)
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.Scale then
+        return KORICore:Scale(x)
     end
     return x
 end
@@ -118,9 +118,9 @@ end
 -- Font Helper
 ---------------------------------------------------------------------------
 local function GetFontPath()
-    local QUI = _G.KoriUI
-    if QUI and QUI.GetGlobalFont then
-        return QUI:GetGlobalFont()
+    local KORI = _G.KoriUI
+    if KORI and KORI.GetGlobalFont then
+        return KORI:GetGlobalFont()
     end
     -- Fallback to bundled Korivash font
     return [[Interface\AddOns\KoriUI\assets\Korivash.ttf]]
@@ -892,11 +892,11 @@ local function ApplySettings()
     skyridingFrame:SetPoint("CENTER", UIParent, "CENTER", offsetX, offsetY)
 
     -- Apply HUD layer priority
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local db = QUICore and QUICore.db and QUICore.db.profile
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local db = KORICore and KORICore.db and KORICore.db.profile
     local layerPriority = db and db.hudLayering and db.hudLayering.skyridingHUD or 5
-    if QUICore and QUICore.GetHUDFrameLevel then
-        local frameLevel = QUICore:GetHUDFrameLevel(layerPriority)
+    if KORICore and KORICore.GetHUDFrameLevel then
+        local frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
         skyridingFrame:SetFrameLevel(frameLevel)
     end
 
@@ -1113,7 +1113,7 @@ _G.KoriUI_RefreshSkyriding = ApplySettings
 ---------------------------------------------------------------------------
 -- Public API
 ---------------------------------------------------------------------------
-QUI.Skyriding = {
+KORI.Skyriding = {
     Refresh = ApplySettings,
     Create = CreateSkyridingFrame,
     UpdateVisibility = UpdateVisibility,

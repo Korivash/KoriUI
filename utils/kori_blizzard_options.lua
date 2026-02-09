@@ -3,16 +3,16 @@
 -- Registers KoriUI in Settings > AddOns panel
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = KoriUI
+local KORI = KoriUI
 
 local ADDON_DISPLAY_NAME = "Kori UI"
 
 local function OpenKoriUI()
-    if QUI.GUI then
-        QUI.GUI:Toggle()
+    if KORI.GUI then
+        KORI.GUI:Toggle()
         return true
     end
-    print("|cFF4169E1KoriUI:|r GUI not loaded yet. Try /kori instead.")
+    print("|cFF56D1FFKoriUI:|r GUI not loaded yet. Try /kori instead.")
     return false
 end
 

@@ -5,9 +5,9 @@ local addonName, ns = ...
 ---------------------------------------------------------------------------
 
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general
     end
     return nil
 end

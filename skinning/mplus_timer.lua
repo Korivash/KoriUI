@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------
 -- KoriUI Mythic+ Timer Skinning
--- Applies QUI skin colors to the custom M+ timer frame
+-- Applies KORI skin colors to the custom M+ timer frame
 -- Frame created in utils/kori_mplus_timer.lua
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
@@ -18,18 +18,18 @@ local function IsDarkBackground(r, g, b)
 end
 
 ---------------------------------------------------------------------------
--- Get QUI Skin Colors
+-- Get KORI Skin Colors
 ---------------------------------------------------------------------------
 local function GetSkinColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1       -- Fallback mint
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95  -- Fallback dark
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
@@ -39,9 +39,9 @@ end
 -- Get M+ Timer Settings
 ---------------------------------------------------------------------------
 local function GetMPlusTimerSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.mplusTimer then
-        return QUICore.db.profile.mplusTimer
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.mplusTimer then
+        return KORICore.db.profile.mplusTimer
     end
     return { showBorder = true }
 end

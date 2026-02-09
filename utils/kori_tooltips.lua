@@ -3,8 +3,8 @@
 -- Cursor-following tooltips with per-context visibility controls
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 -- Locals for performance
 local GameTooltip = GameTooltip
@@ -73,9 +73,9 @@ local FADED_ALPHA_THRESHOLD = 0.5
 ---------------------------------------------------------------------------
 local function GetSettings()
     if cachedSettings then return cachedSettings end
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.tooltip then
-        cachedSettings = QUICore.db.profile.tooltip
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.tooltip then
+        cachedSettings = KORICore.db.profile.tooltip
         return cachedSettings
     end
     return nil

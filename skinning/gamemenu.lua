@@ -13,29 +13,29 @@ local FONT_FLAGS = "OUTLINE"
 
 -- Get game menu font size from settings
 local function GetGameMenuFontSize()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     return settings and settings.gameMenuFontSize or 12
 end
 
 -- Get skinning colors (uses unified color system)
 local function GetGameMenuColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
 end
 
 -- Create a styled backdrop for frames
-local function CreateQUIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+local function CreateKORIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     if not frame.quiBackdrop then
         frame.quiBackdrop = CreateFrame("Frame", nil, frame, "BackdropTemplate")
         frame.quiBackdrop:SetAllPoints()
@@ -53,7 +53,7 @@ local function CreateQUIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     frame.quiBackdrop:SetBackdropBorderColor(sr, sg, sb, sa)
 end
 
--- Style a button with QUI theme
+-- Style a button with KORI theme
 local function StyleButton(button, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     if not button or button.quiStyled then return end
 
@@ -97,8 +97,8 @@ local function StyleButton(button, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     -- Style button text
     local text = button:GetFontString()
     if text then
-        local QUI = _G.KoriUI
-        local fontPath = QUI and QUI.GetGlobalFont and QUI:GetGlobalFont() or STANDARD_TEXT_FONT
+        local KORI = _G.KoriUI
+        local fontPath = KORI and KORI.GetGlobalFont and KORI:GetGlobalFont() or STANDARD_TEXT_FONT
         local fontSize = GetGameMenuFontSize()
         text:SetFont(fontPath, fontSize, FONT_FLAGS)
         text:SetTextColor(unpack(COLORS.text))
@@ -143,8 +143,8 @@ end
 
 -- Main skinning function
 local function SkinGameMenu()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     if not settings or not settings.skinGameMenu then return end
 
     if not GameMenuFrame then return end
@@ -157,7 +157,7 @@ local function SkinGameMenu()
     HideBlizzardDecorations()
 
     -- Create backdrop
-    CreateQUIBackdrop(GameMenuFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+    CreateKORIBackdrop(GameMenuFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
 
     -- Adjust frame padding for cleaner look
     GameMenuFrame.topPadding = 15
@@ -203,8 +203,8 @@ local function RefreshGameMenuFontSize()
     if not GameMenuFrame then return end
 
     local fontSize = GetGameMenuFontSize()
-    local QUI = _G.KoriUI
-    local fontPath = QUI and QUI.GetGlobalFont and QUI:GetGlobalFont() or STANDARD_TEXT_FONT
+    local KORI = _G.KoriUI
+    local fontPath = KORI and KORI.GetGlobalFont and KORI:GetGlobalFont() or STANDARD_TEXT_FONT
 
     if GameMenuFrame.buttonPool then
         for button in GameMenuFrame.buttonPool:EnumerateActive() do
@@ -231,8 +231,8 @@ _G.KoriUI_RefreshGameMenuFontSize = RefreshGameMenuFontSize
 
 -- Inject button on every InitButtons call (buttonPool gets reset each time)
 local function InjectKoriUIButton()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     if not settings or settings.addKoriUIButton == false then return end
 
     if not GameMenuFrame or not GameMenuFrame.buttonPool then return end
@@ -258,9 +258,9 @@ local function InjectKoriUIButton()
         local quiButton = GameMenuFrame:AddButton("Kori UI", function()
             PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
             HideUIPanel(GameMenuFrame)
-            local QUI = _G.KoriUI
-            if QUI and QUI.GUI then
-                QUI.GUI:Show()
+            local KORI = _G.KoriUI
+            if KORI and KORI.GUI then
+                KORI.GUI:Show()
             end
         end)
         quiButton.layoutIndex = macrosIndex + 1

@@ -5,8 +5,8 @@
 ]]
 
 local ADDON_NAME, ns = ...
-local QUI = KoriUI
-local GUI = QUI.GUI
+local KORI = KoriUI
+local GUI = KORI.GUI
 local C = GUI.Colors
 
 -- Reference to main options file for helper functions
@@ -484,7 +484,7 @@ local function BuildCastbarOptions(tabContent, unitKey, y, PAD, FORM_ROW, Refres
                     UpdateCastbarSliders()
                     RefreshUnit()
                 else
-                    print("|cFF4169E1KoriUI:|r Essential Cooldowns viewer not visible.")
+                    print("|cFF56D1FFKoriUI:|r Essential Cooldowns viewer not visible.")
                 end
             end)
         end
@@ -501,7 +501,7 @@ local function BuildCastbarOptions(tabContent, unitKey, y, PAD, FORM_ROW, Refres
                     UpdateCastbarSliders()
                     RefreshUnit()
                 else
-                    print("|cFF4169E1KoriUI:|r Utility Cooldowns viewer not visible.")
+                    print("|cFF56D1FFKoriUI:|r Utility Cooldowns viewer not visible.")
                 end
             end)
         end

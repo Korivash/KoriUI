@@ -6,22 +6,22 @@ local addonName, ns = ...
 
 -- Get skinning colors
 local function GetColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
 end
 
 -- Create backdrop for a frame
-local function CreateQUIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+local function CreateKORIBackdrop(frame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     if not frame.quiBackdrop then
         frame.quiBackdrop = CreateFrame("Frame", nil, frame, "BackdropTemplate")
         frame.quiBackdrop:SetAllPoints()
@@ -348,7 +348,7 @@ local function StyleGroupFinderButton(button, sr, sg, sb, sa, bgr, bgg, bgb, bga
     button.quiStyled = true
 end
 
--- Style close button (QUI pattern - minimal, just hide border)
+-- Style close button (KORI pattern - minimal, just hide border)
 local function StyleCloseButton(closeButton)
     if not closeButton then return end
     if closeButton.Border then closeButton.Border:SetAlpha(0) end
@@ -365,9 +365,9 @@ local function SkinPVEFrame()
     HidePVEDecorations()
 
     -- Create main backdrop
-    CreateQUIBackdrop(PVEFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+    CreateKORIBackdrop(PVEFrame, sr, sg, sb, sa, bgr, bgg, bgb, bga)
 
-    -- Style close button (minimal - just hide border per QUI pattern)
+    -- Style close button (minimal - just hide border per KORI pattern)
     local closeButton = PVEFrame.CloseButton or _G.PVEFrameCloseButton
     if closeButton then
         StyleCloseButton(closeButton)
@@ -383,7 +383,7 @@ local function SkinPVEFrame()
 
     -- Reposition tabs: left justify and tighten spacing
     -- Blizzard default: Tab1 at x=19, Tab2-3 at -16px overlap, Tab4 at +3px gap
-    -- QUI: Tab1 at x=-3, tabs at -5px spacing
+    -- KORI: Tab1 at x=-3, tabs at -5px spacing
     _G.PVEFrameTab1:ClearAllPoints()
     _G.PVEFrameTab2:ClearAllPoints()
     _G.PVEFrameTab3:ClearAllPoints()
@@ -702,7 +702,7 @@ local function SkinLFGListFrame()
         -- Style search box
         if sp.SearchBox then
             StripTextures(sp.SearchBox)
-            CreateQUIBackdrop(sp.SearchBox, sr, sg, sb, sa, bgr, bgg, bgb, bga)
+            CreateKORIBackdrop(sp.SearchBox, sr, sg, sb, sa, bgr, bgg, bgb, bga)
         end
         -- Style filter button
         if sp.FilterButton then
@@ -838,8 +838,8 @@ local function SkinChallengesFrame()
             end
             -- Style labels
             if wi.Child.Label then
-                local QUI = _G.KoriUI
-                local fontPath = QUI and QUI.GetGlobalFont and QUI:GetGlobalFont() or STANDARD_TEXT_FONT
+                local KORI = _G.KoriUI
+                local fontPath = KORI and KORI.GetGlobalFont and KORI:GetGlobalFont() or STANDARD_TEXT_FONT
                 wi.Child.Label:SetFont(fontPath, 14, "OUTLINE")
             end
         end
@@ -1342,8 +1342,8 @@ end
 
 -- Main skinning function
 local function SkinInstanceFrames()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     if not settings or not settings.skinInstanceFrames then return end
 
     SkinPVEFrame()

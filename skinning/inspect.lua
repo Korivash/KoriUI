@@ -1,5 +1,5 @@
 local addonName, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 
 ---------------------------------------------------------------------------
 -- INSPECT FRAME SKINNING
@@ -8,7 +8,7 @@ local QUICore = ns.Addon
 
 -- Module reference
 local InspectSkinning = {}
-QUICore.InspectSkinning = InspectSkinning
+KORICore.InspectSkinning = InspectSkinning
 
 -- Configuration constants
 local CONFIG = {
@@ -20,18 +20,18 @@ local CONFIG = {
 local customBg = nil
 
 ---------------------------------------------------------------------------
--- Helper: Get skin colors from QUI system
+-- Helper: Get skin colors from KORI system
 ---------------------------------------------------------------------------
 local function GetSkinColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1      -- Fallback mint
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95  -- Fallback dark
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
@@ -43,7 +43,7 @@ end
 -- This is separate from character.inspectEnabled which controls overlays/stats
 ---------------------------------------------------------------------------
 local function IsSkinningEnabled()
-    local coreRef = _G.KoriUI and _G.KoriUI.QUICore
+    local coreRef = _G.KoriUI and _G.KoriUI.KORICore
     local settings = coreRef and coreRef.db and coreRef.db.profile and coreRef.db.profile.general
     -- Default to true if not explicitly set
     if settings and settings.skinInspectFrame == nil then
@@ -58,7 +58,7 @@ end
 -- This is separate from general.skinInspectFrame which controls visual skinning
 ---------------------------------------------------------------------------
 local function IsInspectOverlaysEnabled()
-    local coreRef = _G.KoriUI and _G.KoriUI.QUICore
+    local coreRef = _G.KoriUI and _G.KoriUI.KORICore
     local settings = coreRef and coreRef.db and coreRef.db.profile and coreRef.db.profile.character
     -- Default to true if not explicitly set
     if settings and settings.inspectEnabled == nil then

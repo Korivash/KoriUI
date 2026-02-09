@@ -6,13 +6,13 @@
 -- Enables accurate tracking of trinkets, potions, and class abilities during combat
 
 local ADDON_NAME, _ = ...
-local QUI = KoriUI
+local KORI = KoriUI
 
 ---------------------------------------------------------------------------
 -- MODULE STATE
 ---------------------------------------------------------------------------
 local SpellScanner = {}
-QUI.SpellScanner = SpellScanner
+KORI.SpellScanner = SpellScanner
 
 -- Runtime state: currently active buffs
 -- Structure: { [spellID] = { startTime, duration, expirationTime, source, sourceId } }
@@ -22,7 +22,7 @@ SpellScanner.activeBuffs = {}
 -- Structure: { [spellID] = { timestamp, itemID (optional) } }
 SpellScanner.pendingScanning = {}
 
--- Scan mode toggle (explicit /koriscan)
+-- Scan mode toggle (explicit /quiscan)
 SpellScanner.scanMode = false
 
 -- Auto-scan: try to scan unknown spells when cast out of combat (off by default)
@@ -38,19 +38,19 @@ SpellScanner.onScanCallback = nil
 ---------------------------------------------------------------------------
 
 local function GetDB()
-    if QUI and QUI.db and QUI.db.global then
-        if not QUI.db.global.spellScanner then
-            QUI.db.global.spellScanner = {
+    if KORI and KORI.db and KORI.db.global then
+        if not KORI.db.global.spellScanner then
+            KORI.db.global.spellScanner = {
                 spells = {},  -- [castSpellID] = { buffSpellID, duration, icon, name }
                 items = {},   -- [itemID] = { useSpellID, buffSpellID, duration, icon, name }
                 autoScan = false,  -- Auto-scan setting (off by default)
             }
         end
         -- Load autoScan from DB into runtime state
-        if QUI.db.global.spellScanner.autoScan ~= nil then
-            SpellScanner.autoScan = QUI.db.global.spellScanner.autoScan
+        if KORI.db.global.spellScanner.autoScan ~= nil then
+            SpellScanner.autoScan = KORI.db.global.spellScanner.autoScan
         end
-        return QUI.db.global.spellScanner
+        return KORI.db.global.spellScanner
     end
     return nil
 end
@@ -391,22 +391,22 @@ SpellScanner.cleanupTicker = C_Timer.NewTicker(1, CleanupExpiredBuffs)
 -- SLASH COMMANDS
 ---------------------------------------------------------------------------
 
--- /koriscan - Toggle scan mode
-SLASH_QUISCAN1 = "/koriscan"
-SlashCmdList["QUISCAN"] = function()
+-- /quiscan - Toggle scan mode
+SLASH_KORISCAN1 = "/quiscan"
+SlashCmdList["KORISCAN"] = function()
     local enabled = SpellScanner.ToggleScanMode()
     if enabled then
         print("|cff00ff00KoriUI:|r Scan mode |cff00ff00ENABLED|r")
         print("|cffff8800-|r Cast abilities to scan their durations")
-        print("|cffff8800-|r Type /koriscan again to stop")
+        print("|cffff8800-|r Type /quiscan again to stop")
     else
         print("|cff00ff00KoriUI:|r Scan mode |cffff0000DISABLED|r")
     end
 end
 
--- /koriscanned - List scanned spells
-SLASH_QUISCANNED1 = "/koriscanned"
-SlashCmdList["QUISCANNED"] = function()
+-- /quiscanned - List scanned spells
+SLASH_KORISCANNED1 = "/quiscanned"
+SlashCmdList["KORISCANNED"] = function()
     local db = GetDB()
     if not db then
         print("|cffff0000KoriUI:|r Database not available")
@@ -454,8 +454,8 @@ SlashCmdList["QUISCANNED"] = function()
 end
 
 -- /koriclearspell <spellID> - Remove a scanned spell
-SLASH_QUICLEARSPELL1 = "/koriclearspell"
-SlashCmdList["QUICLEARSPELL"] = function(msg)
+SLASH_KORICLEARSPELL1 = "/koriclearspell"
+SlashCmdList["KORICLEARSPELL"] = function(msg)
     local spellID = tonumber(msg:trim())
     if not spellID then
         print("|cffff0000KoriUI:|r Usage: /koriclearspell <spellID>")

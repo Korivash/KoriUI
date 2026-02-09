@@ -1,5 +1,5 @@
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LibEditModeOverride = LibStub("LibEditModeOverride-1.0", true)
 
 -- Extra nudge targets: Blizzard Edit Mode unit frame anchors
@@ -23,8 +23,8 @@ local function IsNudgeTargetFrameName(frameName)
     if not frameName then return false end
 
     -- Our cooldown viewers
-    if QUICore.viewers then
-        for _, viewerName in ipairs(QUICore.viewers) do
+    if KORICore.viewers then
+        for _, viewerName in ipairs(KORICore.viewers) do
             if frameName == viewerName then
                 return true
             end
@@ -77,7 +77,7 @@ local function CreateNudgeUI()
     if NudgeFrame then return NudgeFrame end
 
     NudgeFrame = CreateFrame("Frame", ADDON_NAME .. "NudgeFrame", UIParent, "BackdropTemplate")
-    QUICore.nudgeFrame = NudgeFrame
+    KORICore.nudgeFrame = NudgeFrame
 
     -- Frame properties
     NudgeFrame:SetSize(200, 320)
@@ -152,7 +152,7 @@ local function CreateNudgeUI()
         end
 
         button:SetScript("OnClick", function()
-            QUICore:NudgeSelectedViewer(direction)
+            KORICore:NudgeSelectedViewer(direction)
             PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
         end)
 
@@ -208,7 +208,7 @@ local function CreateNudgeUI()
     amountSlider:SetScript("OnValueChanged", function(self, value)
         -- Round to 1 decimal place
         value = math.floor(value * 10 + 0.5) / 10
-        QUICore.db.profile.nudgeAmount = value
+        KORICore.db.profile.nudgeAmount = value
         -- Format to show 1 decimal place for fractional values
         local displayValue = (value % 1 == 0) and tostring(math.floor(value)) or string.format("%.1f", value)
         amountLabel:SetText("Nudge Amount: " .. displayValue .. "px")
@@ -229,18 +229,18 @@ local function CreateNudgeUI()
         local info = UIDropDownMenu_CreateInfo()
 
         -- Cooldown viewers
-        if QUICore.viewers then
-            for _, viewerName in ipairs(QUICore.viewers) do
+        if KORICore.viewers then
+            for _, viewerName in ipairs(KORICore.viewers) do
                 local displayName = GetNudgeDisplayName(viewerName)
 
                 info.text = displayName
                 info.value = viewerName
                 info.func = function()
-                    QUICore:SelectViewer(viewerName)
+                    KORICore:SelectViewer(viewerName)
                     UIDropDownMenu_SetText(viewerDropdown, displayName)
                     CloseDropDownMenus()
                 end
-                info.checked = (QUICore.selectedViewer == viewerName)
+                info.checked = (KORICore.selectedViewer == viewerName)
                 UIDropDownMenu_AddButton(info, level)
             end
         end
@@ -252,11 +252,11 @@ local function CreateNudgeUI()
             info.text = displayName
             info.value = frameName
             info.func = function()
-                QUICore:SelectViewer(frameName)
+                KORICore:SelectViewer(frameName)
                 UIDropDownMenu_SetText(viewerDropdown, displayName)
                 CloseDropDownMenus()
             end
-            info.checked = (QUICore.selectedViewer == frameName)
+            info.checked = (KORICore.selectedViewer == frameName)
             UIDropDownMenu_AddButton(info, level)
         end
     end
@@ -267,7 +267,7 @@ local function CreateNudgeUI()
 
     -- Update info display
     function NudgeFrame:UpdateInfo()
-        local viewerName = QUICore.selectedViewer
+        local viewerName = KORICore.selectedViewer
         local viewer = viewerName and _G[viewerName]
 
         if viewer then
@@ -307,7 +307,7 @@ local function CreateNudgeUI()
 
     -- Update amount slider
     function NudgeFrame:UpdateAmountSlider()
-        local amount = QUICore.db.profile.nudgeAmount or 1
+        local amount = KORICore.db.profile.nudgeAmount or 1
         self.amountSlider:SetValue(amount)
         -- Format to show 1 decimal place for fractional values
         local displayAmount = (amount % 1 == 0) and tostring(math.floor(amount)) or string.format("%.1f", amount)
@@ -421,8 +421,8 @@ local function CreateViewerNudgeButton(parent, direction, viewerName)
 
     btn:SetScript("OnClick", function()
         -- Select this viewer and nudge it
-        QUICore:SelectViewer(viewerName)
-        QUICore:NudgeSelectedViewer(direction)
+        KORICore:SelectViewer(viewerName)
+        KORICore:NudgeSelectedViewer(direction)
     end)
 
     return btn
@@ -490,8 +490,8 @@ local function CreateMinimapNudgeButton(parent, direction)
 
     -- Click handler - nudge minimap position
     btn:SetScript("OnClick", function()
-        QUICore:SelectEditModeElement("minimap", "minimap")
-        QUICore:NudgeMinimap(direction)
+        KORICore:SelectEditModeElement("minimap", "minimap")
+        KORICore:NudgeMinimap(direction)
     end)
 
     return btn
@@ -608,7 +608,7 @@ local function CreateBlizzardFrameOverlay(frameInfo)
     return overlay
 end
 
--- Create overlay for the QUI minimap
+-- Create overlay for the KORI minimap
 local function CreateMinimapOverlay()
     if not Minimap then return nil end
 
@@ -671,7 +671,7 @@ local function CreateMinimapOverlay()
 end
 
 -- Show overlays on all CDM viewers
-function QUICore:ShowViewerOverlays()
+function KORICore:ShowViewerOverlays()
     for _, viewerName in ipairs(CDM_VIEWERS) do
         if not viewerOverlays[viewerName] then
             viewerOverlays[viewerName] = CreateViewerOverlay(viewerName)
@@ -685,7 +685,7 @@ function QUICore:ShowViewerOverlays()
             overlay:EnableMouse(true)
             overlay:SetScript("OnMouseDown", function(self, button)
                 if button == "LeftButton" then
-                    QUICore:SelectViewer(viewerName)
+                    KORICore:SelectViewer(viewerName)
                     -- Start drag on the viewer
                     local viewer = _G[viewerName]
                     if viewer then
@@ -714,7 +714,7 @@ function QUICore:ShowViewerOverlays()
 end
 
 -- Hide all viewer overlays
-function QUICore:HideViewerOverlays()
+function KORICore:HideViewerOverlays()
     for _, viewerName in ipairs(CDM_VIEWERS) do
         local overlay = viewerOverlays[viewerName]
         if overlay then
@@ -727,7 +727,7 @@ function QUICore:HideViewerOverlays()
 end
 
 -- Show overlays on all Blizzard Edit Mode frames
-function QUICore:ShowBlizzardFrameOverlays()
+function KORICore:ShowBlizzardFrameOverlays()
     for _, frameInfo in ipairs(BLIZZARD_EDITMODE_FRAMES) do
         local frameName = frameInfo.name
         local frame = _G[frameName]
@@ -745,7 +745,7 @@ function QUICore:ShowBlizzardFrameOverlays()
                 overlay:EnableMouse(true)
                 overlay:SetScript("OnMouseDown", function(self, button)
                     if button == "LeftButton" then
-                        QUICore:SelectViewer(frameName)
+                        KORICore:SelectViewer(frameName)
                         -- Start drag on the frame
                         frame:SetMovable(true)  -- Enable movable for Blizzard Edit Mode frames
                         frame:StartMoving()
@@ -771,7 +771,7 @@ function QUICore:ShowBlizzardFrameOverlays()
 end
 
 -- Hide all Blizzard frame overlays
-function QUICore:HideBlizzardFrameOverlays()
+function KORICore:HideBlizzardFrameOverlays()
     for _, frameInfo in ipairs(BLIZZARD_EDITMODE_FRAMES) do
         local overlay = blizzardOverlays[frameInfo.name]
         if overlay then
@@ -784,7 +784,7 @@ function QUICore:HideBlizzardFrameOverlays()
 end
 
 -- Show minimap overlay
-function QUICore:ShowMinimapOverlay()
+function KORICore:ShowMinimapOverlay()
     if not minimapOverlay then
         minimapOverlay = CreateMinimapOverlay()
     end
@@ -795,7 +795,7 @@ function QUICore:ShowMinimapOverlay()
         minimapOverlay:EnableMouse(true)
         minimapOverlay:SetScript("OnMouseDown", function(self, button)
             if button == "LeftButton" then
-                QUICore:SelectEditModeElement("minimap", "minimap")
+                KORICore:SelectEditModeElement("minimap", "minimap")
                 -- Start drag on the Minimap
                 if Minimap:IsMovable() then
                     Minimap:StartMoving()
@@ -805,7 +805,7 @@ function QUICore:ShowMinimapOverlay()
         minimapOverlay:SetScript("OnMouseUp", function(self, button)
             Minimap:StopMovingOrSizing()
             -- Save position to DB
-            local settings = QUICore.db and QUICore.db.profile and QUICore.db.profile.minimap
+            local settings = KORICore.db and KORICore.db.profile and KORICore.db.profile.minimap
             if settings then
                 local point, _, relPoint, x, y = Minimap:GetPoint()
                 settings.position = {point, relPoint, x, y}
@@ -824,7 +824,7 @@ function QUICore:ShowMinimapOverlay()
 end
 
 -- Hide minimap overlay
-function QUICore:HideMinimapOverlay()
+function KORICore:HideMinimapOverlay()
     if minimapOverlay then
         minimapOverlay:Hide()
         minimapOverlay:EnableMouse(false)
@@ -839,7 +839,7 @@ local clickDetector = CreateFrame("Frame")
 clickDetector:Hide()
 local lastClickedFrame = nil
 
-function QUICore:EnableClickDetection()
+function KORICore:EnableClickDetection()
     clickDetector:Show()
     clickDetector._elapsed = 0
     clickDetector:SetScript("OnUpdate", function(self, elapsed)
@@ -857,7 +857,7 @@ function QUICore:EnableClickDetection()
                         if IsNudgeTargetFrameName(frameName) then
                             if lastClickedFrame ~= frame then
                                 lastClickedFrame = frame
-                                QUICore:SelectViewer(frameName)
+                                KORICore:SelectViewer(frameName)
                             end
                             return
                         end
@@ -869,7 +869,7 @@ function QUICore:EnableClickDetection()
                             if IsNudgeTargetFrameName(parentName) then
                                 if lastClickedFrame ~= frame then
                                     lastClickedFrame = frame
-                                    QUICore:SelectViewer(parentName)
+                                    KORICore:SelectViewer(parentName)
                                 end
                                 return
                             end
@@ -883,7 +883,7 @@ function QUICore:EnableClickDetection()
     end)
 end
 
-function QUICore:DisableClickDetection()
+function KORICore:DisableClickDetection()
     clickDetector:Hide()
     clickDetector:SetScript("OnUpdate", nil)
     lastClickedFrame = nil
@@ -892,7 +892,7 @@ end
 -- Viewer Selection & Nudging
 
 -- Select a viewer for nudging
-function QUICore:SelectViewer(viewerName)
+function KORICore:SelectViewer(viewerName)
     if not viewerName or not _G[viewerName] then
         self.selectedViewer = nil
         if self.nudgeFrame then
@@ -936,7 +936,7 @@ local function EnsureEditModeReady()
 end
 
 -- Nudge the selected viewer
-function QUICore:NudgeSelectedViewer(direction)
+function KORICore:NudgeSelectedViewer(direction)
     if not self.selectedViewer then return false end
 
     local viewer = _G[self.selectedViewer]
@@ -1001,7 +1001,7 @@ function QUICore:NudgeSelectedViewer(direction)
 end
 
 -- Nudge the minimap
-function QUICore:NudgeMinimap(direction)
+function KORICore:NudgeMinimap(direction)
     local db = self.db and self.db.profile and self.db.profile.minimap
     if not db or not db.position then return end
 
@@ -1048,31 +1048,31 @@ local function SetupEditModeHooks()
         end
 
         -- NudgeFrame is lazy-loaded, only update if it exists
-        if QUICore.nudgeFrame then
-            QUICore.nudgeFrame:UpdateVisibility()
+        if KORICore.nudgeFrame then
+            KORICore.nudgeFrame:UpdateVisibility()
         end
-        QUICore:EnableClickDetection()
+        KORICore:EnableClickDetection()
         -- Let Blizzard's native Edit Mode handle CDM viewers and standard Edit Mode frames
-        -- QUICore:ShowViewerOverlays()
-        -- QUICore:ShowBlizzardFrameOverlays()
-        QUICore:ShowMinimapOverlay()  -- Show nudge overlay on QUI minimap
-        QUICore:EnableMinimapEditMode()  -- Temporarily allow minimap movement
+        -- KORICore:ShowViewerOverlays()
+        -- KORICore:ShowBlizzardFrameOverlays()
+        KORICore:ShowMinimapOverlay()  -- Show nudge overlay on KORI minimap
+        KORICore:EnableMinimapEditMode()  -- Temporarily allow minimap movement
     end)
 
     hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
         -- NudgeFrame is lazy-loaded, only hide if it exists
-        if QUICore.nudgeFrame then
-            QUICore.nudgeFrame:Hide()
+        if KORICore.nudgeFrame then
+            KORICore.nudgeFrame:Hide()
         end
-        QUICore:DisableClickDetection()
-        -- QUICore:HideViewerOverlays()
-        -- QUICore:HideBlizzardFrameOverlays()
-        QUICore:HideMinimapOverlay()  -- Hide minimap overlay
-        QUICore:DisableMinimapEditMode()  -- Restore minimap lock setting
-        QUICore.selectedViewer = nil
+        KORICore:DisableClickDetection()
+        -- KORICore:HideViewerOverlays()
+        -- KORICore:HideBlizzardFrameOverlays()
+        KORICore:HideMinimapOverlay()  -- Hide minimap overlay
+        KORICore:DisableMinimapEditMode()  -- Restore minimap lock setting
+        KORICore.selectedViewer = nil
         -- Clear central selection (in case a CDM viewer was selected)
-        if QUICore.ClearEditModeSelection then
-            QUICore:ClearEditModeSelection()
+        if KORICore.ClearEditModeSelection then
+            KORICore:ClearEditModeSelection()
         end
         
         -- Fix for arrow-key positioning bug: Convert TOPLEFT anchoring to CENTER anchoring
@@ -1203,8 +1203,8 @@ viewerAnchorFixFrame:SetScript("OnEvent", function(self, event, isInitialLogin, 
 end)
 
 -- Add nudgeamount
-local oldOnInitialize = QUICore.OnInitialize
-function QUICore:OnInitialize()
+local oldOnInitialize = KORICore.OnInitialize
+function KORICore:OnInitialize()
     if oldOnInitialize then
         oldOnInitialize(self)
     end

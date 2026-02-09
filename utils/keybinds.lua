@@ -2,7 +2,7 @@
 -- Displays action bar keybinds on Essential and Utility cooldown viewer icons
 -- Also handles Rotation Helper overlay (C_AssistedCombat integration)
 
-local _, QUI = ...
+local _, KORI = ...
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- Cache for spell ID to keybind mapping
@@ -40,10 +40,10 @@ local KEYBIND_DEBUG = false
 -- Performance: Check if ANY keybind display feature is enabled across all viewers
 -- This gates expensive operations to prevent CPU spikes when features are disabled
 local function IsAnyKeybindFeatureEnabled()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then return false end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then return false end
 
-    local viewers = QUICore.db.profile.viewers
+    local viewers = KORICore.db.profile.viewers
     if not viewers then return false end
 
     for viewerName, settings in pairs(viewers) do
@@ -56,9 +56,9 @@ end
 
 -- Get font from general settings
 local function GetGeneralFont()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         local fontName = general.font or "Friz Quadrata TT"
         return LSM:Fetch("font", fontName) or "Fonts\\FRIZQT__.TTF"
     end
@@ -66,9 +66,9 @@ local function GetGeneralFont()
 end
 
 local function GetGeneralFontOutline()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general.fontOutline or "OUTLINE"
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general.fontOutline or "OUTLINE"
     end
     return "OUTLINE"
 end
@@ -153,7 +153,7 @@ local function FormatKeybind(keybind)
 end
 
 -- Expose globally for other modules (action bars, rotation helper)
-QUI.FormatKeybind = FormatKeybind
+KORI.FormatKeybind = FormatKeybind
 
 -- BT4 bar number to WoW binding name mapping (matches Bartender4's BINDING_MAPPINGS)
 local BT4_BINDING_MAPPINGS = {
@@ -817,10 +817,10 @@ end
 
 -- Apply keybind text to a cooldown icon
 local function ApplyKeybindToIcon(icon, viewerName)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then return end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then return end
     
-    local settings = QUICore.db.profile.viewers[viewerName]
+    local settings = KORICore.db.profile.viewers[viewerName]
     if not settings then return end
     
     -- Check if keybinds should be shown
@@ -1138,7 +1138,7 @@ end
 
 -- Debug function to see what's in the cache
 local function DebugPrintCache()
-    print("|cFF4169E1[QUI Keybinds]|r Cache contents:")
+    print("|cFF56D1FF[KORI Keybinds]|r Cache contents:")
     
     -- Print spell ID cache
     print("|cFF00FF00Spell ID Cache:|r")
@@ -1212,7 +1212,7 @@ local function DebugMacro(macroName)
     end
     
     local name, iconTexture, body = GetMacroInfo(macroIndex)
-    print("|cFF4169E1[QUI Keybinds]|r Macro Debug: " .. name)
+    print("|cFF56D1FF[KORI Keybinds]|r Macro Debug: " .. name)
     print("  Index: " .. macroIndex)
     print("  Body:")
     for line in body:gmatch("[^\r\n]+") do
@@ -1258,7 +1258,7 @@ local function DebugFindMacro(macroName)
         return
     end
     
-    print("|cFF4169E1[QUI Keybinds]|r Searching for macro '" .. macroName .. "' (index " .. targetMacroIndex .. ") on action buttons...")
+    print("|cFF56D1FF[KORI Keybinds]|r Searching for macro '" .. macroName .. "' (index " .. targetMacroIndex .. ") on action buttons...")
     
     -- Scan ALL action buttons in _G
     local foundButtons = {}
@@ -1330,7 +1330,7 @@ end
 
 -- Debug function to check what a specific key is bound to
 local function DebugKey(keyName)
-    print("|cFF4169E1[QUI Keybinds]|r Checking what '" .. keyName .. "' is bound to...")
+    print("|cFF56D1FF[KORI Keybinds]|r Checking what '" .. keyName .. "' is bound to...")
     
     -- GetBindingAction returns the action bound to a key
     local action = GetBindingAction(keyName)
@@ -1415,18 +1415,18 @@ local function DebugKey(keyName)
 end
 
 -- Slash command for debugging
-SLASH_QUIKEYBINDS1 = "/korikeybinds"
-SlashCmdList["QUIKEYBINDS"] = function(msg)
+SLASH_KORIKEYBINDS1 = "/korikeybinds"
+SlashCmdList["KORIKEYBINDS"] = function(msg)
     if msg == "debug" then
         RebuildCache()
         DebugPrintCache()
     elseif msg == "refresh" then
         UpdateAllKeybinds()
-        print("|cFF4169E1[QUI Keybinds]|r Refreshed keybinds")
+        print("|cFF56D1FF[KORI Keybinds]|r Refreshed keybinds")
     elseif msg == "rebuild" then
         ForceRebuildButtonCache()
         RebuildCache()
-        print("|cFF4169E1[QUI Keybinds]|r Force rebuilt button and spell caches")
+        print("|cFF56D1FF[KORI Keybinds]|r Force rebuilt button and spell caches")
         print("  Button count: " .. #cachedActionButtons)
     elseif msg:match("^macro%s+") then
         local macroName = msg:match("^macro%s+(.+)")
@@ -1440,7 +1440,7 @@ SlashCmdList["QUIKEYBINDS"] = function(msg)
         end
     elseif msg == "buttons" then
         -- Show how many action buttons we have cached
-        print("|cFF4169E1[QUI Keybinds]|r Action button cache:")
+        print("|cFF56D1FF[KORI Keybinds]|r Action button cache:")
         print("  Cached: " .. (actionButtonsCached and "YES" or "NO"))
         print("  Button count: " .. #cachedActionButtons)
         local sample = {}
@@ -1458,7 +1458,7 @@ SlashCmdList["QUIKEYBINDS"] = function(msg)
         end
     elseif msg == "dominos" then
         -- Scan all Dominos buttons and show macros
-        print("|cFF4169E1[QUI Keybinds]|r Scanning Dominos buttons for macros...")
+        print("|cFF56D1FF[KORI Keybinds]|r Scanning Dominos buttons for macros...")
         local found = 0
         for i = 1, 180 do
             local btn = _G["DominosActionButton" .. i]
@@ -1478,7 +1478,7 @@ SlashCmdList["QUIKEYBINDS"] = function(msg)
         print("  Found " .. found .. " macros on Dominos buttons")
     elseif msg == "bartender" then
         -- Scan all Bartender4 buttons and show macros
-        print("|cFF4169E1[QUI Keybinds]|r Scanning Bartender4 buttons for macros...")
+        print("|cFF56D1FF[KORI Keybinds]|r Scanning Bartender4 buttons for macros...")
         local found = 0
         for i = 1, 120 do
             local btn = _G["BT4Button" .. i]
@@ -1508,7 +1508,7 @@ SlashCmdList["QUIKEYBINDS"] = function(msg)
             print("|cFFFF0000Button '" .. btnName .. "' not found!|r")
             return
         end
-        print("|cFF4169E1[QUI Keybinds]|r Tracing button: " .. btnName)
+        print("|cFF56D1FF[KORI Keybinds]|r Tracing button: " .. btnName)
         
         -- Check if in cache
         local inCache = false
@@ -1598,12 +1598,12 @@ SlashCmdList["QUIKEYBINDS"] = function(msg)
     elseif msg == "proctest" then
         -- Toggle proc debug mode
         KEYBIND_DEBUG = not KEYBIND_DEBUG
-        print("|cFF4169E1[QUI Keybinds]|r Proc debug mode: " .. (KEYBIND_DEBUG and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r"))
+        print("|cFF56D1FF[KORI Keybinds]|r Proc debug mode: " .. (KEYBIND_DEBUG and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r"))
         if KEYBIND_DEBUG then
             print("  Watch chat for keybind tracking messages when spells proc")
         end
     else
-        print("|cFF4169E1[QUI Keybinds]|r Commands:")
+        print("|cFF56D1FF[KORI Keybinds]|r Commands:")
         print("  /korikeybinds debug - Show cache contents")
         print("  /korikeybinds refresh - Force refresh keybinds")
         print("  /korikeybinds rebuild - Force rebuild button cache")
@@ -1693,10 +1693,10 @@ end
 
 -- Apply rotation helper overlay to a single icon
 local function ApplyRotationHelperToIcon(icon, viewerName, nextSpellID)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then return end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then return end
     
-    local settings = QUICore.db.profile.viewers[viewerName]
+    local settings = KORICore.db.profile.viewers[viewerName]
     if not settings or not settings.showRotationHelper then
         -- Hide overlay if disabled
         if icon._rotationHelperOverlay then
@@ -1802,10 +1802,10 @@ end
 
 -- Check if rotation helper should be running
 local function ShouldRunRotationHelper()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not QUICore or not QUICore.db or not QUICore.db.profile then return false end
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not KORICore or not KORICore.db or not KORICore.db.profile then return false end
     
-    local viewers = QUICore.db.profile.viewers
+    local viewers = KORICore.db.profile.viewers
     if not viewers then return false end
     
     local essential = viewers.EssentialCooldownViewer
@@ -1857,7 +1857,7 @@ rotationHelperInitFrame:SetScript("OnEvent", function()
 end)
 
 -- Export functions
-QUI.Keybinds = {
+KORI.Keybinds = {
     UpdateAll = UpdateAllKeybinds,
     UpdateViewer = UpdateViewerKeybinds,
     GetKeybindForSpell = GetKeybindForSpell,

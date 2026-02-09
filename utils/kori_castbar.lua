@@ -1,11 +1,11 @@
 --[[
-    QUI Castbar Module
+    KORI Castbar Module
     Extracted from kori_unitframes.lua for better organization
     Handles castbar creation and management for player, target, focus, and boss units
 ]]
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 local IsSecretValue = function(v) return ns.Utils and ns.Utils.IsSecretValue and ns.Utils.IsSecretValue(v) or false end
 
@@ -967,8 +967,8 @@ function KORI_Castbar:CreateCastbar(unitFrame, unit, unitKey)
     anchorFrame:SetSize(1, barHeight)
 
     -- Apply HUD layer priority
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local hudLayering = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.hudLayering
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local hudLayering = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.hudLayering
     local layerPriority
     if unitKey == "player" then
         layerPriority = hudLayering and hudLayering.playerCastbar or 5
@@ -977,8 +977,8 @@ function KORI_Castbar:CreateCastbar(unitFrame, unit, unitKey)
     else
         layerPriority = 5  -- Default for any other castbar
     end
-    if QUICore and QUICore.GetHUDFrameLevel then
-        local frameLevel = QUICore:GetHUDFrameLevel(layerPriority)
+    if KORICore and KORICore.GetHUDFrameLevel then
+        local frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
         anchorFrame:SetFrameLevel(frameLevel)
     end
 

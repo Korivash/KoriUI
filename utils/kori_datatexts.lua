@@ -2,7 +2,7 @@
 --- Central system for managing and displaying datatexts
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- Cache frequently used globals
@@ -20,7 +20,7 @@ local MINUTE_SECONDS = 60
 
 -- Module reference
 local Datatexts = {}
-QUICore.Datatexts = Datatexts
+KORICore.Datatexts = Datatexts
 
 -- Registry storage
 Datatexts.registry = {}
@@ -74,7 +74,7 @@ local lockoutCache = {
 }
 
 local function GetLockoutCacheTTL()
-    local db = QUICore.db and QUICore.db.profile and QUICore.db.profile.datatext
+    local db = KORICore.db and KORICore.db.profile and KORICore.db.profile.datatext
     local minutes = db and db.lockoutCacheMinutes or 5
     return max(1, minutes) * 60  -- Convert to seconds, minimum 1 minute
 end
@@ -301,7 +301,7 @@ Datatexts:Register("time", {
         
         local function Update()
             -- Read time settings from global config (not panel config)
-            local dtSettings = QUICore.db and QUICore.db.profile and QUICore.db.profile.datatext
+            local dtSettings = KORICore.db and KORICore.db.profile and KORICore.db.profile.datatext
             local useLocalTime = (not dtSettings) or (dtSettings.timeFormat == "local")
             local use24Hour = (not dtSettings) or (dtSettings.use24Hour ~= false)
 
@@ -818,7 +818,7 @@ Datatexts:Register("gold", {
         local function SaveGold()
             local charKey = GetCharKey()
             if not charKey then return end  -- Guard against nil during early load
-            local db = QUICore and QUICore.db
+            local db = KORICore and KORICore.db
             if db and db.global then
                 if not db.global.goldData then db.global.goldData = {} end
                 local _, className = UnitClass("player")
@@ -887,7 +887,7 @@ Datatexts:Register("gold", {
             GameTooltip:AddDoubleLine("Current:", string.format("%dg %ds %dc", gold, silver, copper), 0.8, 0.8, 0.8, 1, 1, 1)
 
             -- Show all characters' gold from global storage
-            local db = QUICore and QUICore.db
+            local db = KORICore and KORICore.db
             if db and db.global and db.global.goldData then
                 local total = 0
                 local charList = {}
@@ -958,7 +958,7 @@ Datatexts:Register("gold", {
 
         -- Character management menu using MenuUtil
         local function ShowCharacterMenu(anchorFrame)
-            local db = QUICore and QUICore.db
+            local db = KORICore and KORICore.db
             if not db or not db.global or not db.global.goldData then return end
 
             local currentCharKey = GetCharKey()
@@ -984,7 +984,7 @@ Datatexts:Register("gold", {
                             button2 = "Cancel",
                             OnAccept = function()
                                 db.global.goldData[deleteCharKey] = nil
-                                print("|cff30D1FF[KoriUI]|r Removed gold data for " .. deleteCharKey)
+                                print("|cff1E90FF[KoriUI]|r Removed gold data for " .. deleteCharKey)
                             end,
                             timeout = 0,
                             whileDead = true,
@@ -1012,7 +1012,7 @@ Datatexts:Register("gold", {
                             if keepKey and keepData then
                                 db.global.goldData[keepKey] = keepData
                             end
-                            print("|cff30D1FF[KoriUI]|r Reset gold data (kept current character)")
+                            print("|cff1E90FF[KoriUI]|r Reset gold data (kept current character)")
                         end,
                         timeout = 0,
                         whileDead = true,
@@ -2906,7 +2906,7 @@ Datatexts:Register("playerspec", {
             local r, g, b = GetValueColor()
 
             -- Get display mode setting: "icon", "loadout", or "full" (default)
-            local db = QUICore and QUICore.db
+            local db = KORICore and KORICore.db
             local dtSettings = db and db.profile and db.profile.datatext
             local displayMode = dtSettings and dtSettings.specDisplayMode or "full"
 

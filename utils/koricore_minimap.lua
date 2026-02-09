@@ -3,13 +3,13 @@
 --- All settings stored in AceDB for profile export/import
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 local LibDBIcon = LibStub("LibDBIcon-1.0", true)
 
 -- Module reference
 local Minimap_Module = {}
-QUICore.Minimap = Minimap_Module
+KORICore.Minimap = Minimap_Module
 
 -- Local references for performance
 local Minimap = Minimap
@@ -23,7 +23,7 @@ local coordsFrame, coordsText
 local zoneTextFrame, zoneTextFont
 local minimapTooltip
 
--- Datatext panel (3-slot architecture using QUICore.Datatexts registry)
+-- Datatext panel (3-slot architecture using KORICore.Datatexts registry)
 local datatextFrame
 
 -- Performance: Cached settings and tickers (avoid per-frame GetSettings calls)
@@ -66,10 +66,10 @@ end
 
 local function GetSettings()
     if cachedSettings then return cachedSettings end
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return nil
     end
-    cachedSettings = QUICore.db.profile.minimap
+    cachedSettings = KORICore.db.profile.minimap
     return cachedSettings
 end
 
@@ -186,10 +186,10 @@ end
 ---=================================================================================
 
 local function GetDatatextSettings()
-    if not QUICore or not QUICore.db or not QUICore.db.profile then
+    if not KORICore or not KORICore.db or not KORICore.db.profile then
         return nil
     end
-    return QUICore.db.profile.datatext
+    return KORICore.db.profile.datatext
 end
 
 local function ColorWrap(text, r, g, b)
@@ -255,7 +255,7 @@ end
 -- Attach datatexts to the 3 minimap panel slots
 local function RefreshDatatextSlots()
     if not datatextFrame or not datatextFrame.slots then return end
-    if not QUICore or not QUICore.Datatexts then return end
+    if not KORICore or not KORICore.Datatexts then return end
 
     local dtSettings = GetDatatextSettings()
     if not dtSettings then return end
@@ -265,8 +265,8 @@ local function RefreshDatatextSlots()
     -- Apply font settings to all slots
     local generalFont = "Korivash"
     local generalOutline = "OUTLINE"
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         generalFont = general.font or "Korivash"
         generalOutline = general.fontOutline or "OUTLINE"
     end
@@ -295,11 +295,11 @@ local function RefreshDatatextSlots()
 
         -- Detach any existing datatext first
         if slot.datatextInstance then
-            QUICore.Datatexts:DetachFromSlot(slot)
+            KORICore.Datatexts:DetachFromSlot(slot)
         end
 
         -- Apply font to ALL slots (prevents "Font not set" error on empty slots)
-        QUICore:SafeSetFont(slot.text, fontPath, fontSize, generalOutline)
+        KORICore:SafeSetFont(slot.text, fontPath, fontSize, generalOutline)
 
         if datatextID and datatextID ~= "" then
             -- Active slot: size, position, show
@@ -319,7 +319,7 @@ local function RefreshDatatextSlots()
             slot.noLabel = slotConfig.noLabel or false
 
             -- Attach datatext
-            QUICore.Datatexts:AttachToSlot(slot, datatextID, dtSettings)
+            KORICore.Datatexts:AttachToSlot(slot, datatextID, dtSettings)
         else
             -- Empty slot: hide
             slot:Hide()
@@ -489,7 +489,7 @@ local function UpdateClock()
     end
     
     local fontPath = LSM:Fetch("font", clockConfig.font) or "Fonts\\FRIZQT__.TTF"
-    QUICore:SafeSetFont(clockText, fontPath, clockConfig.fontSize, flags)
+    KORICore:SafeSetFont(clockText, fontPath, clockConfig.fontSize, flags)
     clockText:SetJustifyH(clockConfig.align)
     
     -- Set color
@@ -527,7 +527,7 @@ local function UpdateClockTime()
         elseif clockConfig.outline ~= "NONE" then
             flags = clockConfig.outline
         end
-        QUICore:SafeSetFont(clockText, fontPath, clockConfig.fontSize, flags)
+        KORICore:SafeSetFont(clockText, fontPath, clockConfig.fontSize, flags)
     end
     
     local hour, minute
@@ -593,7 +593,7 @@ local function UpdateCoords()
     end
     
     local fontPath = LSM:Fetch("font", coordsConfig.font) or "Fonts\\FRIZQT__.TTF"
-    QUICore:SafeSetFont(coordsText, fontPath, coordsConfig.fontSize, flags)
+    KORICore:SafeSetFont(coordsText, fontPath, coordsConfig.fontSize, flags)
     coordsText:SetJustifyH(coordsConfig.align)
     
     -- Set color
@@ -630,7 +630,7 @@ local function UpdateCoordsPosition()
         elseif coordsConfig.outline ~= "NONE" then
             flags = coordsConfig.outline
         end
-        QUICore:SafeSetFont(coordsText, fontPath, coordsConfig.fontSize, flags)
+        KORICore:SafeSetFont(coordsText, fontPath, coordsConfig.fontSize, flags)
     end
     
     local uiMapID = C_Map.GetBestMapForUnit("player")
@@ -746,8 +746,8 @@ local function UpdateZoneText()
     -- Use general font settings
     local generalFont = "Korivash"
     local generalOutline = "OUTLINE"
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         generalFont = general.font or "Korivash"
         generalOutline = general.fontOutline or "OUTLINE"
     end
@@ -758,7 +758,7 @@ local function UpdateZoneText()
     end
     
     local fontPath = LSM:Fetch("font", generalFont) or "Fonts\\FRIZQT__.TTF"
-    QUICore:SafeSetFont(zoneTextFont, fontPath, zoneConfig.fontSize, flags)
+    KORICore:SafeSetFont(zoneTextFont, fontPath, zoneConfig.fontSize, flags)
     zoneTextFont:SetJustifyH(zoneConfig.align)
 
     UpdateZoneTextDisplay()
@@ -777,8 +777,8 @@ function UpdateZoneTextDisplay()
         -- Use general font settings
         local generalFont = "Korivash"
         local generalOutline = "OUTLINE"
-        if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-            local general = QUICore.db.profile.general
+        if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+            local general = KORICore.db.profile.general
             generalFont = general.font or "Korivash"
             generalOutline = general.fontOutline or "OUTLINE"
         end
@@ -792,7 +792,7 @@ function UpdateZoneTextDisplay()
         elseif generalOutline ~= "NONE" then
             flags = generalOutline
         end
-        QUICore:SafeSetFont(zoneTextFont, fontPath, zoneConfig.fontSize, flags)
+        KORICore:SafeSetFont(zoneTextFont, fontPath, zoneConfig.fontSize, flags)
     end
 
     local text = GetMinimapZoneText()
@@ -1217,7 +1217,7 @@ end
 local editModeWasLocked = nil
 
 -- Enable minimap movement during Edit Mode (ignore lock setting)
-function QUICore:EnableMinimapEditMode()
+function KORICore:EnableMinimapEditMode()
     local settings = GetSettings()
     if not settings then return end
 
@@ -1229,7 +1229,7 @@ function QUICore:EnableMinimapEditMode()
 end
 
 -- Disable minimap Edit Mode (restore lock setting)
-function QUICore:DisableMinimapEditMode()
+function KORICore:DisableMinimapEditMode()
     local settings = GetSettings()
     if not settings then return end
 
@@ -1459,7 +1459,7 @@ function Minimap_Module:Refresh()
     -- Handle disabled state - ensure minimap is still visible in Blizzard default state
     if not settings.enabled then
         StopUpdateTickers()
-        -- Hide QUI customizations but keep minimap visible
+        -- Hide KORI customizations but keep minimap visible
         if minimapBackdrop then
             minimapBackdrop:Hide()
         end

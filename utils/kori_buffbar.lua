@@ -1,9 +1,9 @@
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 
 ---------------------------------------------------------------------------
--- QUI Buff Bar Manager
+-- KORI Buff Bar Manager
 -- Handles dynamic centering of BuffIconCooldownViewer and BuffBarCooldownViewer
 -- Uses hash-based polling + sticky center debounce for stable updates
 ---------------------------------------------------------------------------
@@ -15,8 +15,8 @@ ns.BuffBar = KORI_BuffBar
 -- HELPER: Get font from general settings
 ---------------------------------------------------------------------------
 local function GetGeneralFont()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         local fontName = general.font or "Friz Quadrata TT"
         return LSM:Fetch("font", fontName) or "Fonts\\FRIZQT__.TTF"
     end
@@ -24,8 +24,8 @@ local function GetGeneralFont()
 end
 
 local function GetGeneralFontOutline()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general.fontOutline or "OUTLINE"
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general.fontOutline or "OUTLINE"
     end
     return "OUTLINE"
 end
@@ -56,8 +56,8 @@ end
 ---------------------------------------------------------------------------
 
 local function GetDB()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.ncdm then
-        return QUICore.db.profile.ncdm
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.ncdm then
+        return KORICore.db.profile.ncdm
     end
     return nil
 end
@@ -449,9 +449,9 @@ local function ApplyIconStyle(icon, settings)
         cooldown:SetSwipeColor(0, 0, 0, 0.8)
 
         -- Show cooldown swipe based on showBuffIconSwipe setting (opt-in, default OFF)
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        local showBuffIconSwipe = QUICore and QUICore.db and QUICore.db.profile.cooldownSwipe
-            and QUICore.db.profile.cooldownSwipe.showBuffIconSwipe or false
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        local showBuffIconSwipe = KORICore and KORICore.db and KORICore.db.profile.cooldownSwipe
+            and KORICore.db.profile.cooldownSwipe.showBuffIconSwipe or false
         if cooldown.SetDrawSwipe then
             cooldown:SetDrawSwipe(showBuffIconSwipe)
         end
@@ -958,11 +958,11 @@ LayoutBuffIcons = function()
     end
 
     -- Apply HUD layer priority
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local hudLayering = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.hudLayering
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local hudLayering = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.hudLayering
     local layerPriority = hudLayering and hudLayering.buffIcon or 5
-    if QUICore and QUICore.GetHUDFrameLevel then
-        local frameLevel = QUICore:GetHUDFrameLevel(layerPriority)
+    if KORICore and KORICore.GetHUDFrameLevel then
+        local frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
         BuffIconCooldownViewer:SetFrameLevel(frameLevel)
     end
 
@@ -1126,12 +1126,12 @@ LayoutBuffBars = function()
     isBarLayoutRunning = true
 
     -- Apply HUD layer priority (strata + level)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local hudLayering = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.hudLayering
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local hudLayering = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.hudLayering
     local layerPriority = hudLayering and hudLayering.buffBar or 5
     local frameLevel = 200  -- Default fallback
-    if QUICore and QUICore.GetHUDFrameLevel then
-        frameLevel = QUICore:GetHUDFrameLevel(layerPriority)
+    if KORICore and KORICore.GetHUDFrameLevel then
+        frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
     end
     -- Set strata to MEDIUM to match power bars, then apply frame level
     BuffBarCooldownViewer:SetFrameStrata("MEDIUM")
@@ -1168,10 +1168,10 @@ LayoutBuffBars = function()
     -- CRITICAL: Tell Blizzard's GridLayoutFrameMixin which layout direction to use
     -- When isHorizontal=true, Blizzard positions bars up/down (Y-axis)
     -- When isHorizontal=false, Blizzard positions bars left/right (X-axis)
-    -- This prevents Blizzard's Layout() from overriding QUI's positioning with wrong axis
+    -- This prevents Blizzard's Layout() from overriding KORI's positioning with wrong axis
     -- FEAT-007: Remove combat lockdown check - setting frame properties is safe during combat
     BuffBarCooldownViewer.isHorizontal = not isVertical
-    -- Also update direction flags to match QUI's growth direction
+    -- Also update direction flags to match KORI's growth direction
     if isVertical then
         BuffBarCooldownViewer.layoutFramesGoingRight = growFromBottom  -- growUp becomes growRight
         BuffBarCooldownViewer.layoutFramesGoingUp = false
@@ -1435,12 +1435,12 @@ local function ForcePopulateBuffIcons()
         end
     end
 
-    -- Method 3: Force a rescan via QUICore if available
-    if _G.KoriUI and _G.KoriUI.QUICore then
-        local QUICore = _G.KoriUI.QUICore
-        if QUICore.ForceRefreshBuffIcons then
+    -- Method 3: Force a rescan via KORICore if available
+    if _G.KoriUI and _G.KoriUI.KORICore then
+        local KORICore = _G.KoriUI.KORICore
+        if KORICore.ForceRefreshBuffIcons then
             C_Timer.After(0.2, function()
-                pcall(function() QUICore:ForceRefreshBuffIcons() end)
+                pcall(function() KORICore:ForceRefreshBuffIcons() end)
             end)
         end
     end

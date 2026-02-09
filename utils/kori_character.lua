@@ -3,8 +3,8 @@
 -- Custom character panel styling with equipment overlays and stats panel
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 ---------------------------------------------------------------------------
 -- Module Constants
@@ -114,9 +114,9 @@ local defaultSettings = {
 }
 
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.character then
-        return QUICore.db.profile.character
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.character then
+        return KORICore.db.profile.character
     end
     -- Return shared defaults if DB not ready (same table every time)
     return defaultSettings
@@ -130,12 +130,12 @@ local trackedILvlFonts = {}
 local trackedItemNameFonts = {}  -- For item name text (line 1)
 
 ---------------------------------------------------------------------------
--- Get global font from QUI settings
+-- Get global font from KORI settings
 ---------------------------------------------------------------------------
 local function GetGlobalFont()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile then
-        local fontName = QUICore.db.profile.general and QUICore.db.profile.general.font
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile then
+        local fontName = KORICore.db.profile.general and KORICore.db.profile.general.font
         if fontName then
             local LSM = LibStub and LibStub("LibSharedMedia-3.0", true)
             if LSM then
@@ -1078,15 +1078,15 @@ local function CreateCustomBackground()
     else
         -- Skinning disabled - create our own background for character pane
         -- Use global skinning colors for consistency
-        local QUI = _G.KoriUI
+        local KORI = _G.KoriUI
         local sr, sg, sb, sa = C.border[1], C.border[2], C.border[3], 1
         local bgr, bgg, bgb, bga = C.bg[1], C.bg[2], C.bg[3], C.bg[4] or 0.95
 
-        if QUI and QUI.GetSkinColor then
-            sr, sg, sb, sa = QUI:GetSkinColor()
+        if KORI and KORI.GetSkinColor then
+            sr, sg, sb, sa = KORI:GetSkinColor()
         end
-        if QUI and QUI.GetSkinBgColor then
-            bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+        if KORI and KORI.GetSkinBgColor then
+            bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
         end
 
         if not customBg then
@@ -2346,8 +2346,8 @@ ScheduleUpdate = function()
         end
 
         -- Update inspect frame if visible (delegated to kori_inspect.lua)
-        if ns.QUI.InspectPane and ns.QUI.InspectPane.UpdateInspectFrame then
-            ns.QUI.InspectPane.UpdateInspectFrame()
+        if ns.KORI.InspectPane and ns.KORI.InspectPane.UpdateInspectFrame then
+            ns.KORI.InspectPane.UpdateInspectFrame()
         end
     end)
 end
@@ -2883,7 +2883,7 @@ local function HookCharacterFrame()
         -- Title
         local title = settingsPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         title:SetPoint("TOP", settingsPanel, "TOP", 0, -8)
-        title:SetText("QUI Character Panel")
+        title:SetText("KORI Character Panel")
         title:SetTextColor(C.accent[1], C.accent[2], C.accent[3], 1)
 
         -- Close button (X)
@@ -2948,8 +2948,8 @@ local function HookCharacterFrame()
         y = y - FORM_ROW
 
         -- Background color (uses shared skinning background color)
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        local generalDB = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        local generalDB = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
         local bgColorPicker = nil
         if generalDB then
             bgColorPicker = GUI:CreateFormColorPicker(scrollChild, "Background Color", "skinBgColor", generalDB, function()
@@ -2967,7 +2967,7 @@ local function HookCharacterFrame()
             bgColorPicker:SetPoint("RIGHT", scrollChild, "RIGHT", -PAD, 0)
             y = y - FORM_ROW
 
-            -- Refresh color picker when panel shows (in case color changed in main QUI options)
+            -- Refresh color picker when panel shows (in case color changed in main KORI options)
             settingsPanel:HookScript("OnShow", function()
                 if bgColorPicker and bgColorPicker.swatch and generalDB and generalDB.skinBgColor then
                     local col = generalDB.skinBgColor
@@ -3238,7 +3238,7 @@ end
 ---------------------------------------------------------------------------
 -- Module API
 ---------------------------------------------------------------------------
-QUI.CharacterPane = {
+KORI.CharacterPane = {
     Refresh = function()
         ScheduleUpdate()
     end,
@@ -3246,13 +3246,13 @@ QUI.CharacterPane = {
     GetSettings = GetSettings,
 }
 
-ns.CharacterPane = QUI.CharacterPane
+ns.CharacterPane = KORI.CharacterPane
 
 ---------------------------------------------------------------------------
 -- Shared exports for kori_inspect.lua
 -- These functions/tables are exported for the inspect module to use
 ---------------------------------------------------------------------------
-QUI.CharacterShared = {
+KORI.CharacterShared = {
     -- Constants
     EQUIPMENT_SLOTS = EQUIPMENT_SLOTS,
     C = C,

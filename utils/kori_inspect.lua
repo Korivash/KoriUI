@@ -4,8 +4,8 @@
 -- Split from kori_character.lua for better organization
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 ---------------------------------------------------------------------------
 -- Module State
@@ -22,7 +22,7 @@ local currentInspectGUID = nil  -- Tracks inspected unit's GUID for validation
 -- These will be available after kori_character.lua loads
 ---------------------------------------------------------------------------
 local function GetShared()
-    return ns.QUI.CharacterShared or {}
+    return ns.KORI.CharacterShared or {}
 end
 
 ---------------------------------------------------------------------------
@@ -647,12 +647,12 @@ local function CreateInspectSettingsButton()
     local GUI = _G.KoriUI and _G.KoriUI.GUI
     if not GUI then return end
 
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if not (QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.character) then
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if not (KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.character) then
         C_Timer.After(0.5, CreateInspectSettingsButton)
         return
     end
-    local charDB = QUICore.db.profile.character
+    local charDB = KORICore.db.profile.character
 
     -- Initialize inspect color defaults if not set (ensures color pickers show correct values)
     if charDB.inspectEnchantTextColor == nil then
@@ -724,7 +724,7 @@ local function CreateInspectSettingsButton()
     -- Title
     local title = inspectSettingsPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("TOP", inspectSettingsPanel, "TOP", 0, -8)
-    title:SetText("QUI Inspect Panel")
+    title:SetText("KORI Inspect Panel")
     title:SetTextColor(C.accent[1], C.accent[2], C.accent[3], 1)
 
     -- Close button
@@ -804,7 +804,7 @@ local function CreateInspectSettingsButton()
     y = y - FORM_ROW
 
     -- Background color (uses shared skinning background color)
-    local generalDB = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local generalDB = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     local bgColorPicker = nil
     if generalDB then
         bgColorPicker = GUI:CreateFormColorPicker(scrollChild, "Background Color", "skinBgColor", generalDB, function()
@@ -1112,10 +1112,10 @@ end)
 ---------------------------------------------------------------------------
 -- Module API (exported for kori_character.lua to call)
 ---------------------------------------------------------------------------
-QUI.InspectPane = {
+KORI.InspectPane = {
     UpdateInspectFrame = UpdateInspectFrame,
     GetCurrentTab = GetCurrentInspectTab,
     INSPECT_CONFIG = INSPECT_CONFIG,
 }
 
-ns.InspectPane = QUI.InspectPane
+ns.InspectPane = KORI.InspectPane

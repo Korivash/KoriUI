@@ -2,12 +2,12 @@
 --- Creates and manages movable datatext panels
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- Module reference
 local Datapanels = {}
-QUICore.Datapanels = Datapanels
+KORICore.Datapanels = Datapanels
 
 -- Active panels storage
 Datapanels.activePanels = {}
@@ -139,7 +139,7 @@ function Datapanels:SetupDragging(panel)
         self.config.position = {point, relPoint, x, y}
         
         -- Update saved variables
-        local db = QUICore.db.profile.quiDatatexts
+        local db = KORICore.db.profile.quiDatatexts
         if db and db.panels then
             for i, panelConfig in ipairs(db.panels) do
                 if panelConfig.id == self.panelID then
@@ -174,8 +174,8 @@ end
 function Datapanels:UpdateSlots(panel)
     -- Clear existing slots
     for _, slot in ipairs(panel.slots) do
-        if QUICore.Datatexts then
-            QUICore.Datatexts:DetachFromSlot(slot)
+        if KORICore.Datatexts then
+            KORICore.Datatexts:DetachFromSlot(slot)
         end
         slot:Hide()
         slot:SetParent(nil)
@@ -189,8 +189,8 @@ function Datapanels:UpdateSlots(panel)
     -- Apply font settings
     local generalFont = "Korivash"
     local generalOutline = "OUTLINE"
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         generalFont = general.font or "Korivash"
         generalOutline = general.fontOutline or "OUTLINE"
     end
@@ -204,7 +204,7 @@ function Datapanels:UpdateSlots(panel)
         
         -- Create text for datatext use
         slot.text = slot:CreateFontString(nil, "OVERLAY")
-        QUICore:SafeSetFont(slot.text, fontPath, fontSize, generalOutline)
+        KORICore:SafeSetFont(slot.text, fontPath, fontSize, generalOutline)
         -- Anchor to both edges to constrain width and enable auto-truncation
         slot.text:SetPoint("LEFT", slot, "LEFT", 1, 0)
         slot.text:SetPoint("RIGHT", slot, "RIGHT", -1, 0)
@@ -238,8 +238,8 @@ function Datapanels:UpdateSlots(panel)
         
         -- Attach datatext if configured
         local datatextID = panel.config.slots and panel.config.slots[i]
-        if datatextID and QUICore.Datatexts then
-            QUICore.Datatexts:AttachToSlot(slot, datatextID, panel.config)
+        if datatextID and KORICore.Datatexts then
+            KORICore.Datatexts:AttachToSlot(slot, datatextID, panel.config)
         else
             -- Show placeholder for empty slots
             slot.text:SetText("|cffFFAA00Slot " .. i .. "|r")
@@ -308,8 +308,8 @@ function Datapanels:DeletePanel(panelID)
     
     -- Detach all datatexts
     for _, slot in ipairs(panel.slots) do
-        if QUICore.Datatexts then
-            QUICore.Datatexts:DetachFromSlot(slot)
+        if KORICore.Datatexts then
+            KORICore.Datatexts:DetachFromSlot(slot)
         end
     end
     
@@ -329,7 +329,7 @@ function Datapanels:RefreshAll()
     end
     
     -- Create panels from saved variables
-    local db = QUICore.db.profile.quiDatatexts
+    local db = KORICore.db.profile.quiDatatexts
     if not db or not db.panels then return end
     
     for _, panelConfig in ipairs(db.panels) do
@@ -344,8 +344,8 @@ end
 ---=================================================================================
 
 _G.KoriUI_RefreshDatapanels = function()
-    if QUICore and QUICore.Datapanels then
-        QUICore.Datapanels:RefreshAll()
+    if KORICore and KORICore.Datapanels then
+        KORICore.Datapanels:RefreshAll()
     end
 end
 
@@ -372,8 +372,8 @@ initFrame:SetScript("OnEvent", function(self, event)
 end)
 
 -- Debug slash command
-SLASH_QUIDATAPANELS1 = "/koridp"
-SlashCmdList["QUIDATAPANELS"] = function(msg)
+SLASH_KORIDATAPANELS1 = "/quidp"
+SlashCmdList["KORIDATAPANELS"] = function(msg)
     if msg == "show" then
         local count = 0
         for id, panel in pairs(Datapanels.activePanels) do
@@ -393,8 +393,8 @@ SlashCmdList["QUIDATAPANELS"] = function(msg)
         print("|cff00ff00KoriUI:|r Refreshed all datapanels")
     else
         print("|cff00ff00KoriUI Datapanels Commands:|r")
-        print("/koridp show - List all panels and their status")
-        print("/koridp refresh - Refresh all panels")
+        print("/quidp show - List all panels and their status")
+        print("/quidp refresh - Refresh all panels")
     end
 end
 

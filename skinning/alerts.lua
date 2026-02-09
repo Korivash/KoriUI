@@ -1,12 +1,12 @@
 --- KoriUI Alert & Toast Skinning
---- Skins Blizzard alert frames with QUI styling and adds movers
+--- Skins Blizzard alert frames with KORI styling and adds movers
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 
 -- Module reference
 local Alerts = {}
-QUICore.Alerts = Alerts
+KORICore.Alerts = Alerts
 
 ---------------------------------------------------------------------------
 -- CONSTANTS
@@ -23,7 +23,7 @@ local ICON_TEX_COORDS = { 0.08, 0.92, 0.08, 0.92 }
 ---------------------------------------------------------------------------
 
 local function GetDB()
-    return QUICore.db and QUICore.db.profile or {}
+    return KORICore.db and KORICore.db.profile or {}
 end
 
 local function GetGeneralSettings()
@@ -40,19 +40,19 @@ local function GetAlertSettings()
     return alerts
 end
 
---- Get theme colors from QUI skinning system
+--- Get theme colors from KORI skinning system
 --- @return number sr, number sg, number sb, number sa (border/accent color)
 --- @return number bgr, number bgg, number bgb, number bga (background color with alpha)
 local function GetThemeColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1  -- Fallback mint
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95  -- Fallback dark
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
@@ -65,7 +65,7 @@ local function ForceAlpha(frame, alpha, forced)
     end
 end
 
---- Create QUI-styled backdrop for alert frames
+--- Create KORI-styled backdrop for alert frames
 local function CreateAlertBackdrop(frame, xOffset1, yOffset1, xOffset2, yOffset2)
     if frame.quiBackdrop then return frame.quiBackdrop end
 

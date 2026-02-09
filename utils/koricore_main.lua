@@ -1,17 +1,17 @@
 --- KoriUI Core - Main Integration Module
---- Integrated from QUICore v1.18 with proper AceDB support
+--- Integrated from KORICore v1.18 with proper AceDB support
 --- All branding changed to KoriUI
 
 local ADDON_NAME, ns = ...
-local QUI = KoriUI
+local KORI = KoriUI
 local ADDON_NAME = "KoriUI"
 
--- Create QUICore as an Ace3 module within KoriUI
-local QUICore = QUI:NewModule("QUICore", "AceConsole-3.0", "AceEvent-3.0")
-QUI.QUICore = QUICore
+-- Create KORICore as an Ace3 module within KoriUI
+local KORICore = KORI:NewModule("KORICore", "AceConsole-3.0", "AceEvent-3.0")
+KORI.KORICore = KORICore
 
--- Expose QUICore to namespace for other files
-ns.Addon = QUICore
+-- Expose KORICore to namespace for other files
+ns.Addon = KORICore
 
 -- Shared utility functions
 ns.Utils = {}
@@ -32,11 +32,11 @@ function ns.Utils.IsSecretValue(value)
 end
 
 -- Global pending reload system
-QUICore.__pendingReload = false
-QUICore.__reloadEventFrame = nil
+KORICore.__pendingReload = false
+KORICore.__reloadEventFrame = nil
 
 -- Safe reload function - queues if in combat, reloads immediately if not
-function QUICore:SafeReload()
+function KORICore:SafeReload()
     if InCombatLockdown() then
         if not self.__pendingReload then
             self.__pendingReload = true
@@ -47,10 +47,10 @@ function QUICore:SafeReload()
                 self.__reloadEventFrame = CreateFrame("Frame")
                 self.__reloadEventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
                 self.__reloadEventFrame:SetScript("OnEvent", function(frame, event)
-                    if event == "PLAYER_REGEN_ENABLED" and QUICore.__pendingReload then
-                        QUICore.__pendingReload = false
+                    if event == "PLAYER_REGEN_ENABLED" and KORICore.__pendingReload then
+                        KORICore.__pendingReload = false
                         -- Show popup with reload button (user click = allowed)
-                        QUICore:ShowReloadPopup()
+                        KORICore:ShowReloadPopup()
                     end
                 end)
             end
@@ -61,7 +61,7 @@ function QUICore:SafeReload()
 end
 
 -- Show reload popup after combat ends (user must click to reload)
-function QUICore:ShowReloadPopup()
+function KORICore:ShowReloadPopup()
     -- Use KoriUI's existing confirmation dialog
     if KoriUI and KoriUI.GUI and KoriUI.GUI.ShowConfirmation then
         KoriUI.GUI:ShowConfirmation({
@@ -78,11 +78,11 @@ function QUICore:ShowReloadPopup()
 end
 
 -- Global safe reload function on KoriUI object
-function QUI:SafeReload()
-    if self.QUICore then
-        self.QUICore:SafeReload()
+function KORI:SafeReload()
+    if self.KORICore then
+        self.KORICore:SafeReload()
     else
-        -- Fallback if QUICore not loaded
+        -- Fallback if KORICore not loaded
         if InCombatLockdown() then
             print("|cFF1E90FFKori UI:|r Cannot reload during combat.")
         else
@@ -104,7 +104,7 @@ local LibDualSpec   = LibStub("LibDualSpec-1.0", true)
 --- PROFILE IMPORT/EXPORT
 ---=================================================================================
 
-function QUICore:ExportProfileToString()
+function KORICore:ExportProfileToString()
     if not self.db or not self.db.profile then
         return "No profile loaded."
     end
@@ -127,10 +127,10 @@ function QUICore:ExportProfileToString()
         return "Failed to encode profile."
     end
 
-    return "QUI1:" .. encoded
+    return "KORI1:" .. encoded
 end
 
-function QUICore:ImportProfileFromString(str)
+function KORICore:ImportProfileFromString(str)
     if not self.db or not self.db.profile then
         return false, "No profile loaded."
     end
@@ -142,8 +142,8 @@ function QUICore:ImportProfileFromString(str)
     end
 
     str = str:gsub("%s+", "")
-    str = str:gsub("^QUI1:", "")  -- KoriUI prefix
-    str = str:gsub("^QUI1:", "")  -- Strip QUI1 prefix
+    str = str:gsub("^KORI1:", "")  -- KoriUI prefix
+    str = str:gsub("^KORI1:", "")  -- Strip KORI1 prefix
     str = str:gsub("^CDM1:", "")  -- Backwards compatibility
 
     local compressed = LibDeflate:DecodeForPrint(str)
@@ -183,7 +183,7 @@ end
 -- Convert layer priority (0-10) to frame level
 -- Base 100, step 20 = range 100-300
 -- Higher priority = rendered on top of lower priority elements
-function QUICore:GetHUDFrameLevel(priority)
+function KORICore:GetHUDFrameLevel(priority)
     return 100 + (priority or 5) * 20
 end
 
@@ -200,7 +200,7 @@ end
 -- @param backdropInfo The backdrop info table, or nil to remove backdrop
 -- @param borderColor Optional {r,g,b,a} table for border color after backdrop is set
 -- @return boolean True if backdrop was set immediately, false if deferred
-function QUICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
+function KORICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
     if not frame or not frame.SetBackdrop then return false end
 
     -- Check if frame has valid (non-secret) dimensions
@@ -226,11 +226,11 @@ function QUICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
     if not hasValidSize then
         frame.__quiBackdropPending = backdropInfo
         frame.__quiBackdropBorderColor = borderColor
-        QUICore.__pendingBackdrops = QUICore.__pendingBackdrops or {}
-        QUICore.__pendingBackdrops[frame] = true
+        KORICore.__pendingBackdrops = KORICore.__pendingBackdrops or {}
+        KORICore.__pendingBackdrops[frame] = true
 
         -- Set up deferred processing via OnUpdate (for when dimensions become valid)
-        if not QUICore.__backdropUpdateFrame then
+        if not KORICore.__backdropUpdateFrame then
             local updateFrame = CreateFrame("Frame")
             local elapsed = 0
             updateFrame:SetScript("OnUpdate", function(self, delta)
@@ -239,7 +239,7 @@ function QUICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
                 elapsed = 0
 
                 local processed = {}
-                for pendingFrame in pairs(QUICore.__pendingBackdrops or {}) do
+                for pendingFrame in pairs(KORICore.__pendingBackdrops or {}) do
                     if pendingFrame and pendingFrame.__quiBackdropPending ~= nil then
                         -- Re-check if dimensions are now valid
                         local checkOk, checkResult = pcall(function()
@@ -268,12 +268,12 @@ function QUICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
                 end
 
                 for _, pf in ipairs(processed) do
-                    QUICore.__pendingBackdrops[pf] = nil
+                    KORICore.__pendingBackdrops[pf] = nil
                 end
 
                 -- Stop OnUpdate if no more pending
                 local hasAny = false
-                for _ in pairs(QUICore.__pendingBackdrops or {}) do
+                for _ in pairs(KORICore.__pendingBackdrops or {}) do
                     hasAny = true
                     break
                 end
@@ -281,25 +281,25 @@ function QUICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
                     self:Hide()
                 end
             end)
-            QUICore.__backdropUpdateFrame = updateFrame
+            KORICore.__backdropUpdateFrame = updateFrame
         end
-        QUICore.__backdropUpdateFrame:Show()
+        KORICore.__backdropUpdateFrame:Show()
         return false
     end
 
     -- If in combat, defer backdrop setup to avoid secret value errors
     if InCombatLockdown() then
-        local alreadyPending = QUICore.__pendingBackdrops and QUICore.__pendingBackdrops[frame]
+        local alreadyPending = KORICore.__pendingBackdrops and KORICore.__pendingBackdrops[frame]
         if not alreadyPending then
             frame.__quiBackdropPending = backdropInfo
             frame.__quiBackdropBorderColor = borderColor
 
-            if not QUICore.__backdropEventFrame then
+            if not KORICore.__backdropEventFrame then
                 local eventFrame = CreateFrame("Frame")
                 eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
                 eventFrame:SetScript("OnEvent", function(self)
                     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-                    for pendingFrame in pairs(QUICore.__pendingBackdrops or {}) do
+                    for pendingFrame in pairs(KORICore.__pendingBackdrops or {}) do
                         if pendingFrame and pendingFrame.__quiBackdropPending ~= nil then
                             if not InCombatLockdown() then
                                 local setOk = pcall(pendingFrame.SetBackdrop, pendingFrame, pendingFrame.__quiBackdropPending)
@@ -312,14 +312,14 @@ function QUICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
                             pendingFrame.__quiBackdropBorderColor = nil
                         end
                     end
-                    QUICore.__pendingBackdrops = {}
+                    KORICore.__pendingBackdrops = {}
                 end)
-                QUICore.__backdropEventFrame = eventFrame
+                KORICore.__backdropEventFrame = eventFrame
             end
 
-            QUICore.__pendingBackdrops = QUICore.__pendingBackdrops or {}
-            QUICore.__pendingBackdrops[frame] = true
-            QUICore.__backdropEventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            KORICore.__pendingBackdrops = KORICore.__pendingBackdrops or {}
+            KORICore.__pendingBackdrops[frame] = true
+            KORICore.__backdropEventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
         end
         return false
     end
@@ -339,7 +339,7 @@ end
 -- NOTE: All cooldown viewers are now handled by dedicated modules:
 -- EssentialCooldownViewer/UtilityCooldownViewer → kori_ncdm.lua
 -- BuffIconCooldownViewer/BuffBarCooldownViewer → kori_buffbar.lua
-QUICore.viewers = {
+KORICore.viewers = {
     -- "EssentialCooldownViewer",  -- Handled by NCDM
     -- "UtilityCooldownViewer",    -- Handled by NCDM
     -- "BuffIconCooldownViewer",   -- Handled by kori_buffbar.lua
@@ -523,7 +523,7 @@ local defaults = {
         -- FPS Settings Backup (stores user's CVars before applying Korivash's settings)
         fpsBackup = nil,
 
-        -- QUI New Cooldown Display Manager (NCDM)
+        -- KORI New Cooldown Display Manager (NCDM)
         -- Per-row configuration for Essential and Utility viewers
         ncdm = {
             essential = {
@@ -900,7 +900,7 @@ local defaults = {
         },
         targetCastBar = {
             enabled       = true,
-            attachTo      = "QUICore_Target",
+            attachTo      = "KORICore_Target",
             height        = 18,
             offsetX       = 0,
             offsetY       = -32,
@@ -914,7 +914,7 @@ local defaults = {
         },
         focusCastBar = {
             enabled       = true,
-            attachTo      = "QUICore_Focus",
+            attachTo      = "KORICore_Focus",
             height        = 18,
             offsetX       = 0,
             offsetY       = -32,
@@ -1146,7 +1146,7 @@ local defaults = {
             hideHealthBar = true,              -- Hide the health bar on unit tooltips
         },
 
-        -- QUI Action Bars - Button Skinning and Fade System
+        -- KORI Action Bars - Button Skinning and Fade System
         actionBars = {
             enabled = true,
             -- Global settings (apply to all bars)
@@ -1335,7 +1335,7 @@ local defaults = {
             },
         },
 
-        -- QUI Unit Frames (New Implementation)
+        -- KORI Unit Frames (New Implementation)
         quiUnitFrames = {
             enabled = true,
             -- General settings (applies to all frames)
@@ -1435,7 +1435,7 @@ local defaults = {
                     enabled = false,
                     color = { 1, 1, 1, 1 },
                     opacity = 0.3,
-                    texture = "QUI Stripes",
+                    texture = "KORI Stripes",
                 },
                 -- Castbar
                 castbar = {
@@ -1630,7 +1630,7 @@ local defaults = {
                     enabled = true,
                     color = { 1, 1, 1, 1 },
                     opacity = 0.3,
-                    texture = "QUI Stripes",
+                    texture = "KORI Stripes",
                 },
                 -- Castbar
                 castbar = {
@@ -1776,7 +1776,7 @@ local defaults = {
                     enabled = true,
                     color = { 1, 1, 1, 1 },
                     opacity = 0.7,
-                    texture = "QUI Stripes",
+                    texture = "KORI Stripes",
                 },
                 -- Castbar
                 castbar = {
@@ -1872,7 +1872,7 @@ local defaults = {
                     enabled = true,
                     color = { 1, 1, 1 },
                     opacity = 0.7,
-                    texture = "QUI Stripes",
+                    texture = "KORI Stripes",
                 },
                 -- Auras (buffs/debuffs)
                 auras = {
@@ -1976,7 +1976,7 @@ local defaults = {
                     enabled = true,
                     color = { 1, 1, 1, 1 },
                     opacity = 0.7,
-                    texture = "QUI Stripes",
+                    texture = "KORI Stripes",
                 },
                 -- Castbar
                 castbar = {
@@ -2080,7 +2080,7 @@ local defaults = {
                     enabled = true,
                     color = { 1, 1, 1 },
                     opacity = 0.7,
-                    texture = "QUI Stripes",
+                    texture = "KORI Stripes",
                 },
                 -- Castbar
                 castbar = {
@@ -2308,7 +2308,7 @@ local defaults = {
                     XPosition = 183.1,
                     YPosition = -10,
                     AnchorFrom = "CENTER",
-                    AnchorParent = "QUICore_Target",
+                    AnchorParent = "KORICore_Target",
                     AnchorTo = "CENTER",
                     Texture = "Korivash",
                     ClassColor = true,
@@ -2497,7 +2497,7 @@ local defaults = {
                     XPosition = 350,
                     YPosition = 0,
                     AnchorFrom = "LEFT",
-                    AnchorParent = "QUICore_Target",
+                    AnchorParent = "KORICore_Target",
                     AnchorTo = "RIGHT",
                     Texture = "Korivash",
                     ClassColor = true,
@@ -2626,7 +2626,7 @@ local defaults = {
             fontOutline = true,
         },
         
-        -- QUI Autohides
+        -- KORI Autohides
         uiHider = {
             hideObjectiveTrackerAlways = false,  -- Hide Objective Tracker always
             hideObjectiveTrackerInstanceTypes = {
@@ -2944,9 +2944,9 @@ local defaults = {
     },
 }
 
-function QUICore:OnInitialize()
+function KORICore:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("KoriUIDB", defaults, true)
-    QUI.db = self.db  -- Make database accessible to other QUI modules
+    KORI.db = self.db  -- Make database accessible to other KORI modules
 
     -- Migrate visibility settings to SHOW logic
     -- Old hideWhenX → new showX (semantic conversion)
@@ -3020,7 +3020,7 @@ function QUICore:OnInitialize()
 
 
     -- Note: Main /kori command is handled by init.lua
-    self:RegisterChatCommand("koricorerefresh", "ForceRefreshBuffIcons")
+    self:RegisterChatCommand("quicorerefresh", "ForceRefreshBuffIcons")
 
     -- Defer minimap button creation to reduce load-time CPU
     C_Timer.After(0.1, function()
@@ -3028,7 +3028,7 @@ function QUICore:OnInitialize()
     end)
 end
 
-function QUICore:OnProfileChanged(event, db, profileKey)
+function KORICore:OnProfileChanged(event, db, profileKey)
 
     -- AGGRESSIVE M+ PROTECTION: If we're in a challenge mode dungeon, defer EVERYTHING
     -- WoW's protected state during M+ transitions can't be reliably detected by InCombatLockdown()
@@ -3062,42 +3062,42 @@ function QUICore:OnProfileChanged(event, db, profileKey)
     -- Helper to apply UIParent scale safely (defers if in combat or protected state)
     local function ApplyUIScale(scale)
         if InCombatLockdown() then
-            QUICore._pendingUIScale = scale
-            if not QUICore._scaleRegenFrame then
-                QUICore._scaleRegenFrame = CreateFrame("Frame")
-                QUICore._scaleRegenFrame:SetScript("OnEvent", function(self)
+            KORICore._pendingUIScale = scale
+            if not KORICore._scaleRegenFrame then
+                KORICore._scaleRegenFrame = CreateFrame("Frame")
+                KORICore._scaleRegenFrame:SetScript("OnEvent", function(self)
                     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-                    if QUICore._pendingUIScale and not InCombatLockdown() then
-                        pcall(function() UIParent:SetScale(QUICore._pendingUIScale) end)
-                        QUICore._pendingUIScale = nil
-                        if QUICore.UIMult then
-                            QUICore:UIMult()
+                    if KORICore._pendingUIScale and not InCombatLockdown() then
+                        pcall(function() UIParent:SetScale(KORICore._pendingUIScale) end)
+                        KORICore._pendingUIScale = nil
+                        if KORICore.UIMult then
+                            KORICore:UIMult()
                         end
                     end
                 end)
             end
-            QUICore._scaleRegenFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            KORICore._scaleRegenFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
         else
             -- Use pcall to catch protected states not detected by InCombatLockdown
             -- (e.g., instance transitions during M+ keystone activation)
             local success = pcall(function() UIParent:SetScale(scale) end)
             if not success then
                 -- Protected state detected - defer to combat end
-                QUICore._pendingUIScale = scale
-                if not QUICore._scaleRegenFrame then
-                    QUICore._scaleRegenFrame = CreateFrame("Frame")
-                    QUICore._scaleRegenFrame:SetScript("OnEvent", function(self)
+                KORICore._pendingUIScale = scale
+                if not KORICore._scaleRegenFrame then
+                    KORICore._scaleRegenFrame = CreateFrame("Frame")
+                    KORICore._scaleRegenFrame:SetScript("OnEvent", function(self)
                         self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-                        if QUICore._pendingUIScale and not InCombatLockdown() then
-                            pcall(function() UIParent:SetScale(QUICore._pendingUIScale) end)
-                            QUICore._pendingUIScale = nil
-                            if QUICore.UIMult then
-                                QUICore:UIMult()
+                        if KORICore._pendingUIScale and not InCombatLockdown() then
+                            pcall(function() UIParent:SetScale(KORICore._pendingUIScale) end)
+                            KORICore._pendingUIScale = nil
+                            if KORICore.UIMult then
+                                KORICore:UIMult()
                             end
                         end
                     end)
                 end
-                QUICore._scaleRegenFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+                KORICore._scaleRegenFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
             end
         end
     end
@@ -3157,11 +3157,11 @@ function QUICore:OnProfileChanged(event, db, profileKey)
     end
     
     -- Refresh Minimap module on profile change
-    if QUICore.Minimap then
+    if KORICore.Minimap then
         -- Small delay to ensure profile data is fully loaded
         C_Timer.After(0.1, function()
-            if QUICore.Minimap.Refresh then
-                QUICore.Minimap:Refresh()
+            if KORICore.Minimap.Refresh then
+                KORICore.Minimap:Refresh()
             end
         end)
     end
@@ -3213,10 +3213,10 @@ function QUICore:OnProfileChanged(event, db, profileKey)
     end)
 end
 
-function QUICore:ShowProfileChangeNotification()
+function KORICore:ShowProfileChangeNotification()
     -- Create a simple popup frame if it doesn't exist
     if not self.profileChangePopup then
-        local popup = CreateFrame("Frame", "QUICore_ProfileChangePopup", UIParent, "BackdropTemplate")
+        local popup = CreateFrame("Frame", "KORICore_ProfileChangePopup", UIParent, "BackdropTemplate")
         popup:SetSize(400, 120)
         popup:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
         popup:SetFrameStrata("DIALOG")
@@ -3279,13 +3279,13 @@ end
 -- Tracks which element is currently selected for nudge arrows
 -- ============================================================================
 
-QUICore.EditModeSelection = {
+KORICore.EditModeSelection = {
     selectedType = nil,  -- "unitframe", "powerbar", "cdm"
     selectedKey = nil,   -- "player", "primary", "EssentialCooldownViewer", etc.
 }
 
 -- Select an element and show its nudge arrows (hides arrows on previous selection)
-function QUICore:SelectEditModeElement(elementType, elementKey)
+function KORICore:SelectEditModeElement(elementType, elementKey)
     -- Skip if already selected
     if self.EditModeSelection.selectedType == elementType and self.EditModeSelection.selectedKey == elementKey then
         return
@@ -3303,14 +3303,14 @@ function QUICore:SelectEditModeElement(elementType, elementKey)
 end
 
 -- Clear selection (called when exiting Edit Mode)
-function QUICore:ClearEditModeSelection()
+function KORICore:ClearEditModeSelection()
     self:HideCurrentSelectionArrows()
     self.EditModeSelection.selectedType = nil
     self.EditModeSelection.selectedKey = nil
 end
 
 -- Hide nudge arrows on the currently selected element
-function QUICore:HideCurrentSelectionArrows()
+function KORICore:HideCurrentSelectionArrows()
     local sel = self.EditModeSelection
     if not sel.selectedType then return end
 
@@ -3343,7 +3343,7 @@ function QUICore:HideCurrentSelectionArrows()
 end
 
 -- Show nudge arrows on the specified element
-function QUICore:ShowSelectionArrows(elementType, elementKey)
+function KORICore:ShowSelectionArrows(elementType, elementKey)
     if elementType == "unitframe" then
         if ns.KORI_UnitFrames and ns.KORI_UnitFrames.frames then
             local frame = ns.KORI_UnitFrames.frames[elementKey]
@@ -3379,7 +3379,7 @@ function QUICore:ShowSelectionArrows(elementType, elementKey)
 end
 
 -- Helper to show nudge buttons on an overlay
-function QUICore:ShowNudgeButtons(overlay)
+function KORICore:ShowNudgeButtons(overlay)
     if not overlay then return end
     if overlay.nudgeUp then overlay.nudgeUp:Show() end
     if overlay.nudgeDown then overlay.nudgeDown:Show() end
@@ -3389,7 +3389,7 @@ function QUICore:ShowNudgeButtons(overlay)
 end
 
 -- Helper to hide nudge buttons on an overlay
-function QUICore:HideNudgeButtons(overlay)
+function KORICore:HideNudgeButtons(overlay)
     if not overlay then return end
     if overlay.nudgeUp then overlay.nudgeUp:Hide() end
     if overlay.nudgeDown then overlay.nudgeDown:Hide() end
@@ -3400,11 +3400,11 @@ end
 
 -- ============================================================================
 
-function QUICore:OnEnable()
+function KORICore:OnEnable()
     -- Override Blizzard's /reload command to use SafeReload
     -- (Must happen in OnEnable, after Blizzard's slash commands are registered)
     SlashCmdList["RELOAD"] = function()
-        QUI:SafeReload()
+        KORI:SafeReload()
     end
 
     -- IMMEDIATE (<1ms): Critical sync-only work
@@ -3486,14 +3486,14 @@ function QUICore:OnEnable()
     end)
 end
 
-function QUICore:OpenConfig()
+function KORICore:OpenConfig()
     -- Open the new custom GUI instead of AceConfig
     if KoriUI and KoriUI.GUI then
         KoriUI.GUI:Toggle()
     end
 end
 
-function QUICore:CreateMinimapButton()
+function KORICore:CreateMinimapButton()
     local LDB = LibStub("LibDataBroker-1.1", true)
     local LibDBIcon = LibStub("LibDBIcon-1.0", true)
     
@@ -3612,7 +3612,7 @@ end
 
 -- Icon Skinning
 
-function QUICore:SkinIcon(icon, settings)
+function KORICore:SkinIcon(icon, settings)
     -- Get the icon texture frame (handle both .icon and .Icon for compatibility)
     local iconTexture = icon.icon or icon.Icon
     if not icon or not iconTexture then return end
@@ -3841,7 +3841,7 @@ function QUICore:SkinIcon(icon, settings)
     icon.__cdmSkinPending = nil  -- Clear pending flag
 end
 
-function QUICore:SkinAllIconsInViewer(viewer)
+function KORICore:SkinAllIconsInViewer(viewer)
     if not viewer or not viewer.GetName then return end
 
     local name     = viewer:GetName()
@@ -3856,7 +3856,7 @@ function QUICore:SkinAllIconsInViewer(viewer)
             local ok, err = pcall(self.SkinIcon, self, icon, settings)
             if not ok then
                 icon.__cdmSkinError = true
-                print("|cffff4444[QUICore] SkinIcon error for", name, "icon:", err, "|r")
+                print("|cffff4444[KORICore] SkinIcon error for", name, "icon:", err, "|r")
             end
         end
     end
@@ -3938,7 +3938,7 @@ local function MaxRowWidth(grid, iconWidth, spacing)
     return maxW
 end
 
-function QUICore:ApplyViewerLayout(viewer)
+function KORICore:ApplyViewerLayout(viewer)
     if not viewer or not viewer.GetName then return end
     local name     = viewer:GetName()
     local settings = self.db.profile.viewers[name]
@@ -4118,7 +4118,7 @@ function QUICore:ApplyViewerLayout(viewer)
     end
 end
 
-function QUICore:RescanViewer(viewer)
+function KORICore:RescanViewer(viewer)
     if not viewer or not viewer.GetName then return end
     local name     = viewer:GetName()
     local settings = self.db.profile.viewers[name]
@@ -4152,7 +4152,7 @@ function QUICore:RescanViewer(viewer)
                             eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
                             eventFrame:SetScript("OnEvent", function(self)
                                 self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-                                QUICore:ProcessPendingIcons()
+                                KORICore:ProcessPendingIcons()
                             end)
                             self.__cdmIconSkinEventFrame = eventFrame
                         end
@@ -4192,7 +4192,7 @@ function QUICore:RescanViewer(viewer)
     end
 end
 
-function QUICore:ApplyViewerSkin(viewer)
+function KORICore:ApplyViewerSkin(viewer)
     if not viewer or not viewer.GetName then return end
     local name     = viewer:GetName()
     local settings = self.db.profile.viewers[name]
@@ -4210,7 +4210,7 @@ function QUICore:ApplyViewerSkin(viewer)
     end
 end
 
-function QUICore:ProcessPendingIcons()
+function KORICore:ProcessPendingIcons()
     if not self.__cdmPendingIcons then return end
     if InCombatLockdown() then return end
     
@@ -4239,7 +4239,7 @@ function QUICore:ProcessPendingIcons()
     end
 end
 
-function QUICore:HookViewers()
+function KORICore:HookViewers()
     for _, name in ipairs(self.viewers) do
         local viewer = _G[name]
         if viewer and not viewer.__cdmHooked then
@@ -4281,7 +4281,7 @@ function QUICore:HookViewers()
     end
 end
 
-function QUICore:ForceRefreshBuffIcons()
+function KORICore:ForceRefreshBuffIcons()
     local viewer = _G["BuffIconCooldownViewer"]
     if viewer and viewer:IsShown() then
         viewer.__cdmIconCount = nil
@@ -4294,7 +4294,7 @@ function QUICore:ForceRefreshBuffIcons()
 end
 
 -- Force re-skin all icons in all viewers (used when Edit Mode changes)
-function QUICore:ForceReskinAllViewers()
+function KORICore:ForceReskinAllViewers()
     for _, name in ipairs(self.viewers) do
         local viewer = _G[name]
         if viewer then
@@ -4326,7 +4326,7 @@ function QUICore:ForceReskinAllViewers()
 end
 
 -- Hook Edit Mode to force re-skinning when it opens/closes
-function QUICore:HookEditMode()
+function KORICore:HookEditMode()
     if self.__editModeHooked then return end
     self.__editModeHooked = true
     
@@ -4414,7 +4414,7 @@ function QUICore:HookEditMode()
     end
 
 -- Process pending backdrops that were deferred due to secret values
-function QUICore:ProcessPendingBackdrops()
+function KORICore:ProcessPendingBackdrops()
     if not self.__cdmPendingBackdrops then return end
 
     local processed = {}
@@ -4462,27 +4462,27 @@ end
             end
         end
         
-function QUI:GetGlobalFont()
+function KORI:GetGlobalFont()
     local LSM = LibStub("LibSharedMedia-3.0")
     local fontName = "Korivash"  -- Default fallback
 
     -- Read font from user settings
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        fontName = QUICore.db.profile.general.font or fontName
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        fontName = KORICore.db.profile.general.font or fontName
     end
 
     return LSM:Fetch("font", fontName) or [[Interface\AddOns\KoriUI\assets\Korivash.ttf]]
 end
 
-function QUI:GetGlobalTexture()
+function KORI:GetGlobalTexture()
     local LSM = LibStub("LibSharedMedia-3.0")
     -- For now, return Korivash texture. Will be configurable in General Tab (Feature #3)
     local textureName = "Korivash"
     return LSM:Fetch("statusbar", textureName) or "Interface\\AddOns\\KoriUI\\assets\\Korivash"
 end
 
-function QUI:GetSkinColor()
-    local db = QUI.db and QUI.db.profile
+function KORI:GetSkinColor()
+    local db = KORI.db and KORI.db.profile
     if not db or not db.general then
         return 0.2, 1.0, 0.6, 1  -- Fallback to mint
     end
@@ -4499,8 +4499,8 @@ function QUI:GetSkinColor()
     return c[1], c[2], c[3], c[4] or 1
 end
 
-function QUI:GetSkinBgColor()
-    local db = QUI.db and QUI.db.profile
+function KORI:GetSkinBgColor()
+    local db = KORI.db and KORI.db.profile
     if not db or not db.general then
         return 0.05, 0.05, 0.05, 0.95  -- Fallback to neutral dark
     end
@@ -4511,7 +4511,7 @@ end
 
 -- Safe font setter with fallback for missing font files
 -- LSM:Fetch returns a path even if the file doesn't exist, so SetFont() can silently fail
-function QUICore:SafeSetFont(fontString, fontPath, size, flags)
+function KORICore:SafeSetFont(fontString, fontPath, size, flags)
     if not fontString then return end
     fontString:SetFont(fontPath, size, flags or "")
     -- Check if font was actually set (GetFont returns nil if failed)
@@ -4522,7 +4522,7 @@ function QUICore:SafeSetFont(fontString, fontPath, size, flags)
     end
 end
 
-function QUICore:RefreshAll()
+function KORICore:RefreshAll()
     for _, name in ipairs(self.viewers) do
         local viewer = _G[name]
         if viewer and viewer:IsShown() then
@@ -4573,10 +4573,10 @@ local globalFontHooksInitialized = false
 local globalFontPending = false
 
 local function GetGlobalFontPath()
-    if not QUICore.db or not QUICore.db.profile or not QUICore.db.profile.general then
+    if not KORICore.db or not KORICore.db.profile or not KORICore.db.profile.general then
         return KORI_FONT_PATH
     end
-    local fontName = QUICore.db.profile.general.font or "Korivash"
+    local fontName = KORICore.db.profile.general.font or "Korivash"
     local fontPath = LSM:Fetch("font", fontName)
     return fontPath or KORI_FONT_PATH
 end
@@ -4615,13 +4615,13 @@ local function ScheduleGlobalFontApply()
     globalFontPending = true
     C_Timer.After(0.05, function()
         globalFontPending = false
-        if QUICore.ApplyGlobalFont then
-            QUICore:ApplyGlobalFont()
+        if KORICore.ApplyGlobalFont then
+            KORICore:ApplyGlobalFont()
         end
     end)
 end
 
-function QUICore:ApplyGlobalFont()
+function KORICore:ApplyGlobalFont()
     -- Check if feature is enabled
     if not self.db or not self.db.profile or not self.db.profile.general then return end
     if not self.db.profile.general.applyGlobalFontToBlizzard then return end
@@ -4647,14 +4647,14 @@ function QUICore:ApplyGlobalFont()
         if ObjectiveTrackerFrame then
             if type(ObjectiveTracker_Update) == "function" then
                 hooksecurefunc("ObjectiveTracker_Update", function()
-                    if not QUICore.db.profile.general.applyGlobalFontToBlizzard then return end
+                    if not KORICore.db.profile.general.applyGlobalFontToBlizzard then return end
                     local fp = GetGlobalFontPath()
                     ApplyFontToFrameRecursive(ObjectiveTrackerFrame, fp)
                 end)
             else
                 -- Fallback: hook frame's OnShow for expansion versions without ObjectiveTracker_Update
                 ObjectiveTrackerFrame:HookScript("OnShow", function(self)
-                    if not QUICore.db.profile.general.applyGlobalFontToBlizzard then return end
+                    if not KORICore.db.profile.general.applyGlobalFontToBlizzard then return end
                     local fp = GetGlobalFontPath()
                     ApplyFontToFrameRecursive(self, fp)
                 end)
@@ -4664,7 +4664,7 @@ function QUICore:ApplyGlobalFont()
         -- Hook Tooltip display
         if GameTooltip then
             hooksecurefunc("GameTooltip_SetDefaultAnchor", function(tooltip)
-                if not QUICore.db.profile.general.applyGlobalFontToBlizzard then return end
+                if not KORICore.db.profile.general.applyGlobalFontToBlizzard then return end
                 local fp = GetGlobalFontPath()
                 ApplyFontToFrameRecursive(tooltip, fp)
             end)
@@ -4673,7 +4673,7 @@ function QUICore:ApplyGlobalFont()
         -- Hook chat frame font size changes
         if FCF_SetChatWindowFontSize then
             hooksecurefunc("FCF_SetChatWindowFontSize", function(chatFrame, fontSize)
-                if not QUICore.db.profile.general.applyGlobalFontToBlizzard then return end
+                if not KORICore.db.profile.general.applyGlobalFontToBlizzard then return end
                 local fp = GetGlobalFontPath()
                 if chatFrame and chatFrame.SetFont then
                     -- Apply global font directly to ScrollingMessageFrame (not just children)
@@ -4688,8 +4688,8 @@ function QUICore:ApplyGlobalFont()
         chatFontEventFrame:RegisterEvent("UPDATE_CHAT_WINDOWS")
         chatFontEventFrame:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS")
         chatFontEventFrame:SetScript("OnEvent", function()
-            if not QUICore.db or not QUICore.db.profile then return end
-            if not QUICore.db.profile.general.applyGlobalFontToBlizzard then return end
+            if not KORICore.db or not KORICore.db.profile then return end
+            if not KORICore.db.profile.general.applyGlobalFontToBlizzard then return end
             C_Timer.After(0.05, function()
                 local fp = GetGlobalFontPath()
                 for i = 1, NUM_CHAT_WINDOWS do

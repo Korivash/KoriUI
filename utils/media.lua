@@ -106,9 +106,9 @@ local BORDER = MediaType.BORDER
     LSM:Register(STATUSBAR, "Korivash v6 Inverse", koriV6InverseTexturePath)
     LSM:Register(BORDER, "Korivash v6 Inverse", koriV6InverseTexturePath)
 
-    -- Register QUI Stripes texture (for absorb shield overlays)
+    -- Register KORI Stripes texture (for absorb shield overlays)
     local absorbStripeTexturePath = "Interface\\AddOns\\KoriUI\\assets\\absorb_stripe"
-    LSM:Register(STATUSBAR, "QUI Stripes", absorbStripeTexturePath)
+    LSM:Register(STATUSBAR, "KORI Stripes", absorbStripeTexturePath)
 
 -- Function to check if our media is registered
 function KoriUI:CheckMediaRegistration()

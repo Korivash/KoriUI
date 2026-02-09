@@ -162,9 +162,9 @@ local defaultState = {
 -- Settings Access
 ---------------------------------------------------------------------------
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.mplusTimer then
-        return QUICore.db.profile.mplusTimer
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.mplusTimer then
+        return KORICore.db.profile.mplusTimer
     end
     return {
         enabled = true,
@@ -191,9 +191,9 @@ end
 local function GetPosition()
     local defaults = { point = "TOPRIGHT", relPoint = "TOPRIGHT", x = -100, y = -200 }
 
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.mplusTimer then
-        local pos = QUICore.db.profile.mplusTimer.position
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.mplusTimer then
+        local pos = KORICore.db.profile.mplusTimer.position
         if pos then
             return {
                 point = pos.point or defaults.point,
@@ -207,12 +207,12 @@ local function GetPosition()
 end
 
 local function SavePosition(point, relPoint, x, y)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile then
-        if not QUICore.db.profile.mplusTimer then
-            QUICore.db.profile.mplusTimer = {}
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile then
+        if not KORICore.db.profile.mplusTimer then
+            KORICore.db.profile.mplusTimer = {}
         end
-        QUICore.db.profile.mplusTimer.position = {
+        KORICore.db.profile.mplusTimer.position = {
             point = point,
             relPoint = relPoint,
             x = x,
@@ -230,9 +230,9 @@ end
 -- Font Helper
 ---------------------------------------------------------------------------
 local function GetGlobalFont()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile then
-        local fontName = QUICore.db.profile.general and QUICore.db.profile.general.font
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile then
+        local fontName = KORICore.db.profile.general and KORICore.db.profile.general.font
         if fontName then
             local LSM = LibStub and LibStub("LibSharedMedia-3.0", true)
             if LSM then
@@ -1496,7 +1496,7 @@ end
 ---------------------------------------------------------------------------
 function MPlusTimer:EnableDemoMode()
     if self.state.inChallenge then
-        print("|cFF34D4E8[QUI M+ Timer]|r Can't enable demo mode during active M+!")
+        print("|cFF34D4E8[KORI M+ Timer]|r Can't enable demo mode during active M+!")
         return
     end
 
@@ -1523,7 +1523,7 @@ function MPlusTimer:EnableDemoMode()
     self:Show()
     self:StartTimerLoop()
 
-    print("|cFF34D4E8[QUI M+ Timer]|r Demo mode enabled. Type /qmpt demo to disable.")
+    print("|cFF34D4E8[KORI M+ Timer]|r Demo mode enabled. Type /qmpt demo to disable.")
 end
 
 function MPlusTimer:DisableDemoMode()
@@ -1533,7 +1533,7 @@ function MPlusTimer:DisableDemoMode()
     self:Hide()
     self:ResetState()
 
-    print("|cFF34D4E8[QUI M+ Timer]|r Demo mode disabled.")
+    print("|cFF34D4E8[KORI M+ Timer]|r Demo mode disabled.")
 end
 
 function MPlusTimer:ToggleDemoMode()
@@ -1731,8 +1731,8 @@ eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 ---------------------------------------------------------------------------
 -- Slash Command
 ---------------------------------------------------------------------------
-SLASH_QUIIMPLUSTIMER1 = "/qmpt"
-SlashCmdList["QUIIMPLUSTIMER"] = function(msg)
+SLASH_KORIIMPLUSTIMER1 = "/qmpt"
+SlashCmdList["KORIIMPLUSTIMER"] = function(msg)
     local cmd = msg:lower():trim()
 
     if cmd == "demo" then
@@ -1742,7 +1742,7 @@ SlashCmdList["QUIIMPLUSTIMER"] = function(msg)
     elseif cmd == "hide" then
         MPlusTimer:Hide()
     else
-        print("|cFF34D4E8[QUI M+ Timer]|r Commands:")
+        print("|cFF34D4E8[KORI M+ Timer]|r Commands:")
         print("  /qmpt demo - Toggle demo mode")
         print("  /qmpt show - Show timer")
         print("  /qmpt hide - Hide timer")

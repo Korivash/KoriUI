@@ -5,12 +5,12 @@
 ]]
 
 local ADDON_NAME, ns = ...
-local QUI = KoriUI
+local KORI = KoriUI
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- Create GUI namespace
-QUI.GUI = QUI.GUI or {}
-local GUI = QUI.GUI
+KORI.GUI = KORI.GUI or {}
+local GUI = KORI.GUI
 
 ---------------------------------------------------------------------------
 -- THEME COLORS - "Mint Condition" Palette
@@ -283,7 +283,7 @@ function GUI:CreateButton(parent, text, width, height, onClick)
 end
 
 ---------------------------------------------------------------------------
--- CONFIRMATION DIALOG (QUI-styled replacement for StaticPopup)
+-- CONFIRMATION DIALOG (KORI-styled replacement for StaticPopup)
 -- Singleton frame, lazy-created and reused
 ---------------------------------------------------------------------------
 local confirmDialog = nil
@@ -3269,7 +3269,7 @@ function GUI:CreateMainFrame()
     local PADDING = 20       -- Left + right padding (10 each side)
 
     -- Load saved width first (so tab width calculation uses actual panel width)
-    local savedWidth = QUI.QUICore and QUI.QUICore.db and QUI.QUICore.db.profile.configPanelWidth or FRAME_WIDTH
+    local savedWidth = KORI.KORICore and KORI.KORICore.db and KORI.KORICore.db.profile.configPanelWidth or FRAME_WIDTH
 
     -- Calculate button width to fit exactly in frame (use savedWidth, not default)
     local availableWidth = savedWidth - PADDING - (TAB_SPACING * (TABS_PER_ROW - 1))
@@ -3286,7 +3286,7 @@ function GUI:CreateMainFrame()
     CreateBackdrop(frame, C.bg, C.border)
 
     -- Apply saved panel alpha
-    local savedAlpha = QUI.QUICore and QUI.QUICore.db and QUI.QUICore.db.profile.configPanelAlpha or 0.97
+    local savedAlpha = KORI.KORICore and KORI.KORICore.db and KORI.KORICore.db.profile.configPanelAlpha or 0.97
     frame:SetBackdropColor(C.bg[1], C.bg[2], C.bg[3], savedAlpha)
 
     self.MainFrame = frame
@@ -3369,14 +3369,14 @@ function GUI:CreateMainFrame()
         value = math.max(0.8, math.min(1.5, value))
         value = math.floor(value * 20 + 0.5) / 20  -- Round to 0.05
         frame:SetScale(value)
-        if QUI.QUICore and QUI.QUICore.db then
-            QUI.QUICore.db.profile.configPanelScale = value
+        if KORI.KORICore and KORI.KORICore.db then
+            KORI.KORICore.db.profile.configPanelScale = value
         end
         return value
     end
 
     -- Initialize scale from saved value
-    local savedScale = QUI.QUICore and QUI.QUICore.db and QUI.QUICore.db.profile.configPanelScale or 1.0
+    local savedScale = KORI.KORICore and KORI.KORICore.db and KORI.KORICore.db.profile.configPanelScale or 1.0
     scaleSlider:SetValue(savedScale)
     scaleEditBox:SetText(string.format("%.2f", savedScale))
     frame:SetScale(savedScale)
@@ -3574,8 +3574,8 @@ function GUI:CreateMainFrame()
             self:SetScript("OnUpdate", nil)
 
             -- Save dimensions to DB
-            if QUI.QUICore and QUI.QUICore.db then
-                QUI.QUICore.db.profile.configPanelWidth = frame:GetWidth()
+            if KORI.KORICore and KORI.KORICore.db then
+                KORI.KORICore.db.profile.configPanelWidth = frame:GetWidth()
             end
         end
     end)
@@ -3867,4 +3867,4 @@ function GUI:Toggle()
 end
 
 -- Store reference
-QUI.GUI = GUI
+KORI.GUI = GUI

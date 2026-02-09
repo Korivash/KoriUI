@@ -3,8 +3,8 @@
 -- A simple screen center crosshair overlay
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 local crosshairFrame, horizLine, vertLine, horizBorder, vertBorder
 
@@ -21,9 +21,9 @@ local RANGE_CHECK_INTERVAL = 0.1  -- Check range 10 times per second
 -- Get settings from database
 ---------------------------------------------------------------------------
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.crosshair then
-        return QUICore.db.profile.crosshair
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.crosshair then
+        return KORICore.db.profile.crosshair
     end
     return nil
 end
@@ -430,7 +430,7 @@ end)
 ---------------------------------------------------------------------------
 _G.KoriUI_RefreshCrosshair = UpdateCrosshair
 
-QUI.Crosshair = {
+KORI.Crosshair = {
     Update = UpdateCrosshair,
     Create = CreateCrosshair,
 }

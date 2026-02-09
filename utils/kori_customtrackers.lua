@@ -1,11 +1,11 @@
 --[[
-    QUI Custom Trackers
+    KORI Custom Trackers
     User-configurable icon bars for tracking spells, items, trinkets, consumables
     Drag-and-drop spell/item input
 ]]
 
 local ADDON_NAME, ns = ...
-local QUI = KoriUI  -- Use global addon table, not ns.Addon (which is QUICore)
+local KORI = KoriUI  -- Use global addon table, not ns.Addon (which is KORICore)
 local LSM = LibStub("LibSharedMedia-3.0")
 local LCG = LibStub and LibStub("LibCustomGlow-1.0", true)  -- For active state glow
 local IsSecretValue = function(v) return ns.Utils and ns.Utils.IsSecretValue and ns.Utils.IsSecretValue(v) or false end
@@ -17,8 +17,8 @@ local CustomTrackers = {}
 CustomTrackers.activeBars = {}   -- Runtime bar frames indexed by barID
 CustomTrackers.infoCache = {}    -- Cached spell/item info
 
--- Will be set during initialization when QUICore is available
-local QUICore
+-- Will be set during initialization when KORICore is available
+local KORICore
 
 ---------------------------------------------------------------------------
 -- CONSTANTS
@@ -62,7 +62,7 @@ end
 
 -- Helper: Get recharge edge setting from global cooldownSwipe settings
 local function GetRechargeEdgeSetting()
-    local core = _G.KoriUI and _G.KoriUI.QUICore
+    local core = _G.KoriUI and _G.KoriUI.KORICore
     if core and core.db and core.db.profile and core.db.profile.cooldownSwipe then
         return core.db.profile.cooldownSwipe.showRechargeEdge
     end
@@ -176,15 +176,15 @@ end
 -- DATABASE ACCESS
 ---------------------------------------------------------------------------
 local function GetDB()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.customTrackers then
-        return QUICore.db.profile.customTrackers
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.customTrackers then
+        return KORICore.db.profile.customTrackers
     end
     return nil
 end
 
 local function GetGlobalDB()
-    if QUICore and QUICore.db and QUICore.db.global then
-        return QUICore.db.global
+    if KORICore and KORICore.db and KORICore.db.global then
+        return KORICore.db.global
     end
     return nil
 end
@@ -353,8 +353,8 @@ CustomTrackers.GetBarEntries = GetBarEntries
 -- FONT HELPERS (matches NCDM pattern)
 ---------------------------------------------------------------------------
 local function GetGeneralFont()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         local fontName = general.font or "Friz Quadrata TT"
         return LSM:Fetch("font", fontName) or "Fonts\\FRIZQT__.TTF"
     end
@@ -362,8 +362,8 @@ local function GetGeneralFont()
 end
 
 local function GetGeneralFontOutline()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general.fontOutline or "OUTLINE"
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general.fontOutline or "OUTLINE"
     end
     return "OUTLINE"
 end
@@ -546,7 +546,7 @@ local function GetSpellBuffInfo(spellID)
     -- Prefer SpellScanner whenever available.
     -- Reason: some spells apply a DIFFERENT aura spellID than the cast spellID
     -- (e.g. Angelic Feather), and SpellScanner maintains that cast→buff mapping.
-    local scanner = QUI and QUI.SpellScanner
+    local scanner = KORI and KORI.SpellScanner
     if scanner and scanner.IsSpellActive then
         local isActive, expiration, duration = scanner.IsSpellActive(spellID)
         if isActive then
@@ -684,16 +684,16 @@ local function StartActiveGlow(icon, config)
                 color = color,
                 duration = duration,
                 startAnim = true,  -- Show the burst effect before looping
-                key = "_QUIActiveGlow",
+                key = "_KORIActiveGlow",
             })
             icon._activeGlowShown = true
         end)
     elseif glowType == "Pixel Glow" then
-        LCG.PixelGlow_Start(icon, color, lines, frequency, nil, thickness, 0, 0, true, "_QUIActiveGlow")
+        LCG.PixelGlow_Start(icon, color, lines, frequency, nil, thickness, 0, 0, true, "_KORIActiveGlow")
         icon._activeGlowShown = true
         icon._activeGlowType = glowType
     elseif glowType == "Autocast Shine" then
-        LCG.AutoCastGlow_Start(icon, color, lines, frequency, scale, 0, 0, "_QUIActiveGlow")
+        LCG.AutoCastGlow_Start(icon, color, lines, frequency, scale, 0, 0, "_KORIActiveGlow")
         icon._activeGlowShown = true
         icon._activeGlowType = glowType
     end
@@ -720,7 +720,7 @@ local function StopActiveGlow(icon)
     local glowType = icon._activeGlowType or "Pixel Glow"
 
     if glowType == "Proc Glow" then
-        pcall(LCG.ProcGlow_Stop, icon, "_QUIActiveGlow")
+        pcall(LCG.ProcGlow_Stop, icon, "_KORIActiveGlow")
 
         -- Remove mask from icon texture
         if icon.tex and icon._procGlowMask then
@@ -733,9 +733,9 @@ local function StopActiveGlow(icon)
             icon._borderWasShown = nil
         end
     elseif glowType == "Pixel Glow" then
-        pcall(LCG.PixelGlow_Stop, icon, "_QUIActiveGlow")
+        pcall(LCG.PixelGlow_Stop, icon, "_KORIActiveGlow")
     elseif glowType == "Autocast Shine" then
-        pcall(LCG.AutoCastGlow_Stop, icon, "_QUIActiveGlow")
+        pcall(LCG.AutoCastGlow_Stop, icon, "_KORIActiveGlow")
     end
 
     icon._activeGlowShown = nil
@@ -790,7 +790,7 @@ local function CreateTrackerIcon(parent)
         if self:GetAlpha() == 0 then return end  -- Don't show tooltip when visually hidden
         if self.entry then
             -- Respect tooltip anchor setting
-            local tooltipSettings = QUI.QUICore and QUI.QUICore.db and QUI.QUICore.db.profile and QUI.QUICore.db.profile.tooltip
+            local tooltipSettings = KORI.KORICore and KORI.KORICore.db and KORI.KORICore.db.profile and KORI.KORICore.db.profile.tooltip
             if tooltipSettings and tooltipSettings.anchorToCursor then
                 GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
             else
@@ -950,7 +950,7 @@ local function StyleTrackerIcon(icon, config)
 
     -- Keybind text style (uses global settings from customTrackers.keybinds)
     if icon.keybindText then
-        local db = QUICore and QUICore.db and QUICore.db.profile
+        local db = KORICore and KORICore.db and KORICore.db.profile
         local keybindSettings = db and db.customTrackers and db.customTrackers.keybinds
         if keybindSettings then
             icon.keybindText:SetFont(fontPath, keybindSettings.keybindTextSize or 10, fontOutline)
@@ -971,7 +971,7 @@ end
 local function ApplyKeybindToTrackerIcon(icon)
     if not icon or not icon.entry then return end
 
-    local db = QUICore and QUICore.db and QUICore.db.profile
+    local db = KORICore and KORICore.db and KORICore.db.profile
     local keybindSettings = db and db.customTrackers and db.customTrackers.keybinds
 
     if not keybindSettings or not keybindSettings.showKeybinds then
@@ -987,8 +987,8 @@ local function ApplyKeybindToTrackerIcon(icon)
     local entry = icon.entry
 
     -- Access keybind functions from ns namespace (addon namespace, not AceAddon)
-    local QUIKeybinds = ns and ns.Keybinds
-    if not QUIKeybinds then
+    local KORIKeybinds = ns and ns.Keybinds
+    if not KORIKeybinds then
         if icon.keybindText then
             icon.keybindText:Hide()
         end
@@ -996,21 +996,21 @@ local function ApplyKeybindToTrackerIcon(icon)
     end
 
     if entry.type == "spell" and entry.id then
-        keybind = QUIKeybinds.GetKeybindForSpell(entry.id)
+        keybind = KORIKeybinds.GetKeybindForSpell(entry.id)
         -- Try spell name fallback if no keybind found
-        if not keybind and QUIKeybinds.GetKeybindForSpellName then
+        if not keybind and KORIKeybinds.GetKeybindForSpellName then
             local spellInfo = C_Spell.GetSpellInfo(entry.id)
             if spellInfo and spellInfo.name then
-                keybind = QUIKeybinds.GetKeybindForSpellName(spellInfo.name)
+                keybind = KORIKeybinds.GetKeybindForSpellName(spellInfo.name)
             end
         end
     elseif entry.type == "item" and entry.id then
-        keybind = QUIKeybinds.GetKeybindForItem(entry.id)
+        keybind = KORIKeybinds.GetKeybindForItem(entry.id)
         -- Try item name fallback if no keybind found
-        if not keybind and QUIKeybinds.GetKeybindForItemName then
+        if not keybind and KORIKeybinds.GetKeybindForItemName then
             local itemName = C_Item.GetItemInfo(entry.id)
             if itemName then
-                keybind = QUIKeybinds.GetKeybindForItemName(itemName)
+                keybind = KORIKeybinds.GetKeybindForItemName(itemName)
             end
         end
     end
@@ -1307,7 +1307,7 @@ local function RebuildActiveSet(bar)
     LayoutVisibleIcons(bar)
 
     -- DEBUG: Remove this line after verifying the optimization works
-    -- print("|cFF00FF00[QUI Debug]|r RebuildActiveSet: " .. #bar.activeIcons .. " of " .. #(bar.icons or {}) .. " icons active")
+    -- print("|cFF00FF00[KORI Debug]|r RebuildActiveSet: " .. #bar.activeIcons .. " of " .. #(bar.icons or {}) .. " icons active")
 end
 
 -- Module-level reference for event handlers
@@ -1823,12 +1823,12 @@ function CustomTrackers:CreateBar(barID, config)
     bar:SetFrameStrata("MEDIUM")
 
     -- Apply HUD layer priority
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local hudLayering = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.hudLayering
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local hudLayering = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.hudLayering
     local layerPriority = hudLayering and hudLayering.customBars or 5
     local frameLevel = 50  -- Default fallback
-    if QUICore and QUICore.GetHUDFrameLevel then
-        frameLevel = QUICore:GetHUDFrameLevel(layerPriority)
+    if KORICore and KORICore.GetHUDFrameLevel then
+        frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
     end
     bar:SetFrameLevel(frameLevel)
 
@@ -2132,7 +2132,7 @@ end
 -- GLOBAL REFRESH FUNCTION
 ---------------------------------------------------------------------------
 _G.KoriUI_RefreshCustomTrackers = function()
-    -- Use local CustomTrackers directly since QUICore might not be set yet
+    -- Use local CustomTrackers directly since KORICore might not be set yet
     if CustomTrackers then
         CustomTrackers:RefreshAll()
     end
@@ -2262,10 +2262,10 @@ initFrame:SetScript("OnEvent", function(self, event, ...)
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
-        -- Set QUICore reference now that it's available
-        QUICore = QUI.QUICore
-        if QUICore then
-            QUICore.CustomTrackers = CustomTrackers
+        -- Set KORICore reference now that it's available
+        KORICore = KORI.KORICore
+        if KORICore then
+            KORICore.CustomTrackers = CustomTrackers
         end
 
         C_Timer.After(0.6, function()
@@ -2307,7 +2307,7 @@ local CustomTrackersVisibility = {
 }
 
 local function GetCustomTrackersVisibilitySettings()
-    local db = QUI.QUICore and QUI.QUICore.db
+    local db = KORI.KORICore and KORI.KORICore.db
     if not db or not db.profile then return nil end
     return db.profile.customTrackersVisibility
 end

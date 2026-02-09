@@ -13,21 +13,21 @@ local RESOURCE_BAR_HEIGHT = 40  -- Match button height
 
 -- Get skinning colors
 local function GetColors()
-    local QUI = _G.KoriUI
+    local KORI = _G.KoriUI
     local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
-    if QUI and QUI.GetSkinColor then
-        sr, sg, sb, sa = QUI:GetSkinColor()
+    if KORI and KORI.GetSkinColor then
+        sr, sg, sb, sa = KORI:GetSkinColor()
     end
-    if QUI and QUI.GetSkinBgColor then
-        bgr, bgg, bgb, bga = QUI:GetSkinBgColor()
+    if KORI and KORI.GetSkinBgColor then
+        bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
     end
 
     return sr, sg, sb, sa, bgr, bgg, bgb, bga
 end
 
--- Style action button with QUI theme
+-- Style action button with KORI theme
 local function StyleActionButton(button, index, sr, sg, sb, sa, bgr, bgg, bgb, bga)
     if not button then return end
 
@@ -125,8 +125,8 @@ end
 
 -- Main skinning function
 local function SkinOverrideActionBar()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    local settings = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    local settings = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general
     if not settings or not settings.skinOverrideActionBar then return end
 
     local bar = _G.OverrideActionBar
@@ -261,7 +261,7 @@ local function SkinOverrideActionBar()
 
     -- BUG-005: Reset MicroMenu to normal position after skinning
     -- Blizzard's UpdateMicroButtons() positions MicroMenu using hardcoded offsets (x=648+)
-    -- based on the default bar size. After QUI resizes the bar to ~332px, those offsets
+    -- based on the default bar size. After KORI resizes the bar to ~332px, those offsets
     -- place MicroMenu outside the visible bar area. Reset it to its normal container.
     -- Use C_Timer.After(0) to avoid taint from secure code execution
     if MicroMenu and MicroMenu.ResetMicroMenuPosition then
@@ -338,7 +338,7 @@ local function SetupOverrideBarHooks()
 
     -- BUG-005: Hook UpdateMicroButtons to reset MicroMenu position persistently
     -- Blizzard calls this in OnShow and UpdateSkin, which can re-position MicroMenu
-    -- after QUI's initial skinning. This hook ensures MicroMenu stays in normal position.
+    -- after KORI's initial skinning. This hook ensures MicroMenu stays in normal position.
     -- Use C_Timer.After(0) to break taint chain from secure Blizzard code
     if bar.UpdateMicroButtons then
         hooksecurefunc(bar, "UpdateMicroButtons", function()

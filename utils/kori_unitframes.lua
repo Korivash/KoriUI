@@ -1,11 +1,11 @@
 --[[
-    QUI Unit Frames - New Implementation
+    KORI Unit Frames - New Implementation
     Creates secure unit frames for Player, Target, ToT, Pet, Focus, Boss
     Features: Dark mode, class colors, power bars, castbars, preview mode
 ]]
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 local IsSecretValue = function(v) return ns.Utils and ns.Utils.IsSecretValue and ns.Utils.IsSecretValue(v) or false end
 
@@ -132,16 +132,16 @@ end
 -- HELPER: Get database
 ---------------------------------------------------------------------------
 local function GetDB()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.quiUnitFrames then
-        return QUICore.db.profile.quiUnitFrames
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.quiUnitFrames then
+        return KORICore.db.profile.quiUnitFrames
     end
     return nil
 end
 
 local function GetGeneralSettings()
     -- Get global general settings (font, texture, etc.) from main db
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general
     end
     return nil
 end
@@ -152,11 +152,11 @@ local function GetUnitSettings(unit)
 end
 
 ---------------------------------------------------------------------------
--- HELPER: Pixel-perfect scaling (uses QUICore:Scale if available)
+-- HELPER: Pixel-perfect scaling (uses KORICore:Scale if available)
 ---------------------------------------------------------------------------
 local function Scale(x)
-    if QUICore and QUICore.Scale then
-        return QUICore:Scale(x)
+    if KORICore and KORICore.Scale then
+        return KORICore:Scale(x)
     end
     return x
 end
@@ -231,7 +231,7 @@ end
 local function GetAbsorbTexturePath(textureName)
     local name = textureName
     if not name or name == "" then
-        name = "QUI Stripes"
+        name = "KORI Stripes"
     end
     return LSM:Fetch("statusbar", name) or "Interface\\AddOns\\KoriUI\\assets\\absorb_stripe"
 end
@@ -3222,11 +3222,11 @@ function KORI_UF:RefreshFrame(unitKey)
         local texturePath = GetTexturePath(settings.texture)
 
         -- Get HUD layer priority for boss frames
-        local hudLayering = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.hudLayering
+        local hudLayering = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.hudLayering
         local bossLayerPriority = hudLayering and hudLayering.bossFrames or 4
         local bossFrameLevel
-        if QUICore and QUICore.GetHUDFrameLevel then
-            bossFrameLevel = QUICore:GetHUDFrameLevel(bossLayerPriority)
+        if KORICore and KORICore.GetHUDFrameLevel then
+            bossFrameLevel = KORICore:GetHUDFrameLevel(bossLayerPriority)
         end
 
         for i = 1, 5 do
@@ -3431,7 +3431,7 @@ function KORI_UF:RefreshFrame(unitKey)
     if not settings then return end
 
     -- Apply HUD layer priority
-    local hudLayering = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.hudLayering
+    local hudLayering = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.hudLayering
     local layerKey = unitKey .. "Frame"
     -- Map unitKey to hudLayering key (player -> playerFrame, target -> targetFrame, etc.)
     local layerPriority
@@ -3448,8 +3448,8 @@ function KORI_UF:RefreshFrame(unitKey)
     else
         layerPriority = 4  -- Default for any other unit type
     end
-    if QUICore and QUICore.GetHUDFrameLevel then
-        local frameLevel = QUICore:GetHUDFrameLevel(layerPriority)
+    if KORICore and KORICore.GetHUDFrameLevel then
+        local frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
         frame:SetFrameLevel(frameLevel)
     end
 
@@ -3715,8 +3715,8 @@ function KORI_UF:RefreshFrame(unitKey)
         -- Apply HUD layer priority to indicator frame (independent from player frame)
         if frame.indicatorFrame then
             local indicatorPriority = hudLayering and hudLayering.playerIndicators or 6
-            if QUICore and QUICore.GetHUDFrameLevel then
-                local indicatorLevel = QUICore:GetHUDFrameLevel(indicatorPriority)
+            if KORICore and KORICore.GetHUDFrameLevel then
+                local indicatorLevel = KORICore:GetHUDFrameLevel(indicatorPriority)
                 frame.indicatorFrame:SetFrameLevel(indicatorLevel)
             end
         end
@@ -3922,7 +3922,7 @@ end
 
 function KORI_UF:EnableEditMode()
     if InCombatLockdown() then
-        print("|cFF4169E1KoriUI|r: Cannot enter Edit Mode during combat.")
+        print("|cFF56D1FFKoriUI|r: Cannot enter Edit Mode during combat.")
         return
     end
 
@@ -4076,9 +4076,9 @@ function KORI_UF:EnableEditMode()
         -- Click handler to select this element and show its arrows
         frame:SetScript("OnMouseDown", function(self, button)
             if button == "LeftButton" and KORI_UF.editModeActive then
-                local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-                if QUICore and QUICore.SelectEditModeElement then
-                    QUICore:SelectEditModeElement("unitframe", self._editModeUnitKey)
+                local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+                if KORICore and KORICore.SelectEditModeElement then
+                    KORICore:SelectEditModeElement("unitframe", self._editModeUnitKey)
                 end
             end
         end)
@@ -4205,16 +4205,16 @@ function KORI_UF:EnableEditMode()
         self:ShowPreview(unitKey)
     end
     
-    print("|cFF4169E1KoriUI|r: Edit Mode |cff00ff00ENABLED|r - Drag frames to reposition.")
+    print("|cFF56D1FFKoriUI|r: Edit Mode |cff00ff00ENABLED|r - Drag frames to reposition.")
 end
 
 function KORI_UF:DisableEditMode()
     self.editModeActive = false
 
     -- Clear Edit Mode selection (hides arrows on selected element)
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.ClearEditModeSelection then
-        QUICore:ClearEditModeSelection()
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.ClearEditModeSelection then
+        KORICore:ClearEditModeSelection()
     end
 
     -- Hide the exit button
@@ -4268,7 +4268,7 @@ function KORI_UF:DisableEditMode()
         end
     end
     
-    print("|cFF4169E1KoriUI|r: Edit Mode |cffff0000DISABLED|r - Positions saved.")
+    print("|cFF56D1FFKoriUI|r: Edit Mode |cffff0000DISABLED|r - Positions saved.")
 end
 
 function KORI_UF:ToggleEditMode()
@@ -4415,7 +4415,7 @@ function KORI_UF:HideBlizzardFrames()
         KillBlizzardFrame(PlayerFrame)
     end
     
-    -- Hide Blizzard Player Castbar if our QUI player castbar is enabled
+    -- Hide Blizzard Player Castbar if our KORI player castbar is enabled
     if db.player and db.player.castbar and db.player.castbar.enabled then
         if PlayerCastingBarFrame then
             PlayerCastingBarFrame:SetAlpha(0)
@@ -4456,7 +4456,7 @@ function KORI_UF:HideBlizzardFrames()
         KillBlizzardFrame(PetFrame)
     end
     
-    -- Hide Focus frame visuals (always hide Blizzard focus frame when QUI unit frames are enabled)
+    -- Hide Focus frame visuals (always hide Blizzard focus frame when KORI unit frames are enabled)
     HideBlizzardFocusVisuals()
     
     -- Hide Boss frames (allow in Edit Mode)
@@ -4622,7 +4622,7 @@ end
 ---------------------------------------------------------------------------
 -- BLIZZARD EDIT MODE INTEGRATION
 ---------------------------------------------------------------------------
--- Hook Blizzard's Edit Mode to trigger QUI's edit mode when user enters via Esc > Edit Mode
+-- Hook Blizzard's Edit Mode to trigger KORI's edit mode when user enters via Esc > Edit Mode
 function KORI_UF:HookBlizzardEditMode()
     if not EditModeManagerFrame then return end
     if self._blizzEditModeHooked then return end
@@ -4647,7 +4647,7 @@ function KORI_UF:HookBlizzardEditMode()
     end)
 end
 
--- Hide Blizzard's selection frames when QUI frames are enabled
+-- Hide Blizzard's selection frames when KORI frames are enabled
 -- Called during EnableEditMode() to prevent visual conflicts
 function KORI_UF:HideBlizzardSelectionFrames()
     local function HideSelection(parent, unitKey)
@@ -4658,7 +4658,7 @@ function KORI_UF:HideBlizzardSelectionFrames()
 
         parent.Selection:Hide()
 
-        -- Hook OnShow to persistently hide while QUI frames are enabled
+        -- Hook OnShow to persistently hide while KORI frames are enabled
         if not parent.Selection._quiHooked then
             parent.Selection._quiHooked = true
             parent.Selection:HookScript("OnShow", function(self)
@@ -4820,11 +4820,11 @@ local function GetAnchorFrame(anchorType)
     elseif anchorType == "utility" then
         return _G["UtilityCooldownViewer"]
     elseif anchorType == "primary" then
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        return QUICore and QUICore.powerBar
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        return KORICore and KORICore.powerBar
     elseif anchorType == "secondary" then
-        local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-        return QUICore and QUICore.secondaryPowerBar
+        local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+        return KORICore and KORICore.secondaryPowerBar
     end
     return nil
 end

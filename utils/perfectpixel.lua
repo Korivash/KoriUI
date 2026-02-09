@@ -3,10 +3,10 @@
 
 local ADDON_NAME, ns = ...
 
--- Get QUICore - must load after koricore_main.lua
-local QUICore = ns.Addon or (KoriUI and KoriUI.QUICore)
+-- Get KORICore - must load after koricore_main.lua
+local KORICore = ns.Addon or (KoriUI and KoriUI.KORICore)
 
-if not QUICore then
+if not KORICore then
     print("|cFFFF0000[KoriUI] ERROR: perfectpixel.lua loaded before koricore_main.lua!|r")
     return
 end
@@ -21,7 +21,7 @@ local InCombatLockdown = InCombatLockdown
 local GetPhysicalScreenSize = GetPhysicalScreenSize
 
 -- Refresh global FX scenes (prevents taint from RefreshModelScene)
-function QUICore:RefreshGlobalFX()
+function KORICore:RefreshGlobalFX()
     if _G.GlobalFXDialogModelScene then
         _G.GlobalFXDialogModelScene:Hide()
         _G.GlobalFXDialogModelScene:Show()
@@ -39,8 +39,8 @@ function QUICore:RefreshGlobalFX()
 end
 
 -- Check for Eyefinity (triple monitor) setup
-function QUICore:IsEyefinity(width, height)
-    if QUICore.db and QUICore.db.profile.general.eyefinity and width >= 3840 then
+function KORICore:IsEyefinity(width, height)
+    if KORICore.db and KORICore.db.profile.general.eyefinity and width >= 3840 then
         -- HQ resolution
         if width >= 9840 then return 3280 end                   -- WQSXGA
         if width >= 7680 and width < 9840 then return 2560 end  -- WQXGA
@@ -58,8 +58,8 @@ function QUICore:IsEyefinity(width, height)
 end
 
 -- Check for Ultrawide setup
-function QUICore:IsUltrawide(width, height)
-    if QUICore.db and QUICore.db.profile.general.ultrawide and width >= 2560 then
+function KORICore:IsUltrawide(width, height)
+    if KORICore.db and KORICore.db.profile.general.ultrawide and width >= 2560 then
         -- HQ Resolution
         if width >= 3440 and (height == 1440 or height == 1600) then return 2560 end -- DQHD, DQHD+, WQHD & WQHD+
 
@@ -69,16 +69,16 @@ function QUICore:IsUltrawide(width, height)
 end
 
 -- Calculate the UI multiplier for pixel snapping
-function QUICore:UIMult()
+function KORICore:UIMult()
     local uiScale = 1.0
-    if QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        uiScale = QUICore.db.profile.general.uiScale or 1.0
+    if KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        uiScale = KORICore.db.profile.general.uiScale or 1.0
     end
-    QUICore.mult = QUICore.perfect / uiScale
+    KORICore.mult = KORICore.perfect / uiScale
 end
 
 -- Apply UI scale to UIParent
-function QUICore:UIScale()
+function KORICore:UIScale()
     if InCombatLockdown() then
         -- Defer scale change until out of combat
         if not self._UIScalePending then
@@ -91,8 +91,8 @@ function QUICore:UIScale()
         end
     else
         local uiScale = 1.0
-        if QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-            uiScale = QUICore.db.profile.general.uiScale or 1.0
+        if KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+            uiScale = KORICore.db.profile.general.uiScale or 1.0
         end
 
         -- Use pcall to catch protected states not detected by InCombatLockdown
@@ -110,49 +110,49 @@ function QUICore:UIScale()
             return
         end
 
-        QUICore.uiscale = UIParent:GetScale()
-        QUICore.screenWidth, QUICore.screenHeight = GetScreenWidth(), GetScreenHeight()
+        KORICore.uiscale = UIParent:GetScale()
+        KORICore.screenWidth, KORICore.screenHeight = GetScreenWidth(), GetScreenHeight()
 
-        local width, height = QUICore.physicalWidth, QUICore.physicalHeight
-        QUICore.eyefinity = QUICore:IsEyefinity(width, height)
-        QUICore.ultrawide = QUICore:IsUltrawide(width, height)
+        local width, height = KORICore.physicalWidth, KORICore.physicalHeight
+        KORICore.eyefinity = KORICore:IsEyefinity(width, height)
+        KORICore.ultrawide = KORICore:IsUltrawide(width, height)
 
-        local newWidth = QUICore.eyefinity or QUICore.ultrawide
+        local newWidth = KORICore.eyefinity or KORICore.ultrawide
         if newWidth then
             -- Center UIParent for multi-monitor setups
-            width, height = newWidth / (height / QUICore.screenHeight), QUICore.screenHeight
+            width, height = newWidth / (height / KORICore.screenHeight), KORICore.screenHeight
         else
-            width, height = QUICore.screenWidth, QUICore.screenHeight
+            width, height = KORICore.screenWidth, KORICore.screenHeight
         end
 
         -- Refresh GlobalFX if in Retail
         if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and _G.GlobalFXDialogModelScene then
-            QUICore:RefreshGlobalFX()
+            KORICore:RefreshGlobalFX()
         end
     end
 end
 
 -- Get the best pixel size for current setup
-function QUICore:PixelBestSize()
-    return max(0.4, min(1.15, QUICore.perfect))
+function KORICore:PixelBestSize()
+    return max(0.4, min(1.15, KORICore.perfect))
 end
 
 -- Handle UI scale changes
-function QUICore:PixelScaleChanged(event)
+function KORICore:PixelScaleChanged(event)
     if event == 'UI_SCALE_CHANGED' then
-        QUICore.physicalWidth, QUICore.physicalHeight = GetPhysicalScreenSize()
-        QUICore.resolution = format('%dx%d', QUICore.physicalWidth, QUICore.physicalHeight)
-        QUICore.perfect = 768 / QUICore.physicalHeight
+        KORICore.physicalWidth, KORICore.physicalHeight = GetPhysicalScreenSize()
+        KORICore.resolution = format('%dx%d', KORICore.physicalWidth, KORICore.physicalHeight)
+        KORICore.perfect = 768 / KORICore.physicalHeight
     end
 
-    QUICore:UIMult()
-    QUICore:UIScale()
+    KORICore:UIMult()
+    KORICore:UIScale()
 end
 
 -- Scale a value to align with physical pixels
 -- This is the core pixel-perfect function
-function QUICore:Scale(x)
-    local m = QUICore.mult
+function KORICore:Scale(x)
+    local m = KORICore.mult
     if m == 1 or x == 0 then
         return x
     else
@@ -162,7 +162,7 @@ function QUICore:Scale(x)
 end
 
 -- Initialize the pixel perfect system
-function QUICore:InitializePixelPerfect()
+function KORICore:InitializePixelPerfect()
     -- Initialize physical screen size and perfect scale
     self.physicalWidth, self.physicalHeight = GetPhysicalScreenSize()
     self.resolution = format('%dx%d', self.physicalWidth, self.physicalHeight)
@@ -181,7 +181,7 @@ function QUICore:InitializePixelPerfect()
 end
 
 -- Get smart default scale based on screen resolution (Option 3)
-function QUICore:GetSmartDefaultScale()
+function KORICore:GetSmartDefaultScale()
     local _, screenHeight = GetPhysicalScreenSize()
     
     if screenHeight >= 2160 then      -- 4K
@@ -194,7 +194,7 @@ function QUICore:GetSmartDefaultScale()
 end
 
 -- Apply saved UI scale (call this after db is initialized)
-function QUICore:ApplyUIScale()
+function KORICore:ApplyUIScale()
     if self.db and self.db.profile and self.db.profile.general then
         local savedScale = self.db.profile.general.uiScale
         local scaleToApply

@@ -1,5 +1,5 @@
 --[[
-    QUI NCDM - New Cooldown Display Manager
+    KORI NCDM - New Cooldown Display Manager
     Hooks Blizzard's EssentialCooldownViewer and UtilityCooldownViewer
     and re-layouts icons based on per-row configuration.
     
@@ -7,7 +7,7 @@
 ]]
 
 local ADDON_NAME, ns = ...
-local QUICore = ns.Addon
+local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
 
 -- Enable CDM immediately when file loads (before any events fire)
@@ -17,8 +17,8 @@ pcall(function() SetCVar("cooldownViewerEnabled", 1) end)
 -- HELPER: Get font from general settings
 ---------------------------------------------------------------------------
 local function GetGeneralFont()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        local general = QUICore.db.profile.general
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        local general = KORICore.db.profile.general
         local fontName = general.font or "Friz Quadrata TT"
         return LSM:Fetch("font", fontName) or "Fonts\\FRIZQT__.TTF"
     end
@@ -26,8 +26,8 @@ local function GetGeneralFont()
 end
 
 local function GetGeneralFontOutline()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.general then
-        return QUICore.db.profile.general.fontOutline or "OUTLINE"
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.general then
+        return KORICore.db.profile.general.fontOutline or "OUTLINE"
     end
     return "OUTLINE"
 end
@@ -75,8 +75,8 @@ local NCDM = {
 -- HELPER: Get database
 ---------------------------------------------------------------------------
 local function GetDB()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.ncdm then
-        return QUICore.db.profile.ncdm
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.ncdm then
+        return KORICore.db.profile.ncdm
     end
     return nil
 end
@@ -573,10 +573,10 @@ local function LayoutViewer(viewerName, trackerKey)
     viewer.__cdmLayoutRunning = true
 
     -- Apply HUD layer priority
-    local hudLayering = QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.hudLayering
+    local hudLayering = KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.hudLayering
     local layerPriority = hudLayering and hudLayering[trackerKey] or 5
-    if QUICore and QUICore.GetHUDFrameLevel then
-        local frameLevel = QUICore:GetHUDFrameLevel(layerPriority)
+    if KORICore and KORICore.GetHUDFrameLevel then
+        local frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
         viewer:SetFrameLevel(frameLevel)
     end
 
@@ -1354,12 +1354,12 @@ local function GetCDMFrames()
 
     -- KoriUI power bars - always include in CDM visibility control
     -- (standalone mode only affects positioning, not visibility)
-    if QUICore then
-        if QUICore.powerBar then
-            table.insert(frames, QUICore.powerBar)
+    if KORICore then
+        if KORICore.powerBar then
+            table.insert(frames, KORICore.powerBar)
         end
-        if QUICore.secondaryPowerBar then
-            table.insert(frames, QUICore.secondaryPowerBar)
+        if KORICore.secondaryPowerBar then
+            table.insert(frames, KORICore.secondaryPowerBar)
         end
     end
 
@@ -1368,8 +1368,8 @@ end
 
 -- Get cdmVisibility settings from profile
 local function GetCDMVisibilitySettings()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.cdmVisibility then
-        return QUICore.db.profile.cdmVisibility
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.cdmVisibility then
+        return KORICore.db.profile.cdmVisibility
     end
     return nil
 end
@@ -1573,8 +1573,8 @@ local UnitframesVisibility = {
 
 -- Get unitframesVisibility settings from profile
 local function GetUnitframesVisibilitySettings()
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.unitframesVisibility then
-        return QUICore.db.profile.unitframesVisibility
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.unitframesVisibility then
+        return KORICore.db.profile.unitframesVisibility
     end
     return nil
 end

@@ -3,8 +3,8 @@
 -- Glass-style chat frame customization with URL detection and copy support
 ---------------------------------------------------------------------------
 local ADDON_NAME, ns = ...
-local QUI = ns.QUI or {}
-ns.QUI = QUI
+local KORI = ns.KORI or {}
+ns.KORI = KORI
 
 ---------------------------------------------------------------------------
 -- Local references
@@ -41,7 +41,7 @@ local EDITBOX_TEXTURES = {
     "Prompt", "NewcomerHint",
 }
 
--- QUI Color palette for popup styling
+-- KORI Color palette for popup styling
 local KORI_COLORS = {
     bg = {0.067, 0.094, 0.153, 0.97},
     accent = {0.204, 0.827, 0.6, 1},
@@ -52,9 +52,9 @@ local KORI_COLORS = {
 -- Get settings from database
 ---------------------------------------------------------------------------
 local function GetSettings()
-    local QUICore = _G.KoriUI and _G.KoriUI.QUICore
-    if QUICore and QUICore.db and QUICore.db.profile and QUICore.db.profile.chat then
-        return QUICore.db.profile.chat
+    local KORICore = _G.KoriUI and _G.KoriUI.KORICore
+    if KORICore and KORICore.db and KORICore.db.profile and KORICore.db.profile.chat then
+        return KORICore.db.profile.chat
     end
     return nil
 end
@@ -204,7 +204,7 @@ local function HookChatMessages(chatFrame)
 end
 
 ---------------------------------------------------------------------------
--- Create URL copy popup (on demand) - QUI styled
+-- Create URL copy popup (on demand) - KORI styled
 ---------------------------------------------------------------------------
 local function CreateCopyPopup()
     if urlPopup then return urlPopup end
@@ -218,7 +218,7 @@ local function CreateCopyPopup()
         edgeFile = "Interface\\Buttons\\WHITE8x8",
         edgeSize = 2,
     })
-    -- QUI color scheme
+    -- KORI color scheme
     urlPopup:SetBackdropColor(KORI_COLORS.bg[1], KORI_COLORS.bg[2], KORI_COLORS.bg[3], KORI_COLORS.bg[4])
     urlPopup:SetBackdropBorderColor(KORI_COLORS.accent[1], KORI_COLORS.accent[2], KORI_COLORS.accent[3], KORI_COLORS.accent[4])
     urlPopup:EnableMouse(true)
@@ -1172,7 +1172,7 @@ end)
 ---------------------------------------------------------------------------
 _G.KoriUI_RefreshChat = RefreshAll
 
-QUI.Chat = {
+KORI.Chat = {
     Refresh = RefreshAll,
     SkinFrame = SkinChatFrame,
     SkinAll = SkinAllChatFrames,
