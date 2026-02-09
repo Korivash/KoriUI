@@ -21,7 +21,7 @@ local function GetThemeColors()
         return {bgr, bgg, bgb, bga}, {sr, sg, sb, sa}, {0.95, 0.96, 0.97, 1}
     end
     -- Fallback colors
-    return {0.05, 0.05, 0.05, 0.95}, {0.2, 1.0, 0.6, 1}, {0.95, 0.96, 0.97, 1}
+    return {0.05, 0.05, 0.05, 0.95}, {0.290, 0.620, 1.0, 1}, {0.95, 0.96, 0.97, 1}
 end
 
 -- Constants
@@ -1455,7 +1455,7 @@ function Loot:ToggleMovers()
         self:EnableEditMode()
     end
 end
-local EDIT_BORDER_COLOR = { 0.2, 0.8, 0.8, 1 }  -- Cyan/teal to match KORI style
+local EDIT_BORDER_COLOR = { 0.290, 0.620, 1.0, 1 }  -- Blue to match KORI style
 local EDIT_BORDER_SIZE = 2
 
 -- Create border highlight around a frame (matching KORI player frame style)

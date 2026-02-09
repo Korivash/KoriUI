@@ -43,7 +43,7 @@ local function GetSettings()
         inspectPanelScale = 1.0,
         inspectSlotTextSize = 12,
         inspectEnchantClassColor = true,
-        inspectEnchantTextColor = {0.204, 0.827, 0.6},
+        inspectEnchantTextColor = {0.290, 0.620, 1.0},
         inspectNoEnchantTextColor = {0.5, 0.5, 0.5},
         inspectUpgradeTrackColor = {0.98, 0.60, 0.35, 1},
     }
@@ -56,7 +56,7 @@ local function GetColors()
     local shared = GetShared()
     return shared.C or {
         bg = { 0.067, 0.094, 0.153, 0.95 },
-        accent = { 0.204, 0.827, 0.6, 1 },
+        accent = { 0.290, 0.620, 1.0, 1 },
         text = { 0.953, 0.957, 0.965, 1 },
         border = { 0.2, 0.25, 0.3, 1 },
     }
@@ -656,7 +656,7 @@ local function CreateInspectSettingsButton()
 
     -- Initialize inspect color defaults if not set (ensures color pickers show correct values)
     if charDB.inspectEnchantTextColor == nil then
-        charDB.inspectEnchantTextColor = {0.204, 0.827, 0.6}
+        charDB.inspectEnchantTextColor = {0.290, 0.620, 1.0}
     end
     if charDB.inspectNoEnchantTextColor == nil then
         charDB.inspectNoEnchantTextColor = {0.5, 0.5, 0.5}
@@ -930,7 +930,7 @@ local function CreateInspectSettingsButton()
         charDB.showInspectGems = true
         charDB.inspectSlotTextSize = 12
         charDB.inspectEnchantClassColor = true
-        charDB.inspectEnchantTextColor = {0.204, 0.827, 0.6}
+        charDB.inspectEnchantTextColor = {0.290, 0.620, 1.0}
         charDB.inspectNoEnchantTextColor = {0.5, 0.5, 0.5}
         charDB.inspectUpgradeTrackColor = {0.98, 0.60, 0.35, 1}
 

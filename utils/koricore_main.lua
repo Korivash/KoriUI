@@ -225,7 +225,7 @@ function KORICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
     -- If dimensions are secret/invalid, defer the backdrop setup
     if not hasValidSize then
         frame.__quiBackdropPending = backdropInfo
-        frame.__quiBackdropBorderColor = borderColor
+        frame.__koriBackdropBorderColor = borderColor
         KORICore.__pendingBackdrops = KORICore.__pendingBackdrops or {}
         KORICore.__pendingBackdrops[frame] = true
 
@@ -254,12 +254,12 @@ function KORICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
 
                         if checkOk and checkResult and not InCombatLockdown() then
                             local setOk = pcall(pendingFrame.SetBackdrop, pendingFrame, pendingFrame.__quiBackdropPending)
-                            if setOk and pendingFrame.__quiBackdropPending and pendingFrame.__quiBackdropBorderColor then
-                                local c = pendingFrame.__quiBackdropBorderColor
+                            if setOk and pendingFrame.__quiBackdropPending and pendingFrame.__koriBackdropBorderColor then
+                                local c = pendingFrame.__koriBackdropBorderColor
                                 pendingFrame:SetBackdropBorderColor(c[1], c[2], c[3], c[4] or 1)
                             end
                             pendingFrame.__quiBackdropPending = nil
-                            pendingFrame.__quiBackdropBorderColor = nil
+                            pendingFrame.__koriBackdropBorderColor = nil
                             table.insert(processed, pendingFrame)
                         end
                     else
@@ -292,7 +292,7 @@ function KORICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
         local alreadyPending = KORICore.__pendingBackdrops and KORICore.__pendingBackdrops[frame]
         if not alreadyPending then
             frame.__quiBackdropPending = backdropInfo
-            frame.__quiBackdropBorderColor = borderColor
+            frame.__koriBackdropBorderColor = borderColor
 
             if not KORICore.__backdropEventFrame then
                 local eventFrame = CreateFrame("Frame")
@@ -303,13 +303,13 @@ function KORICore.SafeSetBackdrop(frame, backdropInfo, borderColor)
                         if pendingFrame and pendingFrame.__quiBackdropPending ~= nil then
                             if not InCombatLockdown() then
                                 local setOk = pcall(pendingFrame.SetBackdrop, pendingFrame, pendingFrame.__quiBackdropPending)
-                                if setOk and pendingFrame.__quiBackdropPending and pendingFrame.__quiBackdropBorderColor then
-                                    local c = pendingFrame.__quiBackdropBorderColor
+                                if setOk and pendingFrame.__quiBackdropPending and pendingFrame.__koriBackdropBorderColor then
+                                    local c = pendingFrame.__koriBackdropBorderColor
                                     pendingFrame:SetBackdropBorderColor(c[1], c[2], c[3], c[4] or 1)
                                 end
                             end
                             pendingFrame.__quiBackdropPending = nil
-                            pendingFrame.__quiBackdropBorderColor = nil
+                            pendingFrame.__koriBackdropBorderColor = nil
                         end
                     end
                     KORICore.__pendingBackdrops = {}
@@ -406,7 +406,7 @@ local defaults = {
             skinRollFrames = true,  -- Skin loot roll frames
             skinRollSpacing = 6,  -- Spacing between roll frames
             skinUseClassColor = true,  -- Use class color for skin accents
-            skinCustomColor = { 0.2, 1, 0.6, 1 },  -- Custom skin accent color
+            skinCustomColor = { 0.290, 0.620, 1.0, 1 },  -- Custom skin accent color (blue)
             -- QoL Automation
             sellJunk = true,
             autoRepair = "personal",      -- "off", "personal", "guild"
@@ -488,10 +488,10 @@ local defaults = {
             secondaryStatFormat = "both",   -- Secondary stat format: "percent", "rating", "both"
             compactStats = true,            -- Compact stats mode (reduced spacing)
             headerClassColor = true,        -- Use class color for headers (default on)
-            headerColor = {0.204, 0.827, 0.6},  -- Header color (default accent/mint, used when headerClassColor is off)
+            headerColor = {0.290, 0.620, 1.0},  -- Header color (default blue accent, used when headerClassColor is off)
             enchantTextSize = 10,           -- Enchant text size in pixels (8 - 14) [DEPRECATED - use slotTextSize]
             enchantClassColor = true,       -- Use class color for enchants (default on)
-            enchantTextColor = {0.204, 0.827, 0.6},  -- Enchant text color (used when enchantClassColor is off)
+            enchantTextColor = {0.290, 0.620, 1.0},  -- Enchant text color (blue, used when enchantClassColor is off)
             enchantFont = nil,              -- Enchant font (nil = use global font)
             noEnchantTextColor = {1, 0.341, 0.314, 1},  -- "No Enchant" text color (red tint)
             slotTextSize = 12,              -- Unified text size for all 3 slot lines (6 - 40)
@@ -696,7 +696,7 @@ local defaults = {
                 barWidth = 215,
                 texture = "Korivash v5",
                 useClassColor = true,
-                barColor = {0.204, 0.827, 0.6, 1},  -- mint accent fallback
+                barColor = {0.290, 0.620, 1.0, 1},  -- blue accent fallback
                 borderSize = 2,
                 bgOpacity = 0.5,
                 textSize = 14,
@@ -783,7 +783,7 @@ local defaults = {
                 keybindOffsetY    = 2,
                 -- Rotation Helper overlay (uses C_AssistedCombat)
                 showRotationHelper = false,
-                rotationHelperColor = { 0, 1, 0.84, 1 },  -- #00FFD6 cyan/mint border
+                rotationHelperColor = { 0.290, 0.620, 1.0, 1 },  -- #00FFD6 cyan/blue border
                 rotationHelperThickness = 2,  -- Border thickness in pixels
             },
             UtilityCooldownViewer = {
@@ -817,7 +817,7 @@ local defaults = {
                 keybindOffsetY    = 2,
                 -- Rotation Helper overlay (uses C_AssistedCombat)
                 showRotationHelper = false,
-                rotationHelperColor = { 0, 1, 0.84, 1 },  -- #00FFD6 cyan/mint border
+                rotationHelperColor = { 0.290, 0.620, 1.0, 1 },  -- #00FFD6 cyan/blue border
                 rotationHelperThickness = 2,  -- Border thickness in pixels
             },
             -- BuffIconCooldownViewer removed - now handled by kori_buffbar.lua
@@ -1447,7 +1447,7 @@ local defaults = {
                     offsetY = -35,
                     widthAdjustment = 0,
                     fontSize = 14,
-                    color = {0.404, 1, 0.984, 1},  -- Cyan color from your profile
+                    color = {0.400, 0.700, 1.0, 1},  -- Cyan color from your profile
                     anchor = "none",
                     texture = "Korivash v5",
                     bgColor = {0.149, 0.149, 0.149, 1},
@@ -1911,7 +1911,7 @@ local defaults = {
                     offsetY = -20,
                     widthAdjustment = 0,
                     fontSize = 10,
-                    color = {0.404, 1, 0.984, 1},
+                    color = {0.400, 0.700, 1.0, 1},
                 },
             },
             -- Focus frame
@@ -4484,7 +4484,7 @@ end
 function KORI:GetSkinColor()
     local db = KORI.db and KORI.db.profile
     if not db or not db.general then
-        return 0.2, 1.0, 0.6, 1  -- Fallback to mint
+        return 0.290, 0.620, 1.0, 1  -- Fallback to blue
     end
 
     if db.general.skinUseClassColor then
@@ -4495,7 +4495,7 @@ function KORI:GetSkinColor()
         end
     end
 
-    local c = db.general.skinCustomColor or {0.2, 1.0, 0.6, 1}
+    local c = db.general.skinCustomColor or {0.290, 0.620, 1.0, 1}
     return c[1], c[2], c[3], c[4] or 1
 end
 

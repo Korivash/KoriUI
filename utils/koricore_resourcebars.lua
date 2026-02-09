@@ -568,8 +568,8 @@ local function CreatePowerBarNudgeButton(parent, direction, deltaX, deltaY, barK
 
     -- Hover effect
     btn:SetScript("OnEnter", function(self)
-        self.line1:SetColorTexture(0.204, 0.827, 0.6, 1)
-        self.line2:SetColorTexture(0.204, 0.827, 0.6, 1)
+        self.line1:SetColorTexture(0.290, 0.620, 1.0, 1)
+        self.line2:SetColorTexture(0.290, 0.620, 1.0, 1)
     end)
     btn:SetScript("OnLeave", function(self)
         self.line1:SetColorTexture(1, 1, 1, 0.9)

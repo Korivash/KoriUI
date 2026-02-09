@@ -75,7 +75,7 @@ local function CreateMover()
 
     -- Get skin colors for mover
     local KORI = _G.KoriUI
-    local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
+    local sr, sg, sb, sa = 0.290, 0.620, 1.0, 1
     if KORI and KORI.GetSkinColor then
         sr, sg, sb, sa = KORI:GetSkinColor()
     end
@@ -155,7 +155,7 @@ _G.KoriUI_ToggleReadyCheckMover = ToggleMover
 -- Get KORI skin colors with fallback
 local function GetSkinColors()
     local KORI = _G.KoriUI
-    local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1  -- Fallback mint
+    local sr, sg, sb, sa = 0.290, 0.620, 1.0, 1  -- Fallback mint
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95  -- Fallback dark
 
     if KORI and KORI.GetSkinColor then

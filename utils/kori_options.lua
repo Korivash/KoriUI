@@ -278,7 +278,7 @@ local function RestorePreviousFPSSettings()
     -- Clear backup after successful restore
     db.fpsBackup = nil
 
-    print("|cff34D399KoriUI:|r Restored " .. successCount .. " previous settings.")
+    print("|cff4A9EFFKoriUI:|r Restored " .. successCount .. " previous settings.")
     if failCount > 0 then
         print("|cffFF6B6BKoriUI:|r " .. failCount .. " settings could not be restored.")
     end
@@ -304,8 +304,8 @@ local function ApplyKorivashFPSSettings()
         end
     end
 
-    print("|cff34D399KoriUI:|r Your previous settings have been backed up.")
-    print("|cff34D399KoriUI:|r Applied " .. successCount .. " FPS settings. Use 'Restore Previous Settings' to undo.")
+    print("|cff4A9EFFKoriUI:|r Your previous settings have been backed up.")
+    print("|cff4A9EFFKoriUI:|r Applied " .. successCount .. " FPS settings. Use 'Restore Previous Settings' to undo.")
     if failCount > 0 then
         print("|cffFF6B6BKoriUI:|r " .. failCount .. " settings could not be applied (may require restart).")
     end
@@ -450,7 +450,7 @@ local function CreateGeneralQoLPage(parent)
             local function ApplyPreset(val, name)
                 db.general.uiScale = val
                 pcall(function() UIParent:SetScale(val) end)
-                local msg = "|cff34D399[KoriUI]|r UI scale set to " .. val
+                local msg = "|cff4A9EFF[KoriUI]|r UI scale set to " .. val
                 if name then msg = msg .. " (" .. name .. ")" end
                 DEFAULT_CHAT_FRAME:AddMessage(msg)
                 if KORICore and KORICore.UIMult then KORICore:UIMult() end
@@ -2917,7 +2917,7 @@ local function CreateAutohidesPage(parent)
 
             -- Initialize defaults
             if general.skinUseClassColor == nil then general.skinUseClassColor = true end
-            if general.skinCustomColor == nil then general.skinCustomColor = {0.2, 1.0, 0.6, 1} end
+            if general.skinCustomColor == nil then general.skinCustomColor = {0.290, 0.620, 1.0, 1} end
             if general.skinKeystoneFrame == nil then general.skinKeystoneFrame = true end
 
             -- ═══════════════════════════════════════════════════════════════
@@ -5493,7 +5493,7 @@ local function CreateCDMSetupPage(parent)
         if trackedData.barWidth == nil then trackedData.barWidth = 200 end
         if trackedData.texture == nil then trackedData.texture = "Korivash v5" end
         if trackedData.useClassColor == nil then trackedData.useClassColor = true end
-        if trackedData.barColor == nil then trackedData.barColor = {0.204, 0.827, 0.6, 1} end
+        if trackedData.barColor == nil then trackedData.barColor = {0.290, 0.620, 1.0, 1} end
         if trackedData.barOpacity == nil then trackedData.barOpacity = 1.0 end
         if trackedData.borderSize == nil then trackedData.borderSize = 1 end
         if trackedData.bgColor == nil then trackedData.bgColor = {0, 0, 0, 1} end
@@ -13237,8 +13237,8 @@ local function BuildImportExportTab(tabContent)
         if KORICore and KORICore.ImportProfileFromString then
             local ok, err = KORICore:ImportProfileFromString(str)
             if ok then
-                print("|cff34D399KoriUI:|r Profile imported successfully!")
-                print("|cff34D399KoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
+                print("|cff4A9EFFKoriUI:|r Profile imported successfully!")
+                print("|cff4A9EFFKoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
             else
                 print("|cffff0000KoriUI: Import failed: " .. (err or "Unknown error") .. "|r")
             end
@@ -13518,8 +13518,8 @@ local function CreateSpecProfilesPage(parent)
                     local dbRef = KORICore and KORICore.db
                     if dbRef then
                         dbRef:ResetProfile()
-                        print("|cff34D399KoriUI:|r Profile reset to defaults.")
-                        print("|cff34D399KoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
+                        print("|cff4A9EFFKoriUI:|r Profile reset to defaults.")
+                        print("|cff4A9EFFKoriUI:|r Please type |cFFFFD700/reload|r to apply changes.")
                     end
                 end,
             })
@@ -13687,7 +13687,7 @@ local function CreateSpecProfilesPage(parent)
                     freshDB:SetProfile(profileName)
                     profileDropdownText:SetText(profileName)
                     currentProfileName:SetText(profileName)
-                    print("|cff34D399KoriUI:|r Switched to profile: " .. profileName)
+                    print("|cff4A9EFFKoriUI:|r Switched to profile: " .. profileName)
                 end
                 profileMenu:Hide()
             end)
@@ -13800,7 +13800,7 @@ local function CreateSpecProfilesPage(parent)
             currentProfileName:SetText(newName)
             profileDropdownText:SetText(newName)
             newProfileBox:SetText("")
-            print("|cff34D399KoriUI:|r Created new profile: " .. newName)
+            print("|cff4A9EFFKoriUI:|r Created new profile: " .. newName)
         end
     end)
     y = y - FORM_ROW - 10
@@ -13823,7 +13823,7 @@ local function CreateSpecProfilesPage(parent)
     local copyDropdown = GUI:CreateFormDropdown(content, "Copy From", GetProfileList(), "selected", copyWrapper, function(value)
         if db and value and value ~= "" then
             db:CopyProfile(value)
-            print("|cff34D399KoriUI:|r Copied settings from: " .. value)
+            print("|cff4A9EFFKoriUI:|r Copied settings from: " .. value)
             copyWrapper.selected = ""
         end
     end)
@@ -13864,7 +13864,7 @@ local function CreateSpecProfilesPage(parent)
                     isDestructive = true,
                     onAccept = function()
                         db:DeleteProfile(profileToDelete, true)
-                        print("|cff34D399KoriUI:|r Deleted profile: " .. profileToDelete)
+                        print("|cff4A9EFFKoriUI:|r Deleted profile: " .. profileToDelete)
                         deleteWrapper.selected = ""
                     end,
                 })
@@ -13889,7 +13889,7 @@ local function CreateSpecProfilesPage(parent)
         local enableCheckbox = GUI:CreateFormCheckbox(content, "Enable Spec Profiles", "enabled", enableWrapper,
             function()
                 db:SetDualSpecEnabled(enableWrapper.enabled)
-                print("|cff34D399KoriUI:|r Spec auto-switch " .. (enableWrapper.enabled and "enabled" or "disabled"))
+                print("|cff4A9EFFKoriUI:|r Spec auto-switch " .. (enableWrapper.enabled and "enabled" or "disabled"))
             end)
         enableCheckbox:SetPoint("TOPLEFT", PAD, y)
         enableCheckbox:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
@@ -13922,7 +13922,7 @@ local function CreateSpecProfilesPage(parent)
                 local specDropdown = GUI:CreateFormDropdown(content, displayName, GetProfileList(), "selected", specWrapper, function(value)
                     if value and value ~= "" then
                         db:SetDualSpecProfile(value, i)
-                        print("|cff34D399KoriUI:|r " .. specName .. " will use profile: " .. value)
+                        print("|cff4A9EFFKoriUI:|r " .. specName .. " will use profile: " .. value)
                     end
                 end)
                 specDropdown:SetPoint("TOPLEFT", PAD, y)

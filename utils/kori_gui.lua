@@ -13,47 +13,47 @@ KORI.GUI = KORI.GUI or {}
 local GUI = KORI.GUI
 
 ---------------------------------------------------------------------------
--- THEME COLORS - "Mint Condition" Palette
+-- THEME COLORS - "Blue Steel" Palette
 ---------------------------------------------------------------------------
 GUI.Colors = {
     -- Backgrounds
-    bg = {0.067, 0.094, 0.153, 0.97},         -- #111827 Deep Cool Grey
-    bgLight = {0.122, 0.161, 0.216, 1},       -- #1F2937 Dark Slate (inactive tabs)
-    bgDark = {0.04, 0.06, 0.1, 1},            -- Even darker for contrast
-    bgContent = {0.122, 0.161, 0.216, 0.5},   -- #1F2937 with alpha
+    bg = {0.055, 0.067, 0.098, 0.97},         -- #0E1119 Deep Blue-Black
+    bgLight = {0.098, 0.118, 0.176, 1},       -- #191E2D Dark Blue Slate
+    bgDark = {0.03, 0.04, 0.07, 1},            -- Even darker for contrast
+    bgContent = {0.098, 0.118, 0.176, 0.5},   -- Dark Blue Slate with alpha
     
-    -- Accent colors (Mint)
-    accent = {0.204, 0.827, 0.6, 1},          -- #34D399 Soft Mint (active border)
-    accentLight = {0.431, 0.906, 0.718, 1},   -- #6EE7B7 Lighter Mint (headers)
-    accentDark = {0.1, 0.5, 0.35, 1},
-    accentHover = {0.3, 0.9, 0.65, 1},
+    -- Accent colors (Blue)
+    accent = {0.290, 0.620, 1.0, 1},          -- #4A9EFF Dodger Blue
+    accentLight = {0.482, 0.722, 1.0, 1},     -- #7BB8FF Lighter Blue
+    accentDark = {0.15, 0.35, 0.7, 1},
+    accentHover = {0.4, 0.7, 1.0, 1},
     
     -- Tab colors
-    tabSelected = {0.204, 0.827, 0.6, 1},     -- #34D399 Soft Mint
-    tabSelectedText = {0.067, 0.094, 0.153, 1}, -- Dark text on selected
-    tabNormal = {0.7, 0.75, 0.78, 1},         -- Slightly cool grey
-    tabHover = {0.95, 0.96, 0.96, 1},
+    tabSelected = {0.290, 0.620, 1.0, 1},     -- #4A9EFF Dodger Blue
+    tabSelectedText = {1, 1, 1, 1},            -- White text on selected
+    tabNormal = {0.7, 0.75, 0.82, 1},         -- Cool grey with blue tint
+    tabHover = {0.92, 0.95, 1.0, 1},
     
     -- Text colors
-    text = {0.953, 0.957, 0.965, 1},          -- #F3F4F6 Off-White
+    text = {0.922, 0.937, 0.965, 1},          -- #EBF0F7 Off-White
     textBright = {1, 1, 1, 1},
-    textMuted = {0.6, 0.65, 0.7, 1},
+    textMuted = {0.55, 0.60, 0.70, 1},
     
     -- Borders
-    border = {0.2, 0.25, 0.3, 1},
-    borderLight = {0.3, 0.35, 0.4, 1},
-    borderAccent = {0.204, 0.827, 0.6, 1},    -- #34D399 Mint border
+    border = {0.18, 0.22, 0.30, 1},
+    borderLight = {0.28, 0.32, 0.42, 1},
+    borderAccent = {0.290, 0.620, 1.0, 1},    -- #4A9EFF Blue border
     
     -- Section headers
-    sectionHeader = {0.431, 0.906, 0.718, 1}, -- #6EE7B7 Lighter Mint
+    sectionHeader = {0.482, 0.722, 1.0, 1},   -- #7BB8FF Lighter Blue
 
     -- Slider colors (Premium redesign)
-    sliderTrack = {0.15, 0.17, 0.22, 1},       -- Slightly lighter track background
+    sliderTrack = {0.12, 0.14, 0.20, 1},       -- Dark blue-grey track
     sliderThumb = {1, 1, 1, 1},                -- White thumb
-    sliderThumbBorder = {0.3, 0.35, 0.4, 1},   -- Subtle border on thumb
+    sliderThumbBorder = {0.28, 0.32, 0.42, 1}, -- Subtle blue-grey border
 
     -- Toggle switch colors
-    toggleOff = {0.176, 0.216, 0.282, 1},      -- #2D3748 Dark grey track
+    toggleOff = {0.14, 0.17, 0.24, 1},         -- Dark blue-grey track
     toggleThumb = {1, 1, 1, 1},                -- White circle
 
     -- Warning/secondary accent
@@ -442,7 +442,7 @@ function GUI:ShowConfirmation(options)
 end
 
 ---------------------------------------------------------------------------
--- WIDGET: SECTION HEADER (Mint colored text with underline)
+-- WIDGET: SECTION HEADER (Blue colored text with underline)
 -- Auto-detects if first element in panel (no top margin) vs subsequent (12px margin)
 ---------------------------------------------------------------------------
 function GUI:CreateSectionHeader(parent, text)
@@ -510,7 +510,7 @@ function GUI:CreateSectionBox(parent, title)
     box:SetBackdropColor(0.05, 0.05, 0.08, 0.8)
     box:SetBackdropBorderColor(0.3, 0.3, 0.35, 1)
     
-    -- Title (mint colored, positioned at top-left inside border)
+    -- Title (blue colored, positioned at top-left inside border)
     if title and title ~= "" then
         local titleText = box:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         titleText:SetFont(GetFontPath(), 12, "")
@@ -855,11 +855,11 @@ function GUI:CreateSubTabs(parent, tabs)
     local function SelectSubTab(index)
         for i, btn in ipairs(tabButtons) do
             if i == index then
-                -- ACTIVE: Dark background with thick mint border highlight + mint text
+                -- ACTIVE: Dark background with thick blue border highlight + blue text
                 pcall(btn.SetBackdropColor, btn, 0.12, 0.18, 0.18, 1)  -- Slightly tinted dark bg
                 pcall(btn.SetBackdropBorderColor, btn, unpack(C.accent))
                 btn.text:SetFont(GetFontPath(), 10, "")
-                btn.text:SetTextColor(unpack(C.accent))  -- Mint colored text - easy to read
+                btn.text:SetTextColor(unpack(C.accent))  -- Blue colored text - easy to read
                 tabContents[i]:Show()
             else
                 -- INACTIVE: Standard dark look
@@ -937,8 +937,8 @@ function GUI:CreateCheckbox(parent, label, dbKey, dbTable, onChange)
     box.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
     box.check:SetPoint("CENTER", 0, 0)
     box.check:SetSize(20, 20)
-    box.check:SetVertexColor(0.204, 0.827, 0.6, 1)  -- Mint #34D399
-    box.check:SetDesaturated(true)  -- Remove yellow, then apply mint
+    box.check:SetVertexColor(0.290, 0.620, 1.0, 1)  -- Blue #4A9EFF
+    box.check:SetDesaturated(true)  -- Remove yellow, then apply blue
     box.check:Hide()
     
     local text = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -958,7 +958,7 @@ function GUI:CreateCheckbox(parent, label, dbKey, dbTable, onChange)
         container.checked = val
         if val then
             box.check:Show()
-            box:SetBackdropBorderColor(unpack(C.accent))  -- Mint when checked
+            box:SetBackdropBorderColor(unpack(C.accent))  -- Blue when checked
             box:SetBackdropColor(0.1, 0.2, 0.15, 1)
         else
             box.check:Hide()
@@ -995,7 +995,7 @@ function GUI:CreateCheckboxCentered(parent, label, dbKey, dbTable, onChange)
     
     -- Label on top, centered
     local text = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    SetFont(text, 11, "", C.accentLight)  -- Mint like slider labels
+    SetFont(text, 11, "", C.accentLight)  -- Blue like slider labels
     text:SetText(label or "Option")
     text:SetPoint("TOP", container, "TOP", 0, 0)
     
@@ -1016,7 +1016,7 @@ function GUI:CreateCheckboxCentered(parent, label, dbKey, dbTable, onChange)
     box.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
     box.check:SetPoint("CENTER", 0, 0)
     box.check:SetSize(20, 20)
-    box.check:SetVertexColor(0.204, 0.827, 0.6, 1)
+    box.check:SetVertexColor(0.290, 0.620, 1.0, 1)
     box.check:SetDesaturated(true)
     box.check:Hide()
     
@@ -1067,7 +1067,7 @@ function GUI:CreateColorPickerCentered(parent, label, dbKey, dbTable, onChange)
     local container = CreateFrame("Frame", nil, parent)
     container:SetSize(100, 40)  -- Taller to fit label above
     
-    -- Label on top, centered (mint like slider labels)
+    -- Label on top, centered (blue like slider labels)
     local text = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     SetFont(text, 11, "", C.accentLight)
     text:SetText(label or "Color")
@@ -1168,7 +1168,7 @@ function GUI:CreateCheckboxInverted(parent, label, dbKey, dbTable, onChange)
     box.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
     box.check:SetPoint("CENTER", 0, 0)
     box.check:SetSize(20, 20)
-    box.check:SetVertexColor(0.204, 0.827, 0.6, 1)
+    box.check:SetVertexColor(0.290, 0.620, 1.0, 1)
     box.check:SetDesaturated(true)
     box.check:Hide()
     
@@ -1238,7 +1238,7 @@ function GUI:CreateSlider(parent, label, min, max, step, dbKey, dbTable, onChang
     options = options or {}
     local deferOnDrag = options.deferOnDrag or false
 
-    -- Label (top, centered, mint colored)
+    -- Label (top, centered, blue colored)
     local text = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     SetFont(text, 11, "", C.accentLight)
     text:SetText(label or "Setting")
@@ -1261,7 +1261,7 @@ function GUI:CreateSlider(parent, label, min, max, step, dbKey, dbTable, onChang
     trackBg:SetBackdropColor(C.sliderTrack[1], C.sliderTrack[2], C.sliderTrack[3], 1)
     trackBg:SetBackdropBorderColor(0.1, 0.12, 0.15, 1)
 
-    -- Filled track (mint portion from left to thumb)
+    -- Filled track (blue portion from left to thumb)
     local trackFill = CreateFrame("Frame", nil, trackContainer, "BackdropTemplate")
     trackFill:SetPoint("TOPLEFT", 1, -1)
     trackFill:SetPoint("BOTTOMLEFT", 1, 1)
@@ -1493,10 +1493,10 @@ function GUI:CreateDropdown(parent, label, options, dbKey, dbTable, onChange)
     container:SetHeight(60)  -- Match slider height for vertical alignment
     container:SetWidth(200)  -- Default width, can be overridden by SetWidth()
 
-    -- Label on top (if provided) - mint green like slider labels, centered
+    -- Label on top (if provided) - blue like slider labels, centered
     if label and label ~= "" then
         local text = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        SetFont(text, 11, "", C.accentLight)  -- Mint green like other labels
+        SetFont(text, 11, "", C.accentLight)  -- Blue like other labels
         text:SetText(label)
         text:SetPoint("TOP", container, "TOP", 0, 0)  -- Centered
     end
@@ -1648,7 +1648,7 @@ function GUI:CreateDropdown(parent, label, options, dbKey, dbTable, onChange)
         btn:SetScript("OnEnter", function(self)
             pcall(function()
                 self:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
-                self:SetBackdropColor(0.204, 0.827, 0.6, 0.25)  -- Mint at 25% opacity (ghost)
+                self:SetBackdropColor(0.290, 0.620, 1.0, 0.25)  -- Blue at 25% opacity (ghost)
             end)
             -- Keep text white
         end)
@@ -1746,7 +1746,7 @@ function GUI:CreateDropdownFullWidth(parent, label, options, dbKey, dbTable, onC
     container:SetHeight(45)  -- Compact height for full-width dropdowns
     container:SetWidth(200)  -- Default width, can be overridden by SetWidth()
 
-    -- Label on top (if provided) - mint green, centered
+    -- Label on top (if provided) - blue, centered
     if label and label ~= "" then
         local text = container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         SetFont(text, 11, "", C.accentLight)
@@ -1895,7 +1895,7 @@ function GUI:CreateDropdownFullWidth(parent, label, options, dbKey, dbTable, onC
         btn:SetScript("OnEnter", function(self)
             pcall(function()
                 self:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8"})
-                self:SetBackdropColor(0.204, 0.827, 0.6, 0.25)  -- Mint at 25% opacity (ghost)
+                self:SetBackdropColor(0.290, 0.620, 1.0, 0.25)  -- Blue at 25% opacity (ghost)
             end)
             -- Keep text white
         end)
@@ -1961,7 +1961,7 @@ local FORM_ROW_HEIGHT = 28
 -- WIDGET: iOS-STYLE TOGGLE SWITCH (Premium)
 -- Track: 40x20px, fully rounded
 -- OFF: Dark grey track, white circle on left
--- ON: Mint track, white circle slides to right
+-- ON: Blue track, white circle slides to right
 ---------------------------------------------------------------------------
 function GUI:CreateFormToggle(parent, label, dbKey, dbTable, onChange, registryInfo)
     if parent._hasContent ~= nil then parent._hasContent = true end
@@ -2007,7 +2007,7 @@ function GUI:CreateFormToggle(parent, label, dbKey, dbTable, onChange, registryI
 
     local function UpdateVisual(val)
         if val then
-            -- ON state: Mint track, thumb on right
+            -- ON state: Blue track, thumb on right
             track:SetBackdropColor(C.accent[1], C.accent[2], C.accent[3], 1)
             track:SetBackdropBorderColor(C.accent[1] * 0.8, C.accent[2] * 0.8, C.accent[3] * 0.8, 1)
             thumb:ClearAllPoints()
@@ -2236,7 +2236,7 @@ function GUI:CreateFormCheckboxOriginal(parent, label, dbKey, dbTable, onChange)
     box.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
     box.check:SetPoint("CENTER", 0, 0)
     box.check:SetSize(22, 22)
-    box.check:SetVertexColor(0.204, 0.827, 0.6, 1)
+    box.check:SetVertexColor(0.290, 0.620, 1.0, 1)
     box.check:SetDesaturated(true)
     box.check:Hide()
 
@@ -2332,7 +2332,7 @@ function GUI:CreateFormSlider(parent, label, min, max, step, dbKey, dbTable, onC
     trackBg:SetBackdropColor(C.sliderTrack[1], C.sliderTrack[2], C.sliderTrack[3], 1)
     trackBg:SetBackdropBorderColor(0.1, 0.12, 0.15, 1)
 
-    -- Filled track (mint portion from left to thumb)
+    -- Filled track (blue portion from left to thumb)
     local trackFill = CreateFrame("Frame", nil, trackContainer, "BackdropTemplate")
     trackFill:SetPoint("TOPLEFT", 1, -1)
     trackFill:SetPoint("BOTTOMLEFT", 1, 1)
@@ -3311,13 +3311,13 @@ function GUI:CreateMainFrame()
     
     -- Title bar with title on left, version/close on right (single line)
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    SetFont(title, 14, "OUTLINE", C.accentLight)  -- Lighter mint for title
+    SetFont(title, 14, "OUTLINE", C.accentLight)  -- Lighter blue for title
     title:SetText("Kori UI")
     title:SetPoint("TOPLEFT", 12, -10)
     
-    -- Version text (mint green, to the left of close button)
+    -- Version text (blue, to the left of close button)
     local version = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    SetFont(version, 11, "", C.accentLight)  -- Same mint as title
+    SetFont(version, 11, "", C.accentLight)  -- Same blue as title
     version:SetText("Version 1.99B")
     version:SetPoint("TOPRIGHT", -30, -10)
 
@@ -3470,7 +3470,7 @@ function GUI:CreateMainFrame()
     contentBg:SetAllPoints()
     contentBg:SetColorTexture(unpack(C.bgContent))
     
-    -- Top line above content (subtle mint hint)
+    -- Top line above content (subtle blue hint)
     local topLine = contentArea:CreateTexture(nil, "ARTWORK")
     topLine:SetPoint("BOTTOMLEFT", contentArea, "TOPLEFT", 0, 0)
     topLine:SetPoint("BOTTOMRIGHT", contentArea, "TOPRIGHT", 0, 0)
@@ -3505,19 +3505,19 @@ function GUI:CreateMainFrame()
     local gripTexture = resizeHandle:CreateTexture(nil, "OVERLAY")
     gripTexture:SetAllPoints()
     gripTexture:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
-    gripTexture:SetVertexColor(0.6, 0.8, 0.7, 0.8)  -- Subtle mint tint
+    gripTexture:SetVertexColor(0.5, 0.65, 0.9, 0.8)  -- Subtle blue tint
 
     -- Highlight texture on hover
     local gripHighlight = resizeHandle:CreateTexture(nil, "HIGHLIGHT")
     gripHighlight:SetAllPoints()
     gripHighlight:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
-    gripHighlight:SetVertexColor(0.2, 0.82, 0.6, 1)  -- Mint highlight
+    gripHighlight:SetVertexColor(0.290, 0.620, 1.0, 1)  -- Blue highlight
 
     -- Pushed texture when dragging
     local gripPushed = resizeHandle:CreateTexture(nil, "ARTWORK")
     gripPushed:SetAllPoints()
     gripPushed:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
-    gripPushed:SetVertexColor(0.2, 0.82, 0.6, 1)
+    gripPushed:SetVertexColor(0.290, 0.620, 1.0, 1)
     gripPushed:Hide()
     
     resizeHandle:SetScript("OnMouseDown", function(self, button)
@@ -3625,7 +3625,7 @@ function GUI:CreateMainFrame()
 end
 
 ---------------------------------------------------------------------------
--- ADD TAB (Clean style - no left bar, mint text when active)
+-- ADD TAB (Clean style - no left bar, blue text when active)
 ---------------------------------------------------------------------------
 function GUI:AddTab(frame, name, pageCreateFunc)
     local index = #frame.tabs + 1
@@ -3692,7 +3692,7 @@ end
 
 ---------------------------------------------------------------------------
 -- ADD ACTION BUTTON (Special button that executes action instead of opening page)
--- Styled like "CREATE" button - dark bg with thick mint border, centered text
+-- Styled like "CREATE" button - dark bg with thick blue border, centered text
 ---------------------------------------------------------------------------
 function GUI:AddActionButton(frame, name, onClick, accentColor)
     local index = #frame.tabs + 1
@@ -3708,9 +3708,9 @@ function GUI:AddActionButton(frame, name, onClick, accentColor)
     btn:SetSize(frame.TAB_BUTTON_WIDTH, frame.TAB_BUTTON_HEIGHT)
     btn:SetPoint("TOPLEFT", frame.tabContainer, "TOPLEFT", x, y)
     
-    -- Dark background with thick mint border (like CREATE button)
+    -- Dark background with thick blue border (like CREATE button)
     local bgColor = {0.05, 0.08, 0.12, 1}  -- Very dark
-    local borderColor = {0.2, 0.82, 0.6, 1}  -- Mint/teal accent
+    local borderColor = {0.290, 0.620, 1.0, 1}  -- Blue accent
     
     btn:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
@@ -3725,9 +3725,9 @@ function GUI:AddActionButton(frame, name, onClick, accentColor)
     btn.bgColor = bgColor
     btn.borderColor = borderColor
     
-    -- Button text - CENTERED, mint colored
+    -- Button text - CENTERED, blue colored
     btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    SetFont(btn.text, 11, "", borderColor)  -- Mint text color
+    SetFont(btn.text, 11, "", borderColor)  -- Blue text color
     btn.text:SetText(name)
     btn.text:SetPoint("CENTER", btn, "CENTER", 0, 0)
     btn.text:SetJustifyH("CENTER")
@@ -3745,8 +3745,8 @@ function GUI:AddActionButton(frame, name, onClick, accentColor)
     
     btn:SetScript("OnEnter", function(self)
         self:SetBackdropColor(0.1, 0.15, 0.2, 1)  -- Slightly lighter on hover
-        self:SetBackdropBorderColor(0.4, 1, 0.8, 1)  -- Brighter mint on hover
-        self.text:SetTextColor(0.4, 1, 0.8, 1)  -- Brighter text
+        self:SetBackdropBorderColor(0.4, 0.7, 1.0, 1)  -- Brighter blue on hover
+        self.text:SetTextColor(0.4, 0.7, 1.0, 1)  -- Brighter text
     end)
     
     btn:SetScript("OnLeave", function(self)
@@ -3801,9 +3801,9 @@ function GUI:SelectTab(frame, index)
     frame.activeTab = index
     local tab = frame.tabs[index]
     if tab and not tab.isActionButton then
-        tab.text:SetTextColor(unpack(C.accent))  -- Mint text when active
+        tab.text:SetTextColor(unpack(C.accent))  -- Blue text when active
         pcall(tab.SetBackdropColor, tab, unpack(C.bgLight))
-        pcall(tab.SetBackdropBorderColor, tab, unpack(C.accent))  -- Mint border
+        pcall(tab.SetBackdropBorderColor, tab, unpack(C.accent))  -- Blue border
     end
     
     -- Create/show page

@@ -377,7 +377,7 @@ local function CreateExtraButtonHolder(buttonType, displayName)
         edgeSize = 2,
     })
     mover:SetBackdropColor(0.2, 0.8, 0.6, 0.5)  -- KORI mint color
-    mover:SetBackdropBorderColor(0.2, 1.0, 0.6, 1)
+    mover:SetBackdropBorderColor(0.290, 0.620, 1.0, 1)
     mover:EnableMouse(true)
     mover:SetMovable(true)
     mover:RegisterForDrag("LeftButton")

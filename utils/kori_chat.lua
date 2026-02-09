@@ -44,7 +44,7 @@ local EDITBOX_TEXTURES = {
 -- KORI Color palette for popup styling
 local KORI_COLORS = {
     bg = {0.067, 0.094, 0.153, 0.97},
-    accent = {0.204, 0.827, 0.6, 1},
+    accent = {0.290, 0.620, 1.0, 1},
     text = {0.953, 0.957, 0.965, 1},
 }
 

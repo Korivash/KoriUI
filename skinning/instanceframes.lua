@@ -7,7 +7,7 @@ local addonName, ns = ...
 -- Get skinning colors
 local function GetColors()
     local KORI = _G.KoriUI
-    local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
+    local sr, sg, sb, sa = 0.290, 0.620, 1.0, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
     if KORI and KORI.GetSkinColor then

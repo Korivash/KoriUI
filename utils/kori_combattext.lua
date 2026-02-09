@@ -44,7 +44,7 @@ local function CreateTextFrame()
     local text = frame:CreateFontString(nil, "OVERLAY")
     text:SetPoint("CENTER", frame, "CENTER", 0, 0)
     text:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE")
-    text:SetTextColor(0.204, 0.827, 0.6, 1)  -- KORI mint accent
+    text:SetTextColor(0.290, 0.620, 1.0, 1)  -- KORI blue accent
     text:SetJustifyH("CENTER")
     frame.text = text
 
@@ -134,9 +134,9 @@ local function ShowCombatText(message)
     -- Determine and apply color based on message
     local color
     if message == "+Combat" then
-        color = settings.enterCombatColor or {0.204, 0.827, 0.6, 1}
+        color = settings.enterCombatColor or {0.290, 0.620, 1.0, 1}
     else
-        color = settings.leaveCombatColor or {0.204, 0.827, 0.6, 1}
+        color = settings.leaveCombatColor or {0.290, 0.620, 1.0, 1}
     end
     CombatTextState.textFrame.text:SetTextColor(color[1], color[2], color[3], color[4] or 1)
 
@@ -246,9 +246,9 @@ _G.KoriUI_PreviewCombatText = function(message)
     -- Determine and apply color based on message
     local color
     if message == "+Combat" then
-        color = settings.enterCombatColor or {0.204, 0.827, 0.6, 1}
+        color = settings.enterCombatColor or {0.290, 0.620, 1.0, 1}
     else
-        color = settings.leaveCombatColor or {0.204, 0.827, 0.6, 1}
+        color = settings.leaveCombatColor or {0.290, 0.620, 1.0, 1}
     end
     CombatTextState.textFrame.text:SetTextColor(color[1], color[2], color[3], color[4] or 1)
 

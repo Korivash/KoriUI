@@ -146,7 +146,7 @@ local function SkinKeystoneFrame()
     if KORI and KORI.GetSkinColor then
         sr, sg, sb, sa = KORI:GetSkinColor()
     else
-        sr, sg, sb, sa = 0.2, 1.0, 0.6, 1  -- Fallback mint
+        sr, sg, sb, sa = 0.290, 0.620, 1.0, 1  -- Fallback mint
     end
     if KORI and KORI.GetSkinBgColor then
         bgr, bgg, bgb, bga = KORI:GetSkinBgColor()
@@ -189,7 +189,7 @@ local function SkinKeystoneFrame()
 
     -- Style affix icons when keystone is slotted
     hooksecurefunc(keystoneFrame, "OnKeystoneSlotted", function(f)
-        local r, g, b, a = unpack(f.quiSkinColor or { 0.2, 1.0, 0.6, 1 })
+        local r, g, b, a = unpack(f.quiSkinColor or { 0.290, 0.620, 1.0, 1 })
         for i = 1, 4 do
             local affix = f["Affix" .. i]
             if affix and affix.Portrait then
@@ -214,7 +214,7 @@ local function RefreshKeystoneColors()
 
     -- Get current colors
     local KORI = _G.KoriUI
-    local sr, sg, sb, sa = 0.2, 1.0, 0.6, 1
+    local sr, sg, sb, sa = 0.290, 0.620, 1.0, 1
     local bgr, bgg, bgb, bga = 0.05, 0.05, 0.05, 0.95
 
     if KORI and KORI.GetSkinColor then

@@ -49,7 +49,7 @@ SlashCmdList["KORIKB"] = function()
         -- Fallback to Blizzard's Quick Keybind Mode (no mousewheel support)
         ShowUIPanel(QuickKeybindFrame)
     else
-        print("|cff34D399KoriUI:|r Quick Keybind Mode not available.")
+        print("|cff4A9EFFKoriUI:|r Quick Keybind Mode not available.")
     end
 end
 
@@ -59,7 +59,7 @@ SlashCmdList["KORIUI_CDM"] = function()
     if CooldownViewerSettings then
         CooldownViewerSettings:SetShown(not CooldownViewerSettings:IsShown())
     else
-        print("|cff34D399KoriUI:|r Cooldown Settings not available. Enable CDM first.")
+        print("|cff4A9EFFKoriUI:|r Cooldown Settings not available. Enable CDM first.")
     end
 end
 
@@ -98,10 +98,10 @@ function KoriUI:OnEnable()
         if self.db.profile.chat.showIntroMessage ~= false then
             print("|cFF1E90FFKori UI|r loaded. |cFFFFFF00/kori|r to setup.")
             print("|cFF1E90FFKORI UI REMINDER:|r")
-            print("|cFF34D3991.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
-            print("|cFF34D3992.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Go to |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")
-            print("|cFF34D3993.|r Use |cFFFFFF00100% Icon Size|r on CDM Essential & Utility bars via |cFFFFFF00Edit Mode|r for best results.")
-            print("|cFF34D3994.|r Position your |cFFFFFF00CDM bars|r in |cFFFFFF00Edit Mode|r and click |cFFFFFF00Save|r before exiting.")
+            print("|cFF4A9EFF1.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
+            print("|cFF4A9EFF2.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Go to |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")
+            print("|cFF4A9EFF3.|r Use |cFFFFFF00100% Icon Size|r on CDM Essential & Utility bars via |cFFFFFF00Edit Mode|r for best results.")
+            print("|cFF4A9EFF4.|r Position your |cFFFFFF00CDM bars|r in |cFFFFFF00Edit Mode|r and click |cFFFFFF00Save|r before exiting.")
         end
     end
 end

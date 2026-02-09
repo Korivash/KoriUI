@@ -100,7 +100,7 @@ local function GetTrackedBarSettings()
         barWidth = 200,
         texture = "Korivash v5",
         useClassColor = true,
-        barColor = {0.204, 0.827, 0.6, 1},
+        barColor = {0.290, 0.620, 1.0, 1},
         barOpacity = 1.0,
         borderSize = 1,
         bgColor = {0, 0, 0, 1},
@@ -572,7 +572,7 @@ local function ApplyBarStyle(frame, settings)
     local barWidth = settings.barWidth or 200
     local texture = settings.texture or "Korivash v5"
     local useClassColor = settings.useClassColor
-    local barColor = settings.barColor or {0.204, 0.827, 0.6, 1}
+    local barColor = settings.barColor or {0.290, 0.620, 1.0, 1}
     local barOpacity = settings.barOpacity or 1.0
     local borderSize = settings.borderSize or 1
     local bgColor = settings.bgColor or {0, 0, 0, 1}

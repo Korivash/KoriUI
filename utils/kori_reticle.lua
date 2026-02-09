@@ -94,8 +94,8 @@ local function GetRingColor()
         end
         return 1, 1, 1, 1
     else
-        local c = settings.customColor or {0.204, 0.827, 0.6, 1}
-        return c[1] or 0.204, c[2] or 0.827, c[3] or 0.6, c[4] or 1
+        local c = settings.customColor or {0.290, 0.620, 1.0, 1}
+        return c[1] or 0.290, c[2] or 0.620, c[3] or 1.0, c[4] or 1
     end
 end
 
