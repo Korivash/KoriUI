@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌸 Kori UI v1.0 — Quazii UI Reworked & Reborn
+# 🌸 Kori UI v1.1 — Quazii UI Reworked & Reborn
 
 [![Support Discord](https://img.shields.io/badge/Support%20Discord-Join%20Now-5865F2?logo=discord&logoColor=white)](https://discord.gg/JbQQTbH4hR)
 
