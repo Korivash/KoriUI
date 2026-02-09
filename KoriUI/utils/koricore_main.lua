@@ -3463,6 +3463,11 @@ function KORICore:OnEnable()
         if self.ApplyGlobalFont then
             self:ApplyGlobalFont()
         end
+        -- Initialize Stagger Bar for Monks
+        local _, class = UnitClass("player")
+        if class == "MONK" and KORI.InitStaggerBar then
+            KORI:InitStaggerBar()
+        end
     end)
 
     -- DEFERRED 1.0s: First viewer reskin + UI hider + buff borders

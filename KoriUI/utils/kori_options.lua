@@ -14227,6 +14227,293 @@ local function CreateHUDLayeringPage(parent)
 end
 
 ---------------------------------------------------------------------------
+-- STAGGER BAR PAGE (Brewmaster Monk)
+---------------------------------------------------------------------------
+local function RefreshStaggerBar()
+    local addon = _G.KoriUI
+    if addon and addon.RefreshStaggerBar then
+        addon:RefreshStaggerBar()
+    end
+end
+
+local function CreateStaggerBarPage(parent)
+    local scroll, content = CreateScrollableContent(parent)
+    local db = GetDB()
+    
+    local y = -10
+    local PAD = 10
+    local FORM_ROW = 32
+
+    -- Set search context
+    GUI:SetSearchContext({tabIndex = 13, tabName = "Stagger Bar", subTabIndex = 1, subTabName = "Stagger Bar"})
+
+    -- Early return if not a Monk
+    local _, class = UnitClass("player")
+    if class ~= "MONK" then
+        local notMonkLabel = GUI:CreateLabel(content, "Stagger Bar is only available for Monk characters.", 12, {1, 0.6, 0.3, 1})
+        notMonkLabel:SetPoint("TOPLEFT", PAD, y)
+        notMonkLabel:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+        y = y - 40
+        
+        local infoLabel = GUI:CreateLabel(content, "Log in on a Monk to customize the Stagger Bar settings.", 11, {0.6, 0.6, 0.6, 1})
+        infoLabel:SetPoint("TOPLEFT", PAD, y)
+        infoLabel:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+        
+        content:SetHeight(100)
+        return scroll
+    end
+
+    -- Ensure database exists
+    if not db then
+        local errorLabel = GUI:CreateLabel(content, "Database not ready. Please /reload.", 12, {1, 0.3, 0.3, 1})
+        errorLabel:SetPoint("TOPLEFT", PAD, y)
+        content:SetHeight(50)
+        return scroll
+    end
+
+    -- Initialize stagger defaults if needed
+    if not db.stagger then
+        db.stagger = {
+            enabled = true, width = 250, height = 10, borderSize = 1, scale = 1, alpha = 1,
+            useRawPixels = true, offsetX = 0, offsetY = -150, unlocked = false,
+            showPercent = true, showAbsoluteValue = false, showLabel = false,
+            textSize = 11, textX = 0, textY = 0, labelText = "STAGGER",
+            texture = "Korivash", bgColor = { 0.08, 0.08, 0.08, 0.9 },
+            colors = {
+                light = { 0.52, 1.0, 0.52, 1 },
+                moderate = { 1.0, 0.98, 0.72, 1 },
+                heavy = { 1.0, 0.42, 0.42, 1 },
+            },
+            thresholds = { yellow = 30, red = 60 },
+            pulseOnHeavy = true, smoothAnimation = true, animationSpeed = 0.15,
+            showThresholdTicks = true, tickThickness = 2, tickColor = { 0.3, 0.3, 0.3, 0.8 },
+            glowOnCritical = true, criticalThreshold = 80,
+        }
+    end
+    local stagger = db.stagger
+
+    -- =====================================================
+    -- SECTION 1: ENABLE & GENERAL
+    -- =====================================================
+    local generalHeader = GUI:CreateSectionHeader(content, "General Settings")
+    generalHeader:SetPoint("TOPLEFT", PAD, y)
+    y = y - generalHeader.gap
+
+    local enableCheck = GUI:CreateFormCheckbox(content, "Enable Stagger Bar", "enabled", stagger, RefreshStaggerBar)
+    enableCheck:SetPoint("TOPLEFT", PAD, y)
+    enableCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local unlockCheck = GUI:CreateFormCheckbox(content, "Unlock Position (Drag to Move)", "unlocked", stagger, RefreshStaggerBar)
+    unlockCheck:SetPoint("TOPLEFT", PAD, y)
+    unlockCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local brewmasterNote = GUI:CreateLabel(content, "Note: Stagger Bar only appears when playing Brewmaster specialization.", 10, {0.6, 0.6, 0.6, 1})
+    brewmasterNote:SetPoint("TOPLEFT", PAD, y + 4)
+    brewmasterNote:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - 24
+
+    y = y - 10
+
+    -- =====================================================
+    -- SECTION 2: SIZE & POSITION
+    -- =====================================================
+    local sizeHeader = GUI:CreateSectionHeader(content, "Size & Position")
+    sizeHeader:SetPoint("TOPLEFT", PAD, y)
+    y = y - sizeHeader.gap
+
+    local widthSlider = GUI:CreateFormSlider(content, "Width", 100, 500, 1, "width", stagger, RefreshStaggerBar)
+    widthSlider:SetPoint("TOPLEFT", PAD, y)
+    widthSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local heightSlider = GUI:CreateFormSlider(content, "Height", 4, 40, 1, "height", stagger, RefreshStaggerBar)
+    heightSlider:SetPoint("TOPLEFT", PAD, y)
+    heightSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local borderSlider = GUI:CreateFormSlider(content, "Border Size", 0, 4, 1, "borderSize", stagger, RefreshStaggerBar)
+    borderSlider:SetPoint("TOPLEFT", PAD, y)
+    borderSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local scaleSlider = GUI:CreateFormSlider(content, "Scale", 0.5, 2.0, 0.05, "scale", stagger, RefreshStaggerBar)
+    scaleSlider:SetPoint("TOPLEFT", PAD, y)
+    scaleSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local alphaSlider = GUI:CreateFormSlider(content, "Opacity", 0.1, 1.0, 0.05, "alpha", stagger, RefreshStaggerBar)
+    alphaSlider:SetPoint("TOPLEFT", PAD, y)
+    alphaSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local offsetXSlider = GUI:CreateFormSlider(content, "X Offset (Horizontal)", -800, 800, 1, "offsetX", stagger, RefreshStaggerBar)
+    offsetXSlider:SetPoint("TOPLEFT", PAD, y)
+    offsetXSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local offsetYSlider = GUI:CreateFormSlider(content, "Y Offset (Vertical)", -600, 600, 1, "offsetY", stagger, RefreshStaggerBar)
+    offsetYSlider:SetPoint("TOPLEFT", PAD, y)
+    offsetYSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    y = y - 10
+
+    -- =====================================================
+    -- SECTION 3: TEXT & DISPLAY
+    -- =====================================================
+    local textHeader = GUI:CreateSectionHeader(content, "Text & Display")
+    textHeader:SetPoint("TOPLEFT", PAD, y)
+    y = y - textHeader.gap
+
+    local showPercentCheck = GUI:CreateFormCheckbox(content, "Show Percentage Text", "showPercent", stagger, RefreshStaggerBar)
+    showPercentCheck:SetPoint("TOPLEFT", PAD, y)
+    showPercentCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local showAbsoluteCheck = GUI:CreateFormCheckbox(content, "Show Absolute Value (e.g. 45.2% (125K))", "showAbsoluteValue", stagger, RefreshStaggerBar)
+    showAbsoluteCheck:SetPoint("TOPLEFT", PAD, y)
+    showAbsoluteCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local showLabelCheck = GUI:CreateFormCheckbox(content, "Show 'STAGGER' Label Above Bar", "showLabel", stagger, RefreshStaggerBar)
+    showLabelCheck:SetPoint("TOPLEFT", PAD, y)
+    showLabelCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local textSizeSlider = GUI:CreateFormSlider(content, "Font Size", 8, 20, 1, "textSize", stagger, RefreshStaggerBar)
+    textSizeSlider:SetPoint("TOPLEFT", PAD, y)
+    textSizeSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    y = y - 10
+
+    -- =====================================================
+    -- SECTION 4: STAGGER THRESHOLDS
+    -- =====================================================
+    local thresholdHeader = GUI:CreateSectionHeader(content, "Stagger Thresholds")
+    thresholdHeader:SetPoint("TOPLEFT", PAD, y)
+    y = y - thresholdHeader.gap
+
+    local thresholdDesc = GUI:CreateLabel(content, "Set the % of max health where stagger color changes.", 11, {0.7, 0.7, 0.7, 1})
+    thresholdDesc:SetPoint("TOPLEFT", PAD, y + 4)
+    thresholdDesc:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - 20
+
+    local yellowSlider = GUI:CreateFormSlider(content, "Yellow Threshold (Moderate)", 10, 50, 5, "yellow", stagger.thresholds, RefreshStaggerBar)
+    yellowSlider:SetPoint("TOPLEFT", PAD, y)
+    yellowSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local redSlider = GUI:CreateFormSlider(content, "Red Threshold (Heavy)", 40, 100, 5, "red", stagger.thresholds, RefreshStaggerBar)
+    redSlider:SetPoint("TOPLEFT", PAD, y)
+    redSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local showTicksCheck = GUI:CreateFormCheckbox(content, "Show Threshold Tick Marks on Bar", "showThresholdTicks", stagger, RefreshStaggerBar)
+    showTicksCheck:SetPoint("TOPLEFT", PAD, y)
+    showTicksCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    y = y - 10
+
+    -- =====================================================
+    -- SECTION 5: COLORS
+    -- =====================================================
+    local colorHeader = GUI:CreateSectionHeader(content, "Stagger Colors")
+    colorHeader:SetPoint("TOPLEFT", PAD, y)
+    y = y - colorHeader.gap
+
+    local lightColorPicker = GUI:CreateFormColorPicker(content, "Light Stagger (Green)", "light", stagger.colors, RefreshStaggerBar)
+    lightColorPicker:SetPoint("TOPLEFT", PAD, y)
+    lightColorPicker:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local moderateColorPicker = GUI:CreateFormColorPicker(content, "Moderate Stagger (Yellow)", "moderate", stagger.colors, RefreshStaggerBar)
+    moderateColorPicker:SetPoint("TOPLEFT", PAD, y)
+    moderateColorPicker:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local heavyColorPicker = GUI:CreateFormColorPicker(content, "Heavy Stagger (Red)", "heavy", stagger.colors, RefreshStaggerBar)
+    heavyColorPicker:SetPoint("TOPLEFT", PAD, y)
+    heavyColorPicker:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    y = y - 10
+
+    -- =====================================================
+    -- SECTION 6: EFFECTS & ANIMATIONS
+    -- =====================================================
+    local effectsHeader = GUI:CreateSectionHeader(content, "Effects & Animations")
+    effectsHeader:SetPoint("TOPLEFT", PAD, y)
+    y = y - effectsHeader.gap
+
+    local smoothCheck = GUI:CreateFormCheckbox(content, "Smooth Bar Animation", "smoothAnimation", stagger, RefreshStaggerBar)
+    smoothCheck:SetPoint("TOPLEFT", PAD, y)
+    smoothCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local pulseCheck = GUI:CreateFormCheckbox(content, "Pulse Effect on Heavy Stagger", "pulseOnHeavy", stagger, RefreshStaggerBar)
+    pulseCheck:SetPoint("TOPLEFT", PAD, y)
+    pulseCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local glowCheck = GUI:CreateFormCheckbox(content, "Glow Effect on Critical Stagger", "glowOnCritical", stagger, RefreshStaggerBar)
+    glowCheck:SetPoint("TOPLEFT", PAD, y)
+    glowCheck:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    local criticalSlider = GUI:CreateFormSlider(content, "Critical Glow Threshold %", 60, 100, 5, "criticalThreshold", stagger, RefreshStaggerBar)
+    criticalSlider:SetPoint("TOPLEFT", PAD, y)
+    criticalSlider:SetPoint("RIGHT", content, "RIGHT", -PAD, 0)
+    y = y - FORM_ROW
+
+    y = y - 10
+
+    -- =====================================================
+    -- SECTION 7: RESET BUTTON
+    -- =====================================================
+    local resetHeader = GUI:CreateSectionHeader(content, "Reset Settings")
+    resetHeader:SetPoint("TOPLEFT", PAD, y)
+    y = y - resetHeader.gap
+
+    local resetButton = GUI:CreateButton(content, "Reset Stagger Bar to Defaults", 200, 28)
+    resetButton:SetPoint("TOPLEFT", PAD, y)
+    resetButton:SetScript("OnClick", function()
+        StaticPopupDialogs["KORIUI_RESET_STAGGER"] = {
+            text = "Reset all Stagger Bar settings to defaults?",
+            button1 = "Yes",
+            button2 = "No",
+            OnAccept = function()
+                local addon = _G.KoriUI
+                if addon and addon.StaggerDefaults then
+                    db.stagger = CopyTable(addon.StaggerDefaults)
+                    if addon.CreateStaggerBar then
+                        addon:CreateStaggerBar()
+                    end
+                    if addon.UpdateStaggerBarVisibility then
+                        addon:UpdateStaggerBarVisibility()
+                    end
+                    print("|cff4fc3f7KoriUI:|r Stagger Bar reset to defaults. Reopen options to see changes.")
+                end
+            end,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+            preferredIndex = 3,
+        }
+        StaticPopup_Show("KORIUI_RESET_STAGGER")
+    end)
+    y = y - 40
+
+    -- Set content height
+    content:SetHeight(math.abs(y) + 20)
+
+    return scroll
+end
+
+---------------------------------------------------------------------------
 -- INITIALIZE OPTIONS - Main tabs
 ---------------------------------------------------------------------------
 function GUI:InitializeOptions()
@@ -14247,6 +14534,7 @@ function GUI:InitializeOptions()
 
     -- Row 3: Utilities + Action Buttons
     GUI:AddTab(frame, "HUD Layering", CreateHUDLayeringPage)
+    GUI:AddTab(frame, "Stagger Bar", CreateStaggerBarPage)  -- Monk-only Stagger tracking
     GUI:AddTab(frame, "Spec Profiles", CreateSpecProfilesPage)
     GUI:AddTab(frame, "KORI Import/Export", CreateImportExportPage)
     GUI:AddTab(frame, "Search", CreateSearchPage)
