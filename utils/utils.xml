@@ -41,6 +41,7 @@
     <Script file="kori_skyriding.lua"/>
     <Script file="kori_chat.lua"/>
     <Script file="kori_tooltips.lua"/>
+    <Script file="kori_stagger.lua"/>
     <Script file="kori_mplus_timer.lua"/>
     <Script file="kori_dungeon_teleport.lua"/>
     <Script file="kori_key_tracker.lua"/>
