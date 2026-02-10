@@ -1,5 +1,5 @@
-## Interface: 12000
-## Title: Kori UI (Midnight)
+## Interface: 120000, 120001
+## Title: |cFF1E90FFKori UI (Midnight)|r
 ## IconTexture: Interface\AddOns\KoriUI\assets\koriLogo
 ## AddonCompartmentFunc: KoriUI_CompartmentClick
 ## AddonCompartmentFuncOnEnter: KoriUI_CompartmentOnEnter
