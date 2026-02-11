@@ -1,6 +1,6 @@
 <div align="center">
 
-![KoriUI Logo](https://imgur.com/a/Gh5mdkz.gif)
+![KoriUI Logo](https://imgur.com/RzGt68U.png)
 
 # 🌸 Kori UI
 
