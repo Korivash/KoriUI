@@ -2,7 +2,7 @@
 
 ![KoriUI Logo](https://imgur.com/RzGt68U.png)
 
-# 🌸 Kori UI
+# Kori UI
 
 **A Free, Community-Driven World of Warcraft Interface**
 
