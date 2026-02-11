@@ -29,31 +29,48 @@ end
 
 -- Single unified hook for SetCooldown that handles ALL swipe types
 -- This runs on EVERY cooldown update, ensuring settings are always applied
+-- NOTE: In WoW 12.0.1, we must be careful not to taint secure CooldownViewer frames
 local function HookSetCooldown(icon)
     if not icon or not icon.Cooldown then return end
     if icon._KORI_SetCooldownHooked then return end
+    
+    -- Check if this is a Blizzard CooldownViewer icon (secure frame)
+    -- In 12.0.1, hooking these causes taint errors
+    local parent = icon:GetParent()
+    local parentName = parent and parent:GetName()
+    if parentName and (parentName:find("CooldownViewer") or parentName:find("CooldownManager")) then
+        -- Skip hooking Blizzard's secure CooldownViewer icons to avoid taint
+        return
+    end
+    
     icon._KORI_SetCooldownHooked = true
 
     -- Store parent reference on Cooldown frame for hook access
-    icon.Cooldown._KORIParentIcon = icon
+    -- Use pcall to avoid errors on protected frames
+    pcall(function()
+        icon.Cooldown._KORIParentIcon = icon
+    end)
 
-    hooksecurefunc(icon.Cooldown, "SetCooldown", function(self)
-        local parentIcon = self._KORIParentIcon
-        if not parentIcon then return end
+    -- Wrap the hook in pcall to prevent taint propagation
+    local ok = pcall(function()
+        hooksecurefunc(icon.Cooldown, "SetCooldown", function(self)
+            local parentIcon = self._KORIParentIcon
+            if not parentIcon then return end
 
-        -- Skip if we're the ones calling SetCooldown (recursion guard)
-        if parentIcon._KORI_BypassCDHook then return end
+            -- Skip if we're the ones calling SetCooldown (recursion guard)
+            if parentIcon._KORI_BypassCDHook then return end
 
-        local settings = GetSettings()
-        local showSwipe
-        local auraActive = parentIcon.auraInstanceID and parentIcon.auraInstanceID > 0
+            local settings = GetSettings()
+            local showSwipe
+            local auraActive = parentIcon.auraInstanceID and parentIcon.auraInstanceID > 0
 
         -- Swipe logic
         -- Priority 1: Buff duration (auraInstanceID > 0)
         if auraActive then
             -- Check if this icon is in BuffIconCooldownViewer (separate toggle)
             local parent = parentIcon:GetParent()
-            if parent == _G.BuffIconCooldownViewer then
+            local buffIconViewer = rawget(_G, "BuffIconCooldownViewer")
+            if parent == buffIconViewer then
                 showSwipe = settings.showBuffIconSwipe
             else
                 showSwipe = settings.showBuffSwipe
@@ -81,6 +98,7 @@ local function HookSetCooldown(icon)
         end
         self:SetDrawEdge(showEdge)
     end)
+    end) -- end pcall
 end
 
 -- Process all icons in a viewer
@@ -97,22 +115,33 @@ local function ProcessViewer(viewer)
 end
 
 -- Apply settings to all CDM viewers
+-- NOTE: In 12.0.1, we skip hooking Blizzard CooldownViewer frames to avoid taint
 local function ApplyAllSettings()
+    -- Skip CooldownViewer hooks entirely in 12.0.1 to avoid taint
+    -- The swipe settings will only work on non-Blizzard cooldown frames
+    local tocVersion = select(4, GetBuildInfo())
+    if tocVersion and tocVersion >= 120000 then
+        -- 12.0.1+ : Don't hook Blizzard CooldownViewer to avoid taint
+        return
+    end
+    
     local viewers = {
-        _G.EssentialCooldownViewer,
-        _G.UtilityCooldownViewer,
-        _G.BuffIconCooldownViewer,
+        rawget(_G, "EssentialCooldownViewer"),
+        rawget(_G, "UtilityCooldownViewer"),
+        rawget(_G, "BuffIconCooldownViewer"),
     }
 
     for _, viewer in ipairs(viewers) do
         ProcessViewer(viewer)
 
-        -- Hook Layout to catch new icons
+        -- Hook Layout to catch new icons (wrapped in pcall for safety)
         if viewer and viewer.Layout and not viewer._KORI_LayoutHooked then
             viewer._KORI_LayoutHooked = true
-            hooksecurefunc(viewer, "Layout", function()
-                C_Timer.After(0.15, function()  -- 150ms debounce for CPU efficiency
-                    ProcessViewer(viewer)
+            pcall(function()
+                hooksecurefunc(viewer, "Layout", function()
+                    C_Timer.After(0.15, function()  -- 150ms debounce for CPU efficiency
+                        ProcessViewer(viewer)
+                    end)
                 end)
             end)
         end

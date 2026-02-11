@@ -349,18 +349,27 @@ local function HookViewerIcons(viewerName)
 end
 
 -- Setup continuous hooking for new icons
+-- NOTE: In 12.0.1, we must avoid tainting Blizzard CooldownViewer frames
 local function SetupViewerHooking(viewerName, trackerKey)
+    -- Skip in 12.0.1+ to avoid taint
+    local tocVersion = select(4, GetBuildInfo())
+    if tocVersion and tocVersion >= 120000 then
+        return
+    end
+    
     local viewer = rawget(_G, viewerName)
     if not viewer then return end
 
     -- Hook existing icons
     HookViewerIcons(viewerName)
 
-    -- Watch for new icons via layout changes
+    -- Watch for new icons via layout changes (wrapped in pcall)
     if not viewer._KORIGlowLayoutHooked then
-        viewer:HookScript("OnSizeChanged", function()
-            C_Timer.After(0.1, function()
-                HookViewerIcons(viewerName)
+        pcall(function()
+            viewer:HookScript("OnSizeChanged", function()
+                C_Timer.After(0.1, function()
+                    HookViewerIcons(viewerName)
+                end)
             end)
         end)
         viewer._KORIGlowLayoutHooked = true

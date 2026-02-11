@@ -1084,19 +1084,28 @@ eventFrame:SetScript("OnEvent", function(self, event)
 end)
 
 -- Hook into viewer layout updates
+-- NOTE: In 12.0.1, we must avoid tainting Blizzard CooldownViewer frames
 local function HookViewerLayout(viewerName)
+    -- Skip in 12.0.1+ to avoid taint
+    local tocVersion = select(4, GetBuildInfo())
+    if tocVersion and tocVersion >= 120000 then
+        return
+    end
+    
     local viewer = rawget(_G, viewerName)
     if not viewer then return end
 
     if viewer.Layout and not viewer._KORI_KeybindHooked then
         viewer._KORI_KeybindHooked = true
-        hooksecurefunc(viewer, "Layout", function()
-            -- PERFORMANCE: Skip if no keybind features are enabled
-            if not IsAnyKeybindFeatureEnabled() then return end
-            C_Timer.After(0.25, function()  -- 250ms debounce for CPU efficiency
-                -- Double-check after timer (settings may have changed)
+        pcall(function()
+            hooksecurefunc(viewer, "Layout", function()
+                -- PERFORMANCE: Skip if no keybind features are enabled
                 if not IsAnyKeybindFeatureEnabled() then return end
-                UpdateViewerKeybinds(viewerName)
+                C_Timer.After(0.25, function()  -- 250ms debounce for CPU efficiency
+                    -- Double-check after timer (settings may have changed)
+                    if not IsAnyKeybindFeatureEnabled() then return end
+                    UpdateViewerKeybinds(viewerName)
+                end)
             end)
         end)
     end
