@@ -6,7 +6,7 @@
 ## AddonCompartmentFuncOnLeave: KoriUI_CompartmentOnLeave
 ## Notes: Installer for |cFF1E90FFKorivash|r UI
 ## Author: Korivash
-## Version: 2.1.8
+## Version: 2.1.9
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariables: KoriUI_DB, KoriUIDB

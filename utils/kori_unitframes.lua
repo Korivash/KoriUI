@@ -4338,71 +4338,94 @@ end
 local function KillBlizzardFrame(frame, allowInEditMode)
     if not frame then return end
     
-    -- Unregister events to stop updates
-    frame:UnregisterAllEvents()
+    -- Wrap all operations in pcall for 12.0.1 forbidden frame protection
+    pcall(function()
+        -- Unregister events to stop updates
+        frame:UnregisterAllEvents()
+    end)
     
-    -- For secure frames like PlayerFrame, we can't call Hide() directly
-    -- Instead, make it invisible and non-interactive
-    frame:SetAlpha(0)
-    frame:EnableMouse(false)
+    pcall(function()
+        -- For secure frames like PlayerFrame, we can't call Hide() directly
+        -- Instead, make it invisible and non-interactive
+        frame:SetAlpha(0)
+    end)
     
-    -- Move it off-screen as extra measure
-    frame:ClearAllPoints()
-    frame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
+    pcall(function()
+        frame:EnableMouse(false)
+    end)
+    
+    pcall(function()
+        -- Move it off-screen as extra measure
+        frame:ClearAllPoints()
+        frame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10000, 10000)
+    end)
     
     -- Use RegisterStateDriver to keep it hidden (works with secure frames)
     if not InCombatLockdown() then
-        RegisterStateDriver(frame, "visibility", "hide")
+        pcall(RegisterStateDriver, frame, "visibility", "hide")
     end
 end
 
 local function KillBlizzardChildFrame(frame)
     if not frame then return end
-    if frame.UnregisterAllEvents then
-        frame:UnregisterAllEvents()
-    end
+    
+    pcall(function()
+        if frame.UnregisterAllEvents then
+            frame:UnregisterAllEvents()
+        end
+    end)
     
     -- Use pcall to safely try Hide() - some child frames may be protected
     pcall(function() frame:Hide() end)
     
-    if frame.EnableMouse then
-        frame:EnableMouse(false)
-    end
+    pcall(function()
+        if frame.EnableMouse then
+            frame:EnableMouse(false)
+        end
+    end)
     
     -- Set alpha to 0 as fallback
-    frame:SetAlpha(0)
+    pcall(function() frame:SetAlpha(0) end)
     
-    frame:SetScript("OnShow", function(f) 
-        pcall(function() f:Hide() end)
-        f:SetAlpha(0)
+    pcall(function()
+        frame:SetScript("OnShow", function(f) 
+            pcall(function() f:Hide() end)
+            pcall(function() f:SetAlpha(0) end)
+        end)
     end)
 end
 
 local function HideBlizzardTargetVisuals()
     if not TargetFrame then return end
     
+    -- In 12.0.1, accessing frame properties can be forbidden - use pcall
+    local function SafeGetChild(parent, childName)
+        local ok, child = pcall(function() return parent[childName] end)
+        return ok and child or nil
+    end
+    
     -- Hide main art & bars but keep the frame alive for tooltips/buffs
-    KillBlizzardChildFrame(TargetFrame.TargetFrameContainer)
-    KillBlizzardChildFrame(TargetFrame.TargetFrameContent)
-    KillBlizzardChildFrame(TargetFrame.healthbar)
-    KillBlizzardChildFrame(TargetFrame.manabar)
-    KillBlizzardChildFrame(TargetFrame.powerBarAlt)
-    KillBlizzardChildFrame(TargetFrame.overAbsorbGlow)
-    KillBlizzardChildFrame(TargetFrame.overHealAbsorbGlow)
-    KillBlizzardChildFrame(TargetFrame.totalAbsorbBar)
-    KillBlizzardChildFrame(TargetFrame.tempMaxHealthLossBar)
-    KillBlizzardChildFrame(TargetFrame.myHealPredictionBar)
-    KillBlizzardChildFrame(TargetFrame.otherHealPredictionBar)
-    KillBlizzardChildFrame(TargetFrame.name)
-    KillBlizzardChildFrame(TargetFrame.portrait)
-    KillBlizzardChildFrame(TargetFrame.threatIndicator)
-    KillBlizzardChildFrame(TargetFrame.threatNumericIndicator)
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "TargetFrameContainer"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "TargetFrameContent"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "healthbar"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "manabar"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "powerBarAlt"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "overAbsorbGlow"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "overHealAbsorbGlow"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "totalAbsorbBar"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "tempMaxHealthLossBar"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "myHealPredictionBar"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "otherHealPredictionBar"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "name"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "portrait"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "threatIndicator"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "threatNumericIndicator"))
     
     -- Hide buff/debuff frames (modern WoW structure)
-    KillBlizzardChildFrame(TargetFrame.BuffFrame)
-    KillBlizzardChildFrame(TargetFrame.DebuffFrame)
-    KillBlizzardChildFrame(TargetFrame.buffsContainer)
-    KillBlizzardChildFrame(TargetFrame.debuffsContainer)
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "BuffFrame"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "DebuffFrame"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "buffsContainer"))
+    KillBlizzardChildFrame(SafeGetChild(TargetFrame, "debuffsContainer"))
     
     -- Hide old-style aura buttons (use rawget to avoid forbidden table error in 12.0.1)
     for i = 1, 40 do
@@ -4413,8 +4436,9 @@ local function HideBlizzardTargetVisuals()
     end
     
     -- Release aura pools (Dragonflight+)
-    if TargetFrame.auraPools and TargetFrame.auraPools.ReleaseAll then
-        TargetFrame.auraPools:ReleaseAll()
+    local auraPools = SafeGetChild(TargetFrame, "auraPools")
+    if auraPools and auraPools.ReleaseAll then
+        pcall(auraPools.ReleaseAll, auraPools)
     end
     
     -- Hide the entire TargetFrame since we have our own
@@ -4424,27 +4448,33 @@ end
 local function HideBlizzardFocusVisuals()
     if not FocusFrame then return end
     
-    KillBlizzardChildFrame(FocusFrame.TargetFrameContainer)
-    KillBlizzardChildFrame(FocusFrame.TargetFrameContent)
-    KillBlizzardChildFrame(FocusFrame.healthbar)
-    KillBlizzardChildFrame(FocusFrame.manabar)
-    KillBlizzardChildFrame(FocusFrame.powerBarAlt)
-    KillBlizzardChildFrame(FocusFrame.overAbsorbGlow)
-    KillBlizzardChildFrame(FocusFrame.overHealAbsorbGlow)
-    KillBlizzardChildFrame(FocusFrame.totalAbsorbBar)
-    KillBlizzardChildFrame(FocusFrame.tempMaxHealthLossBar)
-    KillBlizzardChildFrame(FocusFrame.myHealPredictionBar)
-    KillBlizzardChildFrame(FocusFrame.otherHealPredictionBar)
-    KillBlizzardChildFrame(FocusFrame.name)
-    KillBlizzardChildFrame(FocusFrame.portrait)
-    KillBlizzardChildFrame(FocusFrame.threatIndicator)
-    KillBlizzardChildFrame(FocusFrame.threatNumericIndicator)
+    -- In 12.0.1, accessing frame properties can be forbidden - use pcall
+    local function SafeGetChild(parent, childName)
+        local ok, child = pcall(function() return parent[childName] end)
+        return ok and child or nil
+    end
+    
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "TargetFrameContainer"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "TargetFrameContent"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "healthbar"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "manabar"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "powerBarAlt"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "overAbsorbGlow"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "overHealAbsorbGlow"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "totalAbsorbBar"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "tempMaxHealthLossBar"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "myHealPredictionBar"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "otherHealPredictionBar"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "name"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "portrait"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "threatIndicator"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "threatNumericIndicator"))
     
     -- Hide buff/debuff frames (modern WoW structure)
-    KillBlizzardChildFrame(FocusFrame.BuffFrame)
-    KillBlizzardChildFrame(FocusFrame.DebuffFrame)
-    KillBlizzardChildFrame(FocusFrame.buffsContainer)
-    KillBlizzardChildFrame(FocusFrame.debuffsContainer)
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "BuffFrame"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "DebuffFrame"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "buffsContainer"))
+    KillBlizzardChildFrame(SafeGetChild(FocusFrame, "debuffsContainer"))
     
     -- Hide old-style aura buttons (use rawget to avoid forbidden table error in 12.0.1)
     for i = 1, 40 do
@@ -4455,8 +4485,9 @@ local function HideBlizzardFocusVisuals()
     end
     
     -- Release aura pools
-    if FocusFrame.auraPools and FocusFrame.auraPools.ReleaseAll then
-        FocusFrame.auraPools:ReleaseAll()
+    local auraPools = SafeGetChild(FocusFrame, "auraPools")
+    if auraPools and auraPools.ReleaseAll then
+        pcall(auraPools.ReleaseAll, auraPools)
     end
     
     -- Hide the entire FocusFrame since we have our own
@@ -4500,7 +4531,9 @@ function KORI_UF:HideBlizzardFrames()
     end
     
     -- Hide Target frame visuals (keep frame for auras/tooltips)
-    if db.target and db.target.enabled then
+    -- Default enabled if not explicitly disabled
+    local targetEnabled = db.target and (db.target.enabled == true or db.target.enabled == nil)
+    if targetEnabled then
         HideBlizzardTargetVisuals()
     end
     
@@ -4588,23 +4621,31 @@ function KORI_UF:Initialize()
     -- Create player frame
     if db.player and db.player.enabled then
         self.frames.player = CreateUnitFrame("player", "player")
+        print("|cFF00FF00[KoriUI]|r Player frame created:", self.frames.player and "YES" or "NO")
         -- Create player castbar
         if db.player.castbar and db.player.castbar.enabled then
             self.castbars.player = CreateCastbar(self.frames.player, "player", "player")
         end
         -- Setup aura tracking for player
         SetupAuraTracking(self.frames.player)
+    else
+        print("|cFFFF0000[KoriUI]|r Player frame DISABLED in settings")
     end
 
-    -- Create target frame
-    if db.target and db.target.enabled then
+    -- Create target frame (default enabled if not explicitly disabled)
+    local targetEnabled = db.target and (db.target.enabled == true or db.target.enabled == nil)
+    if targetEnabled then
+        print("|cFF00FF00[KoriUI]|r Creating target frame...")
         self.frames.target = CreateUnitFrame("target", "target")
+        print("|cFF00FF00[KoriUI]|r Target frame created:", self.frames.target and "YES" or "NO")
         -- Create target castbar
         if db.target.castbar and db.target.castbar.enabled then
             self.castbars.target = CreateCastbar(self.frames.target, "target", "target")
         end
         -- Setup aura tracking for target (debuffs above, buffs below)
         SetupAuraTracking(self.frames.target)
+    else
+        print("|cFFFF0000[KoriUI]|r Target frame DISABLED - db.target:", db.target and "exists" or "nil", "enabled:", db.target and db.target.enabled or "N/A")
     end
     
     -- Create target of target frame
