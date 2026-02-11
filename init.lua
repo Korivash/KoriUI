@@ -2,19 +2,6 @@
 -- KoriUI Initialization
 --============================================================--
 
--- DEBUG: Catch forbidden table errors with full stack trace
-local origErrorHandler = geterrorhandler()
-seterrorhandler(function(err)
-    if err and err:find("forbidden table") then
-        print("|cFFFF0000[KoriUI DEBUG] Forbidden table error:|r")
-        print(err)
-        print(debugstack(2, 20, 0))
-    end
-    if origErrorHandler then
-        return origErrorHandler(err)
-    end
-end)
-
 -- Keybinding display name (must be global before Bindings.xml loads)
 BINDING_NAME_KORIUI_TOGGLE_OPTIONS = "Open KoriUI Options"
 

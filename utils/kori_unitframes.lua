@@ -4621,31 +4621,24 @@ function KORI_UF:Initialize()
     -- Create player frame
     if db.player and db.player.enabled then
         self.frames.player = CreateUnitFrame("player", "player")
-        print("|cFF00FF00[KoriUI]|r Player frame created:", self.frames.player and "YES" or "NO")
         -- Create player castbar
         if db.player.castbar and db.player.castbar.enabled then
             self.castbars.player = CreateCastbar(self.frames.player, "player", "player")
         end
         -- Setup aura tracking for player
         SetupAuraTracking(self.frames.player)
-    else
-        print("|cFFFF0000[KoriUI]|r Player frame DISABLED in settings")
     end
 
     -- Create target frame (default enabled if not explicitly disabled)
     local targetEnabled = db.target and (db.target.enabled == true or db.target.enabled == nil)
     if targetEnabled then
-        print("|cFF00FF00[KoriUI]|r Creating target frame...")
         self.frames.target = CreateUnitFrame("target", "target")
-        print("|cFF00FF00[KoriUI]|r Target frame created:", self.frames.target and "YES" or "NO")
         -- Create target castbar
         if db.target.castbar and db.target.castbar.enabled then
             self.castbars.target = CreateCastbar(self.frames.target, "target", "target")
         end
         -- Setup aura tracking for target (debuffs above, buffs below)
         SetupAuraTracking(self.frames.target)
-    else
-        print("|cFFFF0000[KoriUI]|r Target frame DISABLED - db.target:", db.target and "exists" or "nil", "enabled:", db.target and db.target.enabled or "N/A")
     end
     
     -- Create target of target frame
