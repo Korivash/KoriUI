@@ -268,7 +268,7 @@ local function CreateNudgeUI()
     -- Update info display
     function NudgeFrame:UpdateInfo()
         local viewerName = KORICore.selectedViewer
-        local viewer = viewerName and _G[viewerName]
+        local viewer = viewerName and rawget(_G, viewerName)
 
         if viewer then
             local displayName = GetNudgeDisplayName(viewerName)
@@ -499,7 +499,7 @@ end
 
 -- Create overlay for a single CDM viewer
 local function CreateViewerOverlay(viewerName)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return nil end
 
     local overlay = CreateFrame("Frame", nil, viewer, "BackdropTemplate")
@@ -556,7 +556,7 @@ end
 local function CreateBlizzardFrameOverlay(frameInfo)
     local frameName = frameInfo.name
     local label = frameInfo.label
-    local frame = _G[frameName]
+    local frame = rawget(_G, frameName)
     if not frame then return nil end
 
     local overlay = CreateFrame("Frame", nil, frame, "BackdropTemplate")
@@ -687,7 +687,7 @@ function KORICore:ShowViewerOverlays()
                 if button == "LeftButton" then
                     KORICore:SelectViewer(viewerName)
                     -- Start drag on the viewer
-                    local viewer = _G[viewerName]
+                    local viewer = rawget(_G, viewerName)
                     if viewer then
                         viewer:SetMovable(true)  -- Enable movable for Blizzard CDM viewers
                         viewer:StartMoving()
@@ -695,7 +695,7 @@ function KORICore:ShowViewerOverlays()
                 end
             end)
             overlay:SetScript("OnMouseUp", function(self, button)
-                local viewer = _G[viewerName]
+                local viewer = rawget(_G, viewerName)
                 if viewer then
                     viewer:StopMovingOrSizing()
                     -- Save position via LibEditModeOverride
@@ -730,7 +730,7 @@ end
 function KORICore:ShowBlizzardFrameOverlays()
     for _, frameInfo in ipairs(BLIZZARD_EDITMODE_FRAMES) do
         local frameName = frameInfo.name
-        local frame = _G[frameName]
+        local frame = rawget(_G, frameName)
 
         -- Skip if frame doesn't exist (e.g., DamageMeter not in combat)
         if frame then
@@ -893,7 +893,7 @@ end
 
 -- Select a viewer for nudging
 function KORICore:SelectViewer(viewerName)
-    if not viewerName or not _G[viewerName] then
+    if not viewerName or not rawget(_G, viewerName) then
         self.selectedViewer = nil
         if self.nudgeFrame then
             self.nudgeFrame:UpdateInfo()
@@ -939,7 +939,7 @@ end
 function KORICore:NudgeSelectedViewer(direction)
     if not self.selectedViewer then return false end
 
-    local viewer = _G[self.selectedViewer]
+    local viewer = rawget(_G, self.selectedViewer)
     if not viewer then return false end
 
     local amount = 1  -- Always 1px nudge
@@ -1082,7 +1082,7 @@ local function SetupEditModeHooks()
             local uiCenterX, uiCenterY = UIParent:GetCenter()
 
             -- Fix BuffIconCooldownViewer
-            local buffViewer = _G["BuffIconCooldownViewer"]
+            local buffViewer = rawget(_G, "BuffIconCooldownViewer")
             if buffViewer then
                 local point = buffViewer:GetPoint(1)
                 if point == "TOPLEFT" then
@@ -1109,7 +1109,7 @@ local function SetupEditModeHooks()
             end
 
             -- Fix BuffBarCooldownViewer (tracked bars)
-            local barViewer = _G["BuffBarCooldownViewer"]
+            local barViewer = rawget(_G, "BuffBarCooldownViewer")
             if barViewer then
                 local point = barViewer:GetPoint(1)
                 if point == "TOPLEFT" then
@@ -1166,7 +1166,7 @@ viewerAnchorFixFrame:SetScript("OnEvent", function(self, event, isInitialLogin, 
         local uiCenterX, uiCenterY = UIParent:GetCenter()
 
         -- Fix BuffBarCooldownViewer anchor using GetCenter() for exact position
-        local barViewer = _G["BuffBarCooldownViewer"]
+        local barViewer = rawget(_G, "BuffBarCooldownViewer")
         if barViewer then
             local point = barViewer:GetPoint(1)
             if point == "TOPLEFT" then
@@ -1185,7 +1185,7 @@ viewerAnchorFixFrame:SetScript("OnEvent", function(self, event, isInitialLogin, 
         end
 
         -- Same fix for BuffIconCooldownViewer
-        local iconViewer = _G["BuffIconCooldownViewer"]
+        local iconViewer = rawget(_G, "BuffIconCooldownViewer")
         if iconViewer then
             local point = iconViewer:GetPoint(1)
             if point == "TOPLEFT" then

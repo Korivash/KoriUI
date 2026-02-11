@@ -124,36 +124,52 @@ local function ScanSpellFromBuffs(castSpellID, itemID)
     local bestMatch = nil
 
     for i = 1, 40 do
-        local aura = C_UnitAuras.GetAuraDataByIndex("player", i, "HELPFUL")
-        if not aura then break end
+        -- Wrap in pcall for combat safety (12.0.1 forbidden table protection)
+        local ok, aura = pcall(C_UnitAuras.GetAuraDataByIndex, "player", i, "HELPFUL")
+        if not ok or not aura then break end
 
-        -- Secret values in Midnight: reading doesn't error, but comparisons/arithmetic do
-        local spellId = aura.spellId
-        local duration = aura.duration
-        local expirationTime = aura.expirationTime
-        local icon = aura.icon
-        local name = aura.name
-
-        -- Calculate how recently this buff was applied - wrap arithmetic in pcall
-        local buffAge = 999
+        -- In 12.0.1, aura fields can be secret values - safely extract them
+        local spellId, icon, name, auraInstanceID
         pcall(function()
-            if expirationTime and duration and duration > 0 then
-                buffAge = duration - (expirationTime - now)
+            spellId = aura.spellId
+            icon = aura.icon
+            name = aura.name
+            auraInstanceID = aura.auraInstanceID
+        end)
+        
+        -- Skip if we couldn't get basic data
+        if not auraInstanceID then
+            -- Continue to next aura
+        else
+            -- Get timing info from duration object (combat-safe in 12.0.1)
+            local duration, expirationTime, buffAge = nil, nil, 999
+            
+            if C_UnitAuras.GetAuraDuration then
+                local durOk, durationObj = pcall(C_UnitAuras.GetAuraDuration, "player", auraInstanceID)
+                if durOk and durationObj then
+                    local eOK, elapsed = pcall(durationObj.GetElapsedDuration, durationObj)
+                    local rOK, remaining = pcall(durationObj.GetRemainingDuration, durationObj)
+                    if eOK and rOK and elapsed and remaining then
+                        duration = elapsed + remaining
+                        expirationTime = now + remaining
+                        buffAge = elapsed
+                    end
+                end
             end
-        end)
 
-        -- Look for buffs applied in last 2 seconds with meaningful duration (>= 3s)
-        -- Wrap comparison in pcall
-        local isRecentBuff = false
-        pcall(function()
-            isRecentBuff = buffAge < 2 and duration and duration >= 3
-        end)
+            -- Look for buffs applied in last 2 seconds with meaningful duration (>= 3s)
+            local isRecentBuff = false
+            if duration and buffAge then
+                pcall(function()
+                    isRecentBuff = buffAge < 2 and duration >= 3
+                end)
+            end
 
-        if isRecentBuff then
-            if not bestMatch or buffAge < bestMatch.age then
-                bestMatch = {
-                    spellId = spellId,
-                    duration = duration,
+            if isRecentBuff then
+                if not bestMatch or buffAge < bestMatch.age then
+                    bestMatch = {
+                        spellId = spellId,
+                        duration = duration,
                     icon = icon,
                     name = name,
                     age = buffAge,
@@ -161,6 +177,7 @@ local function ScanSpellFromBuffs(castSpellID, itemID)
                 }
             end
         end
+        end  -- end of else block for auraInstanceID check
     end
 
     if bestMatch then
@@ -299,8 +316,28 @@ function SpellScanner.IsSpellActive(spellID)
     local data = GetScannedSpell(spellID)
     if data and data.buffSpellID and not InCombatLockdown() then
         local ok, aura = pcall(C_UnitAuras.GetPlayerAuraBySpellID, data.buffSpellID)
-        if ok and aura and aura.expirationTime then
-            return true, aura.expirationTime, aura.duration
+        if ok and aura then
+            -- Safely extract auraInstanceID (can be forbidden in 12.0.1)
+            local auraInstanceID
+            pcall(function() auraInstanceID = aura.auraInstanceID end)
+            
+            if auraInstanceID then
+                -- Use duration object API (combat-safe in 12.0.1)
+                if C_UnitAuras.GetAuraDuration then
+                    local durOk, durationObj = pcall(C_UnitAuras.GetAuraDuration, "player", auraInstanceID)
+                    if durOk and durationObj then
+                        local eOK, elapsed = pcall(durationObj.GetElapsedDuration, durationObj)
+                        local rOK, remaining = pcall(durationObj.GetRemainingDuration, durationObj)
+                        if eOK and rOK and elapsed and remaining then
+                            local totalDuration = elapsed + remaining
+                            local expirationTime = GetTime() + remaining
+                            return true, expirationTime, totalDuration
+                        end
+                    end
+                end
+                -- Aura exists but couldn't get timing - still report as active
+                return true, nil, nil
+            end
         end
     end
 

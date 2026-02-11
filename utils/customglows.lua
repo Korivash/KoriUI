@@ -337,7 +337,7 @@ end
 
 -- Hook all icons in a viewer
 local function HookViewerIcons(viewerName)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
 
     local children = {viewer:GetChildren()}
@@ -350,7 +350,7 @@ end
 
 -- Setup continuous hooking for new icons
 local function SetupViewerHooking(viewerName, trackerKey)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
 
     -- Hook existing icons
@@ -488,7 +488,7 @@ _G.KoriUI_RefreshCustomGlows = RefreshAllGlows
 -- Debug functions
 _G.KoriUI_TestCustomGlow = function(viewerType)
     viewerType = viewerType or "Essential"
-    local viewer = _G[viewerType .. "CooldownViewer"]
+    local viewer = rawget(_G, viewerType .. "CooldownViewer")
     if viewer then
         local children = {viewer:GetChildren()}
         for i, child in ipairs(children) do

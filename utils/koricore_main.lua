@@ -4246,7 +4246,7 @@ end
 
 function KORICore:HookViewers()
     for _, name in ipairs(self.viewers) do
-        local viewer = _G[name]
+        local viewer = rawget(_G, name)
         if viewer and not viewer.__cdmHooked then
             viewer.__cdmHooked = true
 
@@ -4287,7 +4287,7 @@ function KORICore:HookViewers()
 end
 
 function KORICore:ForceRefreshBuffIcons()
-    local viewer = _G["BuffIconCooldownViewer"]
+    local viewer = rawget(_G, "BuffIconCooldownViewer")
     if viewer and viewer:IsShown() then
         viewer.__cdmIconCount = nil
         self:RescanViewer(viewer)
@@ -4301,7 +4301,7 @@ end
 -- Force re-skin all icons in all viewers (used when Edit Mode changes)
 function KORICore:ForceReskinAllViewers()
     for _, name in ipairs(self.viewers) do
-        local viewer = _G[name]
+        local viewer = rawget(_G, name)
         if viewer then
             local container = viewer.viewerFrame or viewer
             local children = { container:GetChildren() }
@@ -4321,7 +4321,7 @@ function KORICore:ForceReskinAllViewers()
     
     -- Trigger immediate rescan of all viewers
     for _, name in ipairs(self.viewers) do
-        local viewer = _G[name]
+        local viewer = rawget(_G, name)
         if viewer and viewer:IsShown() then
             self:RescanViewer(viewer)
             -- Also force apply viewer skin which does layout + skinning
@@ -4369,7 +4369,7 @@ function KORICore:HookEditMode()
                 -- Hide power bar edit overlays that persist after edit mode exits
                 C_Timer.After(0.15, function()
                     for _, barName in ipairs({"KoriUIPrimaryPowerBar", "KoriUISecondaryPowerBar"}) do
-                        local bar = _G[barName]
+                        local bar = rawget(_G, barName)
                         if bar and bar.editOverlay and bar.editOverlay:IsShown() then
                             bar.editOverlay:Hide()
                         end
@@ -4390,7 +4390,7 @@ function KORICore:HookEditMode()
                 -- Check if any icons need re-skinning
                 local needsReskin = false
                 for _, viewerName in ipairs(self.viewers) do
-                    local viewer = _G[viewerName]
+                    local viewer = rawget(_G, viewerName)
                     if viewer then
                         local container = viewer.viewerFrame or viewer
                         for _, child in ipairs({ container:GetChildren() }) do
@@ -4529,7 +4529,7 @@ end
 
 function KORICore:RefreshAll()
     for _, name in ipairs(self.viewers) do
-        local viewer = _G[name]
+        local viewer = rawget(_G, name)
         if viewer and viewer:IsShown() then
             self:ApplyViewerSkin(viewer)
         end
@@ -4635,7 +4635,7 @@ function KORICore:ApplyGlobalFont()
 
     -- Override Blizzard font objects
     for _, fontObjName in ipairs(BLIZZARD_FONT_OBJECTS) do
-        local fontObj = _G[fontObjName]
+        local fontObj = rawget(_G, fontObjName)
         if fontObj and fontObj.GetFont and fontObj.SetFont then
             local _, size, flags = fontObj:GetFont()
             if size then
@@ -4698,7 +4698,7 @@ function KORICore:ApplyGlobalFont()
             C_Timer.After(0.05, function()
                 local fp = GetGlobalFontPath()
                 for i = 1, NUM_CHAT_WINDOWS do
-                    local chatFrame = _G["ChatFrame" .. i]
+                    local chatFrame = rawget(_G, "ChatFrame" .. i)
                     if chatFrame and chatFrame.SetFont then
                         local _, size, flags = chatFrame:GetFont()
                         if size then
@@ -4712,7 +4712,7 @@ function KORICore:ApplyGlobalFont()
 
     -- Apply to existing chat frames (SetFont on the frame itself for new message persistence)
     for i = 1, NUM_CHAT_WINDOWS do
-        local chatFrame = _G["ChatFrame" .. i]
+        local chatFrame = rawget(_G, "ChatFrame" .. i)
         if chatFrame and chatFrame.SetFont then
             local _, size, flags = chatFrame:GetFont()
             if size then

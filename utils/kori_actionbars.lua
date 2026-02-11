@@ -280,7 +280,7 @@ local function GetBarButtons(barKey)
             table.insert(buttons, MainMenuBarBackpackButton)
         end
         for i = 0, 3 do
-            local slot = _G["CharacterBag" .. i .. "Slot"]
+            local slot = rawget(_G, "CharacterBag" .. i .. "Slot")
             if slot then table.insert(buttons, slot) end
         end
         if CharacterReagentBag0Slot then
@@ -311,7 +311,7 @@ local function GetBarButtons(barKey)
 
     for i = 1, count do
         local buttonName = string.format(pattern, i)
-        local button = _G[buttonName]
+        local button = rawget(_G, buttonName)
         if button then
             table.insert(buttons, button)
         end
@@ -323,7 +323,7 @@ end
 -- Get the bar container frame
 local function GetBarFrame(barKey)
     local frameName = BAR_FRAMES[barKey]
-    return frameName and _G[frameName]
+    return frameName and rawget(_G, frameName)
 end
 
 ---------------------------------------------------------------------------

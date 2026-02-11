@@ -341,7 +341,7 @@ local function PositionCastbarByAnchor(anchorFrame, castSettings, unitFrame, bar
         local offsetX = Scale(castSettings.offsetX or 0)
         local offsetY = math.floor(Scale(castSettings.offsetY or -25) + 0.5)
         local widthAdj = Scale(castSettings.widthAdjustment or 0)
-        local viewer = _G["EssentialCooldownViewer"]
+        local viewer = rawget(_G, "EssentialCooldownViewer")
         if viewer then
             anchorFrame:SetPoint("TOPLEFT", viewer, "BOTTOMLEFT", offsetX - widthAdj, offsetY)
             anchorFrame:SetPoint("TOPRIGHT", viewer, "BOTTOMRIGHT", offsetX + widthAdj, offsetY)
@@ -352,7 +352,7 @@ local function PositionCastbarByAnchor(anchorFrame, castSettings, unitFrame, bar
         local offsetX = Scale(castSettings.offsetX or 0)
         local offsetY = math.floor(Scale(castSettings.offsetY or -25) + 0.5)
         local widthAdj = Scale(castSettings.widthAdjustment or 0)
-        local viewer = _G["UtilityCooldownViewer"]
+        local viewer = rawget(_G, "UtilityCooldownViewer")
         if viewer then
             anchorFrame:SetPoint("TOPLEFT", viewer, "BOTTOMLEFT", offsetX - widthAdj, offsetY)
             anchorFrame:SetPoint("TOPRIGHT", viewer, "BOTTOMRIGHT", offsetX + widthAdj, offsetY)

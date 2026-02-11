@@ -7,6 +7,15 @@
 local ADDON_NAME, ns = ...
 local KORICore = ns.Addon
 local LSM = LibStub("LibSharedMedia-3.0")
+
+-- DEBUG: Safe wrapper for detecting forbidden table access
+local function SafeIndex(tbl, key, fallback)
+    if not tbl then return fallback end
+    local ok, val = pcall(function() return tbl[key] end)
+    if ok then return val end
+    return fallback
+end
+
 local IsSecretValue = function(v) return ns.Utils and ns.Utils.IsSecretValue and ns.Utils.IsSecretValue(v) or false end
 
 ---------------------------------------------------------------------------
@@ -2380,12 +2389,16 @@ local function UpdateAuras(frame)
         if not auraData then return false end
 
         local applied = false
+        
+        -- Safely extract auraInstanceID (can be forbidden in 12.0.1)
+        local auraInstanceID
+        pcall(function() auraInstanceID = auraData.auraInstanceID end)
 
         -- Prefer duration object API (combat-safe on enemy targets)
-        if cooldownFrame.SetCooldownFromDurationObject and auraData.auraInstanceID then
+        if cooldownFrame.SetCooldownFromDurationObject and auraInstanceID then
             local durationObj
             if C_UnitAuras and C_UnitAuras.GetAuraDuration then
-                local ok, obj = pcall(C_UnitAuras.GetAuraDuration, unit, auraData.auraInstanceID)
+                local ok, obj = pcall(C_UnitAuras.GetAuraDuration, unit, auraInstanceID)
                 if ok and obj then
                     durationObj = obj
                 end
@@ -2413,8 +2426,12 @@ local function UpdateAuras(frame)
 
         -- Fallback: numeric start/duration (avoid comparisons; allow secret-safe arithmetic)
         if not applied then
-            local duration = auraData.duration
-            local expirationTime = auraData.expirationTime
+            -- Safely extract duration properties
+            local duration, expirationTime
+            pcall(function()
+                duration = auraData.duration
+                expirationTime = auraData.expirationTime
+            end)
             if duration and expirationTime then
                 local ok = pcall(function()
                     local startTime = expirationTime - duration
@@ -2456,47 +2473,60 @@ local function UpdateAuras(frame)
     end
     if showDebuffs and not debuffPreviewActive then
         while debuffCount < debuffMaxIcons do
-            local auraData = C_UnitAuras.GetAuraDataByIndex(unit, debuffIndex, debuffFilter)
-            if not auraData then break end
+            -- Wrap in pcall for combat safety on enemy units (12.0.1 forbidden table protection)
+            local ok, auraData = pcall(C_UnitAuras.GetAuraDataByIndex, unit, debuffIndex, debuffFilter)
+            if not ok or not auraData then break end
             
-            debuffCount = debuffCount + 1
-
-            local icon = GetAuraIcon(frame.debuffIcons, debuffCount, frame, iconSize, auraSettings, true)
-
-            -- Store aura data for tooltip
-            icon.unit = unit
-            icon.auraInstanceID = auraData.auraInstanceID
-            icon.filter = debuffFilter
-
-            -- Safely set texture (icon field is always safe)
-            if auraData.icon then
-                icon.icon:SetTexture(auraData.icon)
-            end
-
-            -- Red border for debuffs
-            if icon.border then
-                icon.border:SetColorTexture(0.8, 0.2, 0.2, 1)
-            end
-
-            -- Cooldown (safely handles secret values via duration object API)
-            if SafeSetCooldown(icon.cooldown, auraData, unit) then
-                icon.cooldown:Show()
+            -- Safely extract aura properties (all can be forbidden in 12.0.1)
+            local auraInstanceID, auraIcon
+            pcall(function()
+                auraInstanceID = auraData.auraInstanceID
+                auraIcon = auraData.icon
+            end)
+            
+            -- Skip this aura if we couldn't get basic data
+            if not auraInstanceID then 
+                debuffIndex = debuffIndex + 1
+                -- Don't break, try next aura
             else
-                icon.cooldown:Hide()
-            end
+                debuffCount = debuffCount + 1
 
-            -- Stack count (using combat-safe API, no comparisons on result)
-            if icon._showStack then
-                DisplayStackCount(icon.count, unit, auraData.auraInstanceID)
-                icon.count:Show()
-            else
-                icon.count:Hide()
-            end
+                local icon = GetAuraIcon(frame.debuffIcons, debuffCount, frame, iconSize, auraSettings, true)
 
-            -- Calculate position based on anchor and single grow direction
-            local idx = debuffCount - 1
-            local xPos, yPos = debuffOffsetX, debuffOffsetY
-            if debuffGrow == "RIGHT" then
+                -- Store aura data for tooltip
+                icon.unit = unit
+                icon.auraInstanceID = auraInstanceID
+                icon.filter = debuffFilter
+
+                -- Safely set texture
+                if auraIcon then
+                    pcall(icon.icon.SetTexture, icon.icon, auraIcon)
+                end
+
+                -- Red border for debuffs
+                if icon.border then
+                    icon.border:SetColorTexture(0.8, 0.2, 0.2, 1)
+                end
+
+                -- Cooldown (safely handles secret values via duration object API)
+                if SafeSetCooldown(icon.cooldown, auraData, unit) then
+                    icon.cooldown:Show()
+                else
+                    icon.cooldown:Hide()
+                end
+
+                -- Stack count (using combat-safe API, no comparisons on result)
+                if icon._showStack then
+                    DisplayStackCount(icon.count, unit, auraInstanceID)
+                    icon.count:Show()
+                else
+                    icon.count:Hide()
+                end
+
+                -- Calculate position based on anchor and single grow direction
+                local idx = debuffCount - 1
+                local xPos, yPos = debuffOffsetX, debuffOffsetY
+                if debuffGrow == "RIGHT" then
                 xPos = xPos + idx * (iconSize + debuffSpacing)
             elseif debuffGrow == "LEFT" then
                 xPos = xPos - idx * (iconSize + debuffSpacing)
@@ -2519,9 +2549,10 @@ local function UpdateAuras(frame)
                 iconPoint, framePoint, borderOffsetX = "TOPRIGHT", "BOTTOMRIGHT", -1
             end
 
-            icon:ClearAllPoints()
-            icon:SetPoint(iconPoint, frame, framePoint, xPos + (borderOffsetX or 0), yPos)
-            icon:Show()
+                icon:ClearAllPoints()
+                icon:SetPoint(iconPoint, frame, framePoint, xPos + (borderOffsetX or 0), yPos)
+                icon:Show()
+            end  -- end of else block for auraInstanceID check
             
             debuffIndex = debuffIndex + 1
         end
@@ -2532,47 +2563,60 @@ local function UpdateAuras(frame)
     local buffIndex = 1
     if showBuffs and not buffPreviewActive then
         while buffCount < buffMaxIcons do
-            local auraData = C_UnitAuras.GetAuraDataByIndex(unit, buffIndex, "HELPFUL")
-            if not auraData then break end
+            -- Wrap in pcall for combat safety on enemy units (12.0.1 forbidden table protection)
+            local ok, auraData = pcall(C_UnitAuras.GetAuraDataByIndex, unit, buffIndex, "HELPFUL")
+            if not ok or not auraData then break end
             
-            buffCount = buffCount + 1
-
-            local icon = GetAuraIcon(frame.buffIcons, buffCount, frame, buffIconSize, auraSettings, false)
-
-            -- Store aura data for tooltip
-            icon.unit = unit
-            icon.auraInstanceID = auraData.auraInstanceID
-            icon.filter = "HELPFUL"
-
-            -- Safely set texture
-            if auraData.icon then
-                icon.icon:SetTexture(auraData.icon)
-            end
-
-            -- Default black border for buffs
-            if icon.border then
-                icon.border:SetColorTexture(0, 0, 0, 1)
-            end
-
-            -- Cooldown (safely handles secret values via duration object API)
-            if SafeSetCooldown(icon.cooldown, auraData, unit) then
-                icon.cooldown:Show()
+            -- Safely extract aura properties (all can be forbidden in 12.0.1)
+            local auraInstanceID, auraIcon
+            pcall(function()
+                auraInstanceID = auraData.auraInstanceID
+                auraIcon = auraData.icon
+            end)
+            
+            -- Skip this aura if we couldn't get basic data
+            if not auraInstanceID then 
+                buffIndex = buffIndex + 1
+                -- Don't break, try next aura
             else
-                icon.cooldown:Hide()
-            end
+                buffCount = buffCount + 1
 
-            -- Stack count (using combat-safe API, no comparisons on result)
-            if icon._showStack then
-                DisplayStackCount(icon.count, unit, auraData.auraInstanceID)
-                icon.count:Show()
-            else
-                icon.count:Hide()
-            end
+                local icon = GetAuraIcon(frame.buffIcons, buffCount, frame, buffIconSize, auraSettings, false)
 
-            -- Calculate position based on anchor and single grow direction
-            local idx = buffCount - 1
-            local xPos, yPos = buffOffsetX, buffOffsetY
-            if buffGrow == "RIGHT" then
+                -- Store aura data for tooltip
+                icon.unit = unit
+                icon.auraInstanceID = auraInstanceID
+                icon.filter = "HELPFUL"
+
+                -- Safely set texture
+                if auraIcon then
+                    pcall(icon.icon.SetTexture, icon.icon, auraIcon)
+                end
+
+                -- Default black border for buffs
+                if icon.border then
+                    icon.border:SetColorTexture(0, 0, 0, 1)
+                end
+
+                -- Cooldown (safely handles secret values via duration object API)
+                if SafeSetCooldown(icon.cooldown, auraData, unit) then
+                    icon.cooldown:Show()
+                else
+                    icon.cooldown:Hide()
+                end
+
+                -- Stack count (using combat-safe API, no comparisons on result)
+                if icon._showStack then
+                    DisplayStackCount(icon.count, unit, auraInstanceID)
+                    icon.count:Show()
+                else
+                    icon.count:Hide()
+                end
+
+                -- Calculate position based on anchor and single grow direction
+                local idx = buffCount - 1
+                local xPos, yPos = buffOffsetX, buffOffsetY
+                if buffGrow == "RIGHT" then
                 xPos = xPos + idx * (buffIconSize + buffSpacing)
             elseif buffGrow == "LEFT" then
                 xPos = xPos - idx * (buffIconSize + buffSpacing)
@@ -2595,9 +2639,10 @@ local function UpdateAuras(frame)
                 iconPoint, framePoint, borderOffsetX = "TOPRIGHT", "BOTTOMRIGHT", -1
             end
 
-            icon:ClearAllPoints()
-            icon:SetPoint(iconPoint, frame, framePoint, xPos + (borderOffsetX or 0), yPos)
-            icon:Show()
+                icon:ClearAllPoints()
+                icon:SetPoint(iconPoint, frame, framePoint, xPos + (borderOffsetX or 0), yPos)
+                icon:Show()
+            end  -- end of else block for auraInstanceID check
 
             buffIndex = buffIndex + 1
         end
@@ -3095,8 +3140,16 @@ function KORI_UF:ShowAuraPreviewForFrame(frame, unitKey, auraType)
             icon.border:SetColorTexture(0, 0, 0, 1)
         end
 
-        -- Set stack count
-        if showStack and auraData.stacks and auraData.stacks > 1 then
+        -- Set stack count - wrap comparison in pcall for secret value safety
+        local showStackText = false
+        if showStack then
+            pcall(function()
+                if auraData.stacks and auraData.stacks > 1 then
+                    showStackText = true
+                end
+            end)
+        end
+        if showStackText then
             icon.count:SetText(auraData.stacks)
             icon.count:Show()
         else
@@ -4351,10 +4404,12 @@ local function HideBlizzardTargetVisuals()
     KillBlizzardChildFrame(TargetFrame.buffsContainer)
     KillBlizzardChildFrame(TargetFrame.debuffsContainer)
     
-    -- Hide old-style aura buttons
+    -- Hide old-style aura buttons (use rawget to avoid forbidden table error in 12.0.1)
     for i = 1, 40 do
-        KillBlizzardChildFrame(_G["TargetFrameBuff"..i])
-        KillBlizzardChildFrame(_G["TargetFrameDebuff"..i])
+        local buffFrame = rawget(_G, "TargetFrameBuff"..i)
+        local debuffFrame = rawget(_G, "TargetFrameDebuff"..i)
+        KillBlizzardChildFrame(buffFrame)
+        KillBlizzardChildFrame(debuffFrame)
     end
     
     -- Release aura pools (Dragonflight+)
@@ -4391,10 +4446,12 @@ local function HideBlizzardFocusVisuals()
     KillBlizzardChildFrame(FocusFrame.buffsContainer)
     KillBlizzardChildFrame(FocusFrame.debuffsContainer)
     
-    -- Hide old-style aura buttons
+    -- Hide old-style aura buttons (use rawget to avoid forbidden table error in 12.0.1)
     for i = 1, 40 do
-        KillBlizzardChildFrame(_G["FocusFrameBuff"..i])
-        KillBlizzardChildFrame(_G["FocusFrameDebuff"..i])
+        local buffFrame = rawget(_G, "FocusFrameBuff"..i)
+        local debuffFrame = rawget(_G, "FocusFrameDebuff"..i)
+        KillBlizzardChildFrame(buffFrame)
+        KillBlizzardChildFrame(debuffFrame)
     end
     
     -- Release aura pools
@@ -4422,14 +4479,14 @@ function KORI_UF:HideBlizzardFrames()
             PlayerCastingBarFrame:SetScale(0.0001)
             PlayerCastingBarFrame:SetPoint("BOTTOMLEFT", UIParent, "TOPLEFT", -10000, 10000)
             PlayerCastingBarFrame:UnregisterAllEvents()
-            if PlayerCastingBarFrame.SetUnit then
-                PlayerCastingBarFrame:SetUnit(nil)
-            end
+            -- Note: Don't call SetUnit(nil) - it triggers forbidden table iteration in 12.0.1
+            -- The frame is effectively disabled by unregistering events and hiding it
+            
             -- Hook Show to prevent Blizzard from ever showing (catches talent changes, etc.)
             if not PlayerCastingBarFrame._quiShowHooked then
                 PlayerCastingBarFrame._quiShowHooked = true
                 hooksecurefunc(PlayerCastingBarFrame, "Show", function(self)
-                    self:Hide()
+                    pcall(self.Hide, self)
                 end)
             end
         end
@@ -4438,6 +4495,7 @@ function KORI_UF:HideBlizzardFrames()
             PetCastingBarFrame:SetAlpha(0)
             PetCastingBarFrame:SetScale(0.0001)
             PetCastingBarFrame:UnregisterAllEvents()
+            -- Note: Don't call SetUnit(nil) - same issue as player castbar
         end
     end
     
@@ -4459,10 +4517,10 @@ function KORI_UF:HideBlizzardFrames()
     -- Hide Focus frame visuals (always hide Blizzard focus frame when KORI unit frames are enabled)
     HideBlizzardFocusVisuals()
     
-    -- Hide Boss frames (allow in Edit Mode)
+    -- Hide Boss frames (allow in Edit Mode) - use rawget for 12.0.1 compatibility
     if db.boss and db.boss.enabled then
         for i = 1, 5 do
-            local bf = _G["Boss" .. i .. "TargetFrame"]
+            local bf = rawget(_G, "Boss" .. i .. "TargetFrame")
             KillBlizzardFrame(bf, true)
         end
 
@@ -4816,9 +4874,9 @@ _G.KoriUI_Castbars = KORI_UF.castbars
 -- Helper: Get anchor frame by type
 local function GetAnchorFrame(anchorType)
     if anchorType == "essential" then
-        return _G["EssentialCooldownViewer"]
+        return rawget(_G, "EssentialCooldownViewer")
     elseif anchorType == "utility" then
-        return _G["UtilityCooldownViewer"]
+        return rawget(_G, "UtilityCooldownViewer")
     elseif anchorType == "primary" then
         local KORICore = _G.KoriUI and _G.KoriUI.KORICore
         return KORICore and KORICore.powerBar

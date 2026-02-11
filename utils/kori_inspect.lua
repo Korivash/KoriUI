@@ -347,7 +347,7 @@ end
 -- Skin all inspect equipment slots
 local function SkinAllInspectSlots()
     for _, slotName in ipairs(INSPECT_SLOT_NAMES) do
-        local slot = _G[slotName]
+        local slot = rawget(_G, slotName)
         if slot then
             SkinInspectEquipmentSlot(slot)
         end
@@ -357,7 +357,7 @@ end
 -- Update all inspect slot borders
 local function UpdateAllInspectSlotBorders(unit)
     for _, slotName in ipairs(INSPECT_SLOT_NAMES) do
-        local slot = _G[slotName]
+        local slot = rawget(_G, slotName)
         if slot then
             UpdateInspectSlotBorder(slot, unit)
         end
@@ -1003,7 +1003,7 @@ local function InitializeInspectOverlays()
     if not shared.CreateSlotOverlay or not shared.EQUIPMENT_SLOTS then return end
 
     for _, slotInfo in ipairs(shared.EQUIPMENT_SLOTS) do
-        local slotFrame = _G["Inspect" .. slotInfo.name .. "Slot"]
+        local slotFrame = rawget(_G, "Inspect" .. slotInfo.name .. "Slot")
         if slotFrame then
             inspectOverlays[slotInfo.id] = shared.CreateSlotOverlay(slotFrame, slotInfo, "target")
         end

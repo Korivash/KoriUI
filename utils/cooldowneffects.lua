@@ -100,7 +100,7 @@ local viewers = {
 }
 
 local function ProcessViewer(viewerName)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
     
     -- Check if we should hide effects for this viewer
@@ -164,7 +164,7 @@ end
 local function HideExistingBlizzardGlows()
     local viewerNames = {"EssentialCooldownViewer", "UtilityCooldownViewer"}
     for _, viewerName in ipairs(viewerNames) do
-        local viewer = _G[viewerName]
+        local viewer = rawget(_G, viewerName)
         if viewer then
             local children = {viewer:GetChildren()}
             for _, child in ipairs(children) do

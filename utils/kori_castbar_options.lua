@@ -474,7 +474,7 @@ local function BuildCastbarOptions(tabContent, unitKey, y, PAD, FORM_ROW, Refres
 
         if snapEssentialBtn then
             snapEssentialBtn:SetScript("OnClick", function()
-                local viewer = _G["EssentialCooldownViewer"]
+                local viewer = rawget(_G, "EssentialCooldownViewer")
                 if viewer and viewer:IsShown() then
                     castDB.anchor = "essential"
                     castDB.offsetX = 0
@@ -491,7 +491,7 @@ local function BuildCastbarOptions(tabContent, unitKey, y, PAD, FORM_ROW, Refres
 
         if snapUtilityBtn then
             snapUtilityBtn:SetScript("OnClick", function()
-                local viewer = _G["UtilityCooldownViewer"]
+                local viewer = rawget(_G, "UtilityCooldownViewer")
                 if viewer and viewer:IsShown() then
                     castDB.anchor = "utility"
                     castDB.offsetX = 0

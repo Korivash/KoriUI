@@ -288,12 +288,13 @@ function KoriUI:UpdateStaggerBarVisibility()
 end
 
 local function GetStaggerAmount()
+    -- UnitStagger is the combat-safe API for stagger amount in 12.0.1
     local stagger = UnitStagger("player")
     if stagger and stagger > 0 then return stagger end
-    local aura = C_UnitAuras.GetPlayerAuraBySpellID(STAGGER_HEAVY) or
-                 C_UnitAuras.GetPlayerAuraBySpellID(STAGGER_MODERATE) or
-                 C_UnitAuras.GetPlayerAuraBySpellID(STAGGER_LIGHT)
-    if aura and aura.points and aura.points[1] then return aura.points[1] end
+    
+    -- Out of combat fallback: try to get stagger from aura using combat-safe methods
+    -- In 12.0.1, aura.points is a forbidden table, so we use UnitStagger exclusively
+    -- The stagger amount should always be available via UnitStagger for Brewmasters
     return 0
 end
 

@@ -67,7 +67,7 @@ local function StripDefaultTextures(chatFrame)
     if not frameName then return end
 
     for _, textureName in ipairs(CHAT_FRAME_TEXTURES) do
-        local texture = _G[frameName .. textureName]
+        local texture = rawget(_G, frameName .. textureName)
         if texture and texture.SetTexture then
             texture:SetTexture(0)
             texture:SetAlpha(0)
@@ -625,14 +625,14 @@ local function HideChatButtons(chatFrame)
     -- Also try global names for older frames
     local frameName = chatFrame:GetName()
     if frameName then
-        local buttonFrame = _G[frameName .. "ButtonFrame"]
+        local buttonFrame = rawget(_G, frameName .. "ButtonFrame")
         if buttonFrame then
             buttonFrame:SetScript("OnShow", preventShow)
             buttonFrame:Hide()
             buttonFrame:SetWidth(0.1)
         end
 
-        local scrollBar = _G[frameName .. "ScrollBar"]
+        local scrollBar = rawget(_G, frameName .. "ScrollBar")
         if scrollBar then scrollBar:Hide() end
     end
 
@@ -667,14 +667,14 @@ local function ShowChatButtons(chatFrame)
 
     local frameName = chatFrame:GetName()
     if frameName then
-        local buttonFrame = _G[frameName .. "ButtonFrame"]
+        local buttonFrame = rawget(_G, frameName .. "ButtonFrame")
         if buttonFrame then
             buttonFrame:SetScript("OnShow", nil)
             buttonFrame:Show()
             buttonFrame:SetWidth(29)
         end
 
-        local scrollBar = _G[frameName .. "ScrollBar"]
+        local scrollBar = rawget(_G, frameName .. "ScrollBar")
         if scrollBar then scrollBar:Show() end
     end
 
@@ -702,7 +702,7 @@ local function StyleEditBox(chatFrame)
     if not frameName then return end
 
     -- Find edit box
-    local editBox = chatFrame.editBox or _G[frameName .. "EditBox"]
+    local editBox = chatFrame.editBox or rawget(_G, frameName .. "EditBox")
     if not editBox then return end
 
     -- Only strip Blizzard textures once
@@ -715,7 +715,7 @@ local function StyleEditBox(chatFrame)
             "FocusLeft", "FocusMid", "FocusRight",
         }
         for _, suffix in ipairs(childSuffixes) do
-            local child = _G[frameName .. "EditBox" .. suffix]
+            local child = rawget(_G, frameName .. "EditBox" .. suffix)
             if child and child.Hide then
                 child:Hide()
             end
@@ -841,9 +841,9 @@ local function UpdateTabColors(tab)
     -- Check if this tab is selected
     local isSelected = false
     for i = 1, NUM_CHAT_WINDOWS do
-        local chatFrame = _G["ChatFrame" .. i]
+        local chatFrame = rawget(_G, "ChatFrame" .. i)
         if chatFrame and chatFrame:IsShown() then
-            local frameTab = _G["ChatFrame" .. i .. "Tab"]
+            local frameTab = rawget(_G, "ChatFrame" .. i .. "Tab")
             if frameTab == tab then
                 isSelected = true
                 break
@@ -882,7 +882,7 @@ local function StyleChatTab(tab)
             "HighlightLeft", "HighlightMiddle", "HighlightRight",
         }
         for _, suffix in ipairs(textures) do
-            local tex = _G[tabName .. suffix]
+            local tex = rawget(_G, tabName .. suffix)
             if tex and tex.SetAlpha then
                 tex:SetAlpha(0)
             end
@@ -922,7 +922,7 @@ local function StyleAllChatTabs()
     if not settings or not settings.styleTabs then return end
 
     for i = 1, NUM_CHAT_WINDOWS do
-        local tab = _G["ChatFrame" .. i .. "Tab"]
+        local tab = rawget(_G, "ChatFrame" .. i .. "Tab")
         if tab then
             StyleChatTab(tab)
         end
@@ -931,7 +931,7 @@ end
 
 local function RefreshAllTabColors()
     for i = 1, NUM_CHAT_WINDOWS do
-        local tab = _G["ChatFrame" .. i .. "Tab"]
+        local tab = rawget(_G, "ChatFrame" .. i .. "Tab")
         if tab and tab.__quiBackdrop then
             UpdateTabColors(tab)
         end
@@ -1028,7 +1028,7 @@ end
 ---------------------------------------------------------------------------
 local function SkinAllChatFrames()
     for i = 1, NUM_CHAT_WINDOWS do
-        local chatFrame = _G["ChatFrame" .. i]
+        local chatFrame = rawget(_G, "ChatFrame" .. i)
         if chatFrame then
             SkinChatFrame(chatFrame)
         end
@@ -1063,7 +1063,7 @@ local function HookNewChatWindows()
         C_Timer.After(0.05, function()
             RefreshAllTabColors()
 
-            local chatFrame = _G["ChatFrame" .. tabID]
+            local chatFrame = rawget(_G, "ChatFrame" .. tabID)
             local settings = GetSettings()
 
             if chatFrame and settings and settings.editBox and settings.editBox.positionTop then

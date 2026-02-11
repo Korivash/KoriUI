@@ -146,7 +146,7 @@ local function HideBlizzardDecorations()
         end
     end
     for _, corner in pairs({ "TopLeft", "TopRight", "BotLeft", "BotRight" }) do
-        local bg = _G["InspectModelFrameBackground" .. corner]
+        local bg = rawget(_G, "InspectModelFrameBackground" .. corner)
         if bg then bg:Hide() end
     end
 end

@@ -996,10 +996,10 @@ local function DisableBlizzardLoot()
             end
         end
 
-        -- Hide individual roll frames as they're created
+        -- Hide individual roll frames as they're created (use rawget for 12.0.1 compatibility)
         local numRollFrames = NUM_GROUP_LOOT_FRAMES or 4  -- Default to 4 if not defined
         for i = 1, numRollFrames do
-            local frame = _G["GroupLootFrame"..i]
+            local frame = rawget(_G, "GroupLootFrame"..i)
             if frame then
                 frame:UnregisterAllEvents()
                 frame:Hide()

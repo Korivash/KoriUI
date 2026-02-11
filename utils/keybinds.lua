@@ -609,7 +609,7 @@ local function BuildActionButtonCache()
     -- Standard 12-button bars
     for _, prefix in ipairs(buttonPrefixes) do
         for i = 1, 12 do
-            local button = _G[prefix .. i]
+            local button = rawget(_G, prefix .. i)
             if button and not addedButtons[button] then
                 table.insert(cachedActionButtons, button)
                 addedButtons[button] = true
@@ -619,7 +619,7 @@ local function BuildActionButtonCache()
     
     -- Dominos can have up to 180 buttons (15 bars x 12 buttons)
     for i = 1, 180 do
-        local button = _G["DominosActionButton" .. i]
+        local button = rawget(_G, "DominosActionButton" .. i)
         if button and not addedButtons[button] then
             table.insert(cachedActionButtons, button)
             addedButtons[button] = true
@@ -628,7 +628,7 @@ local function BuildActionButtonCache()
 
     -- Bartender4 can have up to 120 buttons (10 bars x 12 buttons)
     for i = 1, 120 do
-        local button = _G["BT4Button" .. i]
+        local button = rawget(_G, "BT4Button" .. i)
         if button and not addedButtons[button] then
             table.insert(cachedActionButtons, button)
             addedButtons[button] = true
@@ -637,7 +637,7 @@ local function BuildActionButtonCache()
 
     -- Bartender4 pet bar buttons
     for i = 1, 10 do
-        local button = _G["BT4PetButton" .. i]
+        local button = rawget(_G, "BT4PetButton" .. i)
         if button and not addedButtons[button] then
             table.insert(cachedActionButtons, button)
             addedButtons[button] = true
@@ -646,7 +646,7 @@ local function BuildActionButtonCache()
 
     -- Bartender4 stance bar buttons
     for i = 1, 10 do
-        local button = _G["BT4StanceButton" .. i]
+        local button = rawget(_G, "BT4StanceButton" .. i)
         if button and not addedButtons[button] then
             table.insert(cachedActionButtons, button)
             addedButtons[button] = true
@@ -978,7 +978,7 @@ end
 
 -- Update keybinds on all icons in a viewer
 local function UpdateViewerKeybinds(viewerName)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
     
     local container = viewer.viewerFrame or viewer
@@ -993,7 +993,7 @@ end
 
 -- Clear stored keybinds from all icons (called when bindings change)
 local function ClearStoredKeybinds(viewerName)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
     
     local container = viewer.viewerFrame or viewer
@@ -1085,7 +1085,7 @@ end)
 
 -- Hook into viewer layout updates
 local function HookViewerLayout(viewerName)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
 
     if viewer.Layout and not viewer._KORI_KeybindHooked then
@@ -1360,7 +1360,7 @@ local function DebugKey(keyName)
             
             print("  Looking for button frames...")
             for _, frameName in ipairs(possibleFrames) do
-                local frame = _G[frameName]
+                local frame = rawget(_G, frameName)
                 if frame then
                     print("    Found: " .. frameName)
                     local btnAction = frame.action or (frame.GetAction and frame:GetAction())
@@ -1384,7 +1384,7 @@ local function DebugKey(keyName)
             -- Also scan ALL Dominos buttons to find which one has this binding
             print("  Scanning Dominos buttons for binding '" .. action .. "'...")
             for i = 1, 180 do
-                local btn = _G["DominosActionButton" .. i]
+                local btn = rawget(_G, "DominosActionButton" .. i)
                 if btn then
                     -- Check if this button's binding matches
                     local btnName = btn:GetName()
@@ -1461,7 +1461,7 @@ SlashCmdList["KORIKEYBINDS"] = function(msg)
         print("|cFF56D1FF[KORI Keybinds]|r Scanning Dominos buttons for macros...")
         local found = 0
         for i = 1, 180 do
-            local btn = _G["DominosActionButton" .. i]
+            local btn = rawget(_G, "DominosActionButton" .. i)
             if btn then
                 local btnAction = btn.action or (btn.GetAction and btn:GetAction())
                 if btnAction then
@@ -1481,7 +1481,7 @@ SlashCmdList["KORIKEYBINDS"] = function(msg)
         print("|cFF56D1FF[KORI Keybinds]|r Scanning Bartender4 buttons for macros...")
         local found = 0
         for i = 1, 120 do
-            local btn = _G["BT4Button" .. i]
+            local btn = rawget(_G, "BT4Button" .. i)
             if btn then
                 local btnAction = btn.action or (btn.GetAction and btn:GetAction())
                 if btnAction then
@@ -1503,7 +1503,7 @@ SlashCmdList["KORIKEYBINDS"] = function(msg)
     elseif msg:match("^trace%s+") then
         -- Trace a specific button by name
         local btnName = msg:match("^trace%s+(.+)")
-        local btn = _G[btnName]
+        local btn = rawget(_G, btnName)
         if not btn then
             print("|cFFFF0000Button '" .. btnName .. "' not found!|r")
             return
@@ -1764,7 +1764,7 @@ end
 
 -- Update rotation helper on all icons in a viewer
 local function UpdateViewerRotationHelper(viewerName, nextSpellID)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
     
     local container = viewer.viewerFrame or viewer

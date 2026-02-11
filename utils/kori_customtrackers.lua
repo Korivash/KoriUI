@@ -86,7 +86,7 @@ local function PositionBar(bar)
 
     -- LOCKED TO PLAYER: reparent and use relative positioning
     if config.lockedToPlayer then
-        local playerFrame = _G["KORI_Player"]
+        local playerFrame = rawget(_G, "KORI_Player")
         if playerFrame then
             bar:SetParent(playerFrame)
             bar:SetFrameLevel(playerFrame:GetFrameLevel() + 10)
@@ -116,7 +116,7 @@ local function PositionBar(bar)
 
     -- LOCKED TO TARGET: reparent and use relative positioning
     if config.lockedToTarget then
-        local targetFrame = _G["KORI_Target"]
+        local targetFrame = rawget(_G, "KORI_Target")
         if targetFrame then
             bar:SetParent(targetFrame)
             bar:SetFrameLevel(targetFrame:GetFrameLevel() + 10)
@@ -561,12 +561,32 @@ local function GetSpellBuffInfo(spellID)
         return false
     end
 
-    -- Out of combat: use direct API (more accurate)
+    -- Out of combat: use direct API with duration object (combat-safe in 12.0.1)
     -- pcall guards against unexpected protection in instanced content
     if C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID then
         local ok, auraData = pcall(C_UnitAuras.GetPlayerAuraBySpellID, spellID)
         if ok and auraData then
-            return true, auraData.expirationTime, auraData.duration
+            -- Safely extract auraInstanceID (can be forbidden in 12.0.1)
+            local auraInstanceID
+            pcall(function() auraInstanceID = auraData.auraInstanceID end)
+            
+            if auraInstanceID then
+                -- Use duration object API for combat-safe access
+                if C_UnitAuras.GetAuraDuration then
+                    local durOk, durationObj = pcall(C_UnitAuras.GetAuraDuration, "player", auraInstanceID)
+                    if durOk and durationObj then
+                        local eOK, elapsed = pcall(durationObj.GetElapsedDuration, durationObj)
+                        local rOK, remaining = pcall(durationObj.GetRemainingDuration, durationObj)
+                        if eOK and rOK and elapsed and remaining then
+                            local totalDuration = elapsed + remaining
+                            local expirationTime = GetTime() + remaining
+                            return true, expirationTime, totalDuration
+                        end
+                    end
+                end
+                -- Aura exists but couldn't get timing - still report as active
+                return true, nil, nil
+            end
         end
     end
     return false

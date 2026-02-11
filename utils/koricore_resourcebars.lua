@@ -394,7 +394,7 @@ local function EnsureDemonHunterSoulBar()
     local spec = GetSpecialization()
     if spec ~= 3 then return end -- Devourer (spec 3, ID 1480)
     
-    local soulBar = _G["DemonHunterSoulFragmentsBar"]
+    local soulBar = rawget(_G, "DemonHunterSoulFragmentsBar")
     if soulBar then
         -- Reparent to UIParent if not already (so it's not affected by PlayerFrame)
         if soulBar:GetParent() ~= UIParent then
@@ -454,7 +454,7 @@ local function GetSecondaryResourceValue(resource)
 
     if resource == "SOUL" then
         -- DH souls – get from default Blizzard bar
-        local soulBar = _G["DemonHunterSoulFragmentsBar"]
+        local soulBar = rawget(_G, "DemonHunterSoulFragmentsBar")
         if not soulBar then return nil, nil, nil, nil end
         
         -- Ensure the bar is shown (even if PlayerFrame is hidden)
@@ -820,7 +820,7 @@ function KORICore:GetPowerBar()
     local width = cfg.width or 0
     if width <= 0 then
         -- Try to get Essential Cooldowns width if available
-        local essentialViewer = _G["EssentialCooldownViewer"]
+        local essentialViewer = rawget(_G, "EssentialCooldownViewer")
         if essentialViewer then
             width = essentialViewer.__cdmIconWidth or essentialViewer:GetWidth() or 0
         end
@@ -924,7 +924,7 @@ function KORICore:UpdatePowerBar()
     local width = cfg.width
     if not width or width <= 0 then
         -- Try to get Essential Cooldowns width
-        local essentialViewer = _G["EssentialCooldownViewer"]
+        local essentialViewer = rawget(_G, "EssentialCooldownViewer")
         if essentialViewer then
             width = essentialViewer.__cdmIconWidth
         end
@@ -1522,7 +1522,7 @@ function KORICore:GetSecondaryPowerBar()
     local width = cfg.width or 0
     if width <= 0 then
         -- Try to get Essential Cooldowns width if available
-        local essentialViewer = _G["EssentialCooldownViewer"]
+        local essentialViewer = rawget(_G, "EssentialCooldownViewer")
         if essentialViewer then
             width = essentialViewer.__cdmIconWidth or essentialViewer:GetWidth() or 0
         end
@@ -2145,7 +2145,7 @@ function KORICore:UpdateSecondaryPowerBar()
     if not lockedToPrimaryHandled then
         -- Get anchor frame (needed for autoAttach positioning)
         local anchorName = cfg.autoAttach and "EssentialCooldownViewer" or cfg.attachTo
-        local anchor = _G[anchorName]
+        local anchor = rawget(_G, anchorName)
 
         -- In standalone mode, don't hide when anchor is hidden (bar is independent)
         -- Otherwise, hide if anchor doesn't exist or isn't shown
@@ -2222,7 +2222,7 @@ function KORICore:UpdateSecondaryPowerBar()
             width = cfg.width
             if not width or width <= 0 then
                 -- Try to get Essential Cooldowns width
-                local essentialViewer = _G["EssentialCooldownViewer"]
+                local essentialViewer = rawget(_G, "EssentialCooldownViewer")
                 if essentialViewer then
                     width = essentialViewer.__cdmIconWidth
                 end
@@ -2483,7 +2483,7 @@ function KORICore:RefreshAll()
 
     -- Refresh resource bars with new settings
     for _, name in ipairs(self.viewers) do
-        local viewer = _G[name]
+        local viewer = rawget(_G, name)
         if viewer and viewer:IsShown() then
             self:ApplyViewerSkin(viewer)
         end

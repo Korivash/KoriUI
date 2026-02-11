@@ -319,9 +319,9 @@ hooksecurefunc("StaticPopup_Show", function(which)
 
     -- Find the popup frame that's showing this dialog
     for i = 1, STATICPOPUP_NUMDIALOGS or 4 do
-        local frame = _G["StaticPopup" .. i]
+        local frame = rawget(_G, "StaticPopup" .. i)
         if frame and frame.which == which and frame:IsShown() then
-            local editBox = frame.editBox or _G["StaticPopup" .. i .. "EditBox"]
+            local editBox = frame.editBox or rawget(_G, "StaticPopup" .. i .. "EditBox")
             if editBox then
                 editBox:SetText(DELETE_ITEM_CONFIRM_STRING or "DELETE")
                 -- Trigger OnTextChanged to enable the confirm button

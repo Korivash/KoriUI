@@ -900,7 +900,7 @@ local function HideBlizzardDecorations()
         "PaperDollInnerBorderTopRight",
     }
     for _, borderName in ipairs(innerBorders) do
-        local border = _G[borderName]
+        local border = rawget(_G, borderName)
         if border then border:Hide() end
     end
 
@@ -914,7 +914,7 @@ local function HideBlizzardDecorations()
         "CharacterTrinket1SlotFrame", "CharacterWaistSlotFrame", "CharacterWristSlotFrame",
     }
     for _, frameName in ipairs(slotFrames) do
-        local frame = _G[frameName]
+        local frame = rawget(_G, frameName)
         if frame then
             frame:Hide()
             -- Hook to keep hidden (Blizzard may re-show on updates)
@@ -1018,7 +1018,7 @@ local function HideBlizzardDecorations()
     -- Skin all equipment slots
     local allSlots = {}
     for _, slotName in ipairs(equipmentSlotNames) do
-        local slot = _G[slotName]
+        local slot = rawget(_G, slotName)
         if slot then
             SkinEquipmentSlot(slot)
             UpdateSlotBorder(slot)
@@ -1052,7 +1052,7 @@ local function HideBlizzardDecorations()
         "CharacterModelFrameBackgroundOverlay",
     }
     for _, bgName in ipairs(modelBgs) do
-        local bg = _G[bgName]
+        local bg = rawget(_G, bgName)
         if bg then bg:Hide() end
     end
 
@@ -1381,7 +1381,7 @@ local function InitializeCharacterOverlays(forceRecreate)
     if characterPaneInitialized then return end
 
     for _, slotInfo in ipairs(EQUIPMENT_SLOTS) do
-        local slotFrame = _G["Character" .. slotInfo.name .. "Slot"]
+        local slotFrame = rawget(_G, "Character" .. slotInfo.name .. "Slot")
         if slotFrame then
             slotOverlays[slotInfo.id] = CreateSlotOverlay(slotFrame, slotInfo)
         end
@@ -1853,11 +1853,11 @@ local function UpdateStatsPanel(panel, unit)
     local powerText = BreakUpLargeNumbers(powerMax)
     if powerType == 0 then
         row.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, MANA).." "..powerText..FONT_COLOR_CODE_CLOSE
-        row.tooltip2 = _G["STAT_MANA_TOOLTIP"]
+        row.tooltip2 = rawget(_G, "STAT_MANA_TOOLTIP")
     else
-        local powerLabel = _G[powerToken] or powerName
+        local powerLabel = rawget(_G, powerToken) or powerName
         row.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, powerLabel).." "..powerText..FONT_COLOR_CODE_CLOSE
-        row.tooltip2 = _G["STAT_"..powerToken.."_TOOLTIP"]
+        row.tooltip2 = rawget(_G, "STAT_"..powerToken.."_TOOLTIP")
     end
     y = y - ROW_HEIGHT
 
@@ -1883,7 +1883,7 @@ local function UpdateStatsPanel(panel, unit)
             row.value:SetText(FormatNumber(effectiveStat))
             
             -- Set tooltip (Blizzard format)
-            local statName = _G["SPELL_STAT"..stat.statIndex.."_NAME"]
+            local statName = rawget(_G, "SPELL_STAT"..stat.statIndex.."_NAME")
             local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, statName).." "
             local effectiveStatDisplay = BreakUpLargeNumbers(effectiveStat)
             
@@ -1906,7 +1906,7 @@ local function UpdateStatsPanel(panel, unit)
                 row.tooltip = tooltipText
             end
             
-            row.tooltip2 = _G["DEFAULT_STAT"..stat.statIndex.."_TOOLTIP"]
+            row.tooltip2 = rawget(_G, "DEFAULT_STAT"..stat.statIndex.."_TOOLTIP")
             
             -- Add class-specific tooltip info (similar to Blizzard's PaperDollFrame_SetStat)
             if unit == "player" then
@@ -2026,7 +2026,7 @@ local function UpdateStatsPanel(panel, unit)
             local statName = STAT_HASTE
             row.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, statName)..FONT_COLOR_CODE_CLOSE
             local _, class = UnitClass(unit)
-            row.tooltip2 = _G["STAT_HASTE_"..class.."_TOOLTIP"]
+            row.tooltip2 = rawget(_G, "STAT_HASTE_"..class.."_TOOLTIP")
             if not row.tooltip2 then
                 row.tooltip2 = STAT_HASTE_TOOLTIP
             end

@@ -373,9 +373,9 @@ local function SkinPVEFrame()
         StyleCloseButton(closeButton)
     end
 
-    -- Style tabs
+    -- Style tabs (use rawget for 12.0.1 compatibility)
     for i = 1, 4 do
-        local tab = _G["PVEFrameTab" .. i]
+        local tab = rawget(_G, "PVEFrameTab" .. i)
         if tab then
             StyleTab(tab, sr, sg, sb, sa, bgr, bgg, bgb, bga)
         end
@@ -384,12 +384,15 @@ local function SkinPVEFrame()
     -- Reposition tabs: left justify and tighten spacing
     -- Blizzard default: Tab1 at x=19, Tab2-3 at -16px overlap, Tab4 at +3px gap
     -- KORI: Tab1 at x=-3, tabs at -5px spacing
-    _G.PVEFrameTab1:ClearAllPoints()
-    _G.PVEFrameTab2:ClearAllPoints()
-    _G.PVEFrameTab3:ClearAllPoints()
-    _G.PVEFrameTab1:SetPoint("BOTTOMLEFT", PVEFrame, "BOTTOMLEFT", -3, -30)
-    _G.PVEFrameTab2:SetPoint("TOPLEFT", _G.PVEFrameTab1, "TOPRIGHT", -5, 0)
-    _G.PVEFrameTab3:SetPoint("TOPLEFT", _G.PVEFrameTab2, "TOPRIGHT", -5, 0)
+    local tab1 = rawget(_G, "PVEFrameTab1")
+    local tab2 = rawget(_G, "PVEFrameTab2")
+    local tab3 = rawget(_G, "PVEFrameTab3")
+    if tab1 then tab1:ClearAllPoints() end
+    if tab2 then tab2:ClearAllPoints() end
+    if tab3 then tab3:ClearAllPoints() end
+    if tab1 then tab1:SetPoint("BOTTOMLEFT", PVEFrame, "BOTTOMLEFT", -3, -30) end
+    if tab2 and tab1 then tab2:SetPoint("TOPLEFT", tab1, "TOPRIGHT", -5, 0) end
+    if tab3 and tab2 then tab3:SetPoint("TOPLEFT", tab2, "TOPRIGHT", -5, 0) end
 
     -- Hook to reposition Tab4 (Delves) - Blizzard repositions it dynamically
     -- Note: Tab4 may not exist in all WoW versions (e.g., 12.x beta)
@@ -514,16 +517,16 @@ local function SkinLFDFrame()
     -- Hide Blizzard decorations
     HideLFDDecorations()
 
-    -- Style role buttons - hide decorative elements
+    -- Style role buttons - hide decorative elements (use rawget for 12.0.1 compatibility)
     local roles = { "Tank", "Healer", "DPS" }
     for _, role in ipairs(roles) do
-        local button = _G["LFDQueueFrameRoleButton" .. role]
+        local button = rawget(_G, "LFDQueueFrameRoleButton" .. role)
         if button then
             -- Hide the background texture (causes doubled icon appearance)
             if button.background then button.background:SetAlpha(0) end
             if button.Background then button.Background:SetAlpha(0) end
             -- Also check for global name pattern
-            local bgTex = _G["LFDQueueFrameRoleButton" .. role .. "Background"]
+            local bgTex = rawget(_G, "LFDQueueFrameRoleButton" .. role .. "Background")
             if bgTex then bgTex:SetAlpha(0) end
 
             if button.shortageBorder then button.shortageBorder:SetAlpha(0) end
@@ -534,7 +537,7 @@ local function SkinLFDFrame()
                 if check.SetNormalTexture then check:SetNormalTexture("") end
                 if check.SetPushedTexture then check:SetPushedTexture("") end
             end
-            local incentiveIcon = _G["LFDQueueFrameRoleButton" .. role .. "IncentiveIcon"]
+            local incentiveIcon = rawget(_G, "LFDQueueFrameRoleButton" .. role .. "IncentiveIcon")
             if incentiveIcon then incentiveIcon:SetAlpha(0) end
         end
     end
@@ -563,15 +566,15 @@ local function SkinRaidFinderFrame()
     -- Hide Blizzard decorations
     HideRaidFinderDecorations()
 
-    -- Style role buttons - hide decorative elements (same as LFD)
+    -- Style role buttons - hide decorative elements (same as LFD, use rawget for 12.0.1)
     local roles = { "Tank", "Healer", "DPS" }
     for _, role in ipairs(roles) do
-        local button = _G["RaidFinderQueueFrameRoleButton" .. role]
+        local button = rawget(_G, "RaidFinderQueueFrameRoleButton" .. role)
         if button then
             -- Hide the background texture (causes doubled icon appearance)
             if button.background then button.background:SetAlpha(0) end
             if button.Background then button.Background:SetAlpha(0) end
-            local bgTex = _G["RaidFinderQueueFrameRoleButton" .. role .. "Background"]
+            local bgTex = rawget(_G, "RaidFinderQueueFrameRoleButton" .. role .. "Background")
             if bgTex then bgTex:SetAlpha(0) end
 
             if button.shortageBorder then button.shortageBorder:SetAlpha(0) end
@@ -581,7 +584,7 @@ local function SkinRaidFinderFrame()
                 if check.SetNormalTexture then check:SetNormalTexture("") end
                 if check.SetPushedTexture then check:SetPushedTexture("") end
             end
-            local incentiveIcon = _G["RaidFinderQueueFrameRoleButton" .. role .. "IncentiveIcon"]
+            local incentiveIcon = rawget(_G, "RaidFinderQueueFrameRoleButton" .. role .. "IncentiveIcon")
             if incentiveIcon then incentiveIcon:SetAlpha(0) end
         end
     end
@@ -1163,9 +1166,9 @@ local function SkinPVPFrame()
     HidePVPDecorations()
 
     -- Style category buttons (left side buttons) - 5 in 12.x, 4 in 11.x
-    -- PTR uses PVPQueueFrame.CategoryButton1, retail uses _G["PVPQueueFrameCategoryButton1"]
+    -- PTR uses PVPQueueFrame.CategoryButton1, retail uses rawget for 12.0.1 compatibility
     for i = 1, 5 do
-        local catButton = PVPQueueFrame["CategoryButton" .. i] or _G["PVPQueueFrameCategoryButton" .. i]
+        local catButton = PVPQueueFrame["CategoryButton" .. i] or rawget(_G, "PVPQueueFrameCategoryButton" .. i)
         if catButton then
             StyleGroupFinderButton(catButton, sr, sg, sb, sa, bgr, bgg, bgb, bga)
         end
@@ -1448,9 +1451,9 @@ local function RefreshInstanceFramesColors()
         PVEFrame.quiBackdrop:SetBackdropBorderColor(sr, sg, sb, sa)
     end
 
-    -- Update PVE tabs
+    -- Update PVE tabs (use rawget for 12.0.1 compatibility)
     for i = 1, 4 do
-        UpdateTabColors(_G["PVEFrameTab" .. i], sr, sg, sb, sa, bgr, bgg, bgb, bga)
+        UpdateTabColors(rawget(_G, "PVEFrameTab" .. i), sr, sg, sb, sa, bgr, bgg, bgb, bga)
     end
 
     -- Update GroupFinder buttons
@@ -1542,9 +1545,9 @@ local function RefreshInstanceFramesColors()
     local PVPQueueFrame = _G.PVPQueueFrame
     if PVPQueueFrame and PVPQueueFrame.quiSkinned then
         -- Category buttons (5 in 12.x, 4 in 11.x)
-        -- PTR uses PVPQueueFrame.CategoryButton1, retail uses _G["PVPQueueFrameCategoryButton1"]
+        -- PTR uses PVPQueueFrame.CategoryButton1, retail uses rawget for 12.0.1 compatibility
         for i = 1, 5 do
-            local catButton = PVPQueueFrame["CategoryButton" .. i] or _G["PVPQueueFrameCategoryButton" .. i]
+            local catButton = PVPQueueFrame["CategoryButton" .. i] or rawget(_G, "PVPQueueFrameCategoryButton" .. i)
             UpdateGroupFinderButtonColors(catButton, sr, sg, sb, sa, bgr, bgg, bgb, bga)
         end
 

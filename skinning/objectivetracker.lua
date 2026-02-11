@@ -256,7 +256,7 @@ local function ApplyMaxWidth(settings)
 
     -- Set width on each module so text wraps correctly
     for _, trackerName in ipairs(trackerModules) do
-        local tracker = _G[trackerName]
+        local tracker = rawget(_G, trackerName)
         if tracker then
             tracker:SetWidth(maxWidth)
             if tracker.Header then
@@ -282,7 +282,7 @@ local function UpdateBackdropAnchors()
     local lowestBottom = math.huge
 
     for _, trackerName in ipairs(trackerModules) do
-        local tracker = _G[trackerName]
+        local tracker = rawget(_G, trackerName)
         if tracker and tracker:IsShown() then
             -- Check if module has content (try GetContentsHeight first, fall back to GetHeight)
             local hasContent = false
@@ -337,7 +337,7 @@ end
 -- Called after tracker updates to ensure glows are hidden
 local function HidePOIButtonGlows()
     for _, trackerName in ipairs(trackerModules) do
-        local tracker = _G[trackerName]
+        local tracker = rawget(_G, trackerName)
         if tracker and tracker.usedBlocks then
             for template, blocks in pairs(tracker.usedBlocks) do
                 if type(blocks) == "table" then
@@ -518,7 +518,7 @@ local function ApplyFontStyles(moduleFontSize, titleFontSize, textFontSize, modu
     local fontPath = GetFontPath()
 
     for _, trackerName in ipairs(trackerModules) do
-        local tracker = _G[trackerName]
+        local tracker = rawget(_G, trackerName)
         if tracker then
             -- Style module header text (e.g., "QUESTS", "ACHIEVEMENTS")
             if moduleFontSize > 0 and tracker.Header and tracker.Header.Text then
@@ -628,7 +628,7 @@ local function SkinObjectiveTracker()
 
     -- Skin all tracker module headers
     for _, trackerName in ipairs(trackerModules) do
-        local tracker = _G[trackerName]
+        local tracker = rawget(_G, trackerName)
         if tracker then
             SkinTrackerHeader(tracker.Header)
         end
@@ -648,7 +648,7 @@ local function SkinObjectiveTracker()
 
     -- Hook each module's header minimize button, SetCollapsed, LayoutContents, and AddBlock
     for _, trackerName in ipairs(trackerModules) do
-        local tracker = _G[trackerName]
+        local tracker = rawget(_G, trackerName)
         if tracker and not tracker.quiCollapseHooked then
             -- Hook the header's minimize button click
             if tracker.Header and tracker.Header.MinimizeButton then

@@ -559,7 +559,7 @@ end
 -- CORE: Layout and skin icons for a viewer
 ---------------------------------------------------------------------------
 local function LayoutViewer(viewerName, trackerKey)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
 
     local settings = GetTrackerSettings(trackerKey)
@@ -926,7 +926,7 @@ end
 -- HOOK: Setup viewer with OnUpdate rescan
 ---------------------------------------------------------------------------
 local function HookViewer(viewerName, trackerKey)
-    local viewer = _G[viewerName]
+    local viewer = rawget(_G, viewerName)
     if not viewer then return end
     if NCDM.hooked[trackerKey] then return end
 
@@ -1179,7 +1179,7 @@ local function ApplyUtilityAnchor()
     if not db or not db.utility then return end
 
     local utilSettings = db.utility
-    local utilViewer = _G[VIEWER_UTILITY]
+    local utilViewer = rawget(_G, VIEWER_UTILITY)
     if not utilViewer then return end
 
     if not utilSettings.anchorBelowEssential then
@@ -1187,7 +1187,7 @@ local function ApplyUtilityAnchor()
         return
     end
 
-    local essViewer = _G[VIEWER_ESSENTIAL]
+    local essViewer = rawget(_G, VIEWER_ESSENTIAL)
     if not essViewer then return end
 
     local utilityTopBorder = utilSettings.row1 and utilSettings.row1.borderSize or 0
@@ -1207,7 +1207,7 @@ _G.KoriUI_ApplyUtilityAnchor = ApplyUtilityAnchor
 -- This prevents flicker by ensuring all CDM viewers are fully initialized
 ---------------------------------------------------------------------------
 local function ForceLoadCDM()
-    local settingsFrame = _G["CooldownViewerSettings"]
+    local settingsFrame = rawget(_G, "CooldownViewerSettings")
     if settingsFrame then
         settingsFrame:Show()
         settingsFrame:Raise()
@@ -1228,11 +1228,11 @@ local function Initialize()
     if NCDM.initialized then return end
     NCDM.initialized = true
     
-    if _G[VIEWER_ESSENTIAL] then
+    if rawget(_G, VIEWER_ESSENTIAL) then
         HookViewer(VIEWER_ESSENTIAL, "essential")
     end
     
-    if _G[VIEWER_UTILITY] then
+    if rawget(_G, VIEWER_UTILITY) then
         HookViewer(VIEWER_UTILITY, "utility")
     end
     
@@ -1256,7 +1256,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
         if not isLogin and not isReload then
             -- Zone change: enable 2-second grace period for anchor checking
             for _, viewerName in ipairs({VIEWER_ESSENTIAL, VIEWER_UTILITY}) do
-                local viewer = _G[viewerName]
+                local viewer = rawget(_G, viewerName)
                 if viewer then
                     viewer.__ncdmGraceUntil = GetTime() + 2.0
                     -- Clear icon state flags for fresh layout in new zone
@@ -1274,7 +1274,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
     elseif event == "CHALLENGE_MODE_START" then
         -- M+ keystone: enable grace period to catch scenario-related scrambles
         for _, viewerName in ipairs({VIEWER_ESSENTIAL, VIEWER_UTILITY}) do
-            local viewer = _G[viewerName]
+            local viewer = rawget(_G, viewerName)
             if viewer then
                 viewer.__ncdmGraceUntil = GetTime() + 2.0
             end
@@ -1284,7 +1284,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 end)
 
 C_Timer.After(0, function()
-    if _G[VIEWER_ESSENTIAL] or _G[VIEWER_UTILITY] then
+    if rawget(_G, VIEWER_ESSENTIAL) or rawget(_G, VIEWER_UTILITY) then
         Initialize()
     end
 end)
@@ -1542,7 +1542,7 @@ local function SetupCDMMouseoverDetector()
     -- Hook existing icons from each viewer
     local viewers = {"EssentialCooldownViewer", "UtilityCooldownViewer", "BuffIconCooldownViewer", "BuffBarCooldownViewer"}
     for _, viewerName in ipairs(viewers) do
-        local viewer = _G[viewerName]
+        local viewer = rawget(_G, viewerName)
         if viewer then
             local icons = CollectIcons(viewer)
             for _, icon in ipairs(icons) do

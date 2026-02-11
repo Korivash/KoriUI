@@ -2450,7 +2450,7 @@ local function CreateGeneralQoLPage(parent)
             end
             -- Show settings panel after a short delay
             C_Timer.After(0.1, function()
-                local settingsPanel = _G["KoriUI_CharSettingsPanel"]
+                local settingsPanel = rawget(_G, "KoriUI_CharSettingsPanel")
                 if settingsPanel then
                     settingsPanel:Show()
                 end
@@ -9106,7 +9106,7 @@ local function CreateCustomTrackersPage(parent)
                 if xOffsetSlider and xOffsetSlider.SetValue then xOffsetSlider.SetValue(barConfig.offsetX, true) end
                 if yOffsetSlider and yOffsetSlider.SetValue then yOffsetSlider.SetValue(barConfig.offsetY, true) end
             else
-                local playerFrame = _G["KORI_Player"]
+                local playerFrame = rawget(_G, "KORI_Player")
                 if not playerFrame then
                     print("|cffff6666[KORI]|r Player frame not found")
                     return
@@ -9235,7 +9235,7 @@ local function CreateCustomTrackersPage(parent)
                 if xOffsetSlider and xOffsetSlider.SetValue then xOffsetSlider.SetValue(barConfig.offsetX, true) end
                 if yOffsetSlider and yOffsetSlider.SetValue then yOffsetSlider.SetValue(barConfig.offsetY, true) end
             else
-                local targetFrame = _G["KORI_Target"]
+                local targetFrame = rawget(_G, "KORI_Target")
                 if not targetFrame then
                     print("|cffff6666[KORI]|r Target frame not found")
                     return
@@ -13061,7 +13061,7 @@ local function CreateScrollableTextBox(parent, height, text)
     scrollFrame:SetPoint("BOTTOMRIGHT", -26, 6)
 
     -- Style the scroll bar
-    local scrollBar = scrollFrame.ScrollBar or _G[scrollFrame:GetName().."ScrollBar"]
+    local scrollBar = scrollFrame.ScrollBar or rawget(_G, scrollFrame:GetName().."ScrollBar")
     if scrollBar then
         scrollBar:ClearAllPoints()
         scrollBar:SetPoint("TOPRIGHT", container, "TOPRIGHT", -4, -18)
