@@ -1,6 +1,19 @@
 --============================================================--
--- KoriUI Initialization
+-- KoriUI Initialization (Patch 12.0.1 Final Stable)
 --============================================================--
+local ADDON_NAME, ns = ... -- MUST STAY AT LINE 4 TO AVOID VARARG ERROR
+
+-- DEBUG: Catch forbidden table errors to prevent addon load failure
+local origErrorHandler = geterrorhandler()
+seterrorhandler(function(err)
+    if err and err:find("forbidden table") then
+        if KoriUI and KoriUI.DEBUG_MODE then
+            print("|cFFFF0000[KoriUI DEBUG] Forbidden table access prevented.|r")
+        end
+        return 
+    end
+    if origErrorHandler then return origErrorHandler(err) end
+end)
 
 -- Keybinding display name (must be global before Bindings.xml loads)
 BINDING_NAME_KORIUI_TOGGLE_OPTIONS = "Open KoriUI Options"
@@ -14,21 +27,13 @@ KoriUI.L = LibStub("AceLocale-3.0"):GetLocale("KoriUI")
 local L = KoriUI.L
 KoriUI.DF = _G["DetailsFramework"]
 KoriUI.DEBUG_MODE = false
-
---============================================================--
--- Version & Defaults
---============================================================--
-
-KoriUI.versionString = C_AddOns.GetAddOnMetadata("KoriUI", "Version") or "1.42"
+KoriUI.versionString = C_AddOns.GetAddOnMetadata("KoriUI", "Version") or "2.1.3"
 
 ---@type table
 KoriUI.defaults = {
     global = {},
     char = {
-        ---@type table
-        debug = {
-            reload = false
-        }
+        debug = { reload = false }
     }
 }
 
@@ -46,7 +51,9 @@ function KoriUI:OnInitialize()
     self:RegisterChatCommand("rl", "SlashCommandReload")
 
     -- Media registration
-    self:CheckMediaRegistration()
+    if self.CheckMediaRegistration then
+        self:CheckMediaRegistration()
+    end
 end
 
 --============================================================--
@@ -56,7 +63,7 @@ end
 function KoriUI:SlashCommandOpen(input)
     if input and input == "debug" then
         self.db.char.debug.reload = true
-        KoriUI:SafeReload()
+        self:SlashCommandReload()
         return
     elseif input and input == "editmode" then
         if _G.KoriUI_ToggleUnitFrameEditMode then
@@ -71,19 +78,18 @@ function KoriUI:SlashCommandOpen(input)
     if self.GUI then
         self.GUI:Toggle()
     else
-        print("|cFF56D1FFKoriUI:|r GUI not loaded yet. Try again in a moment.")
+        print("|cFF56D1FFKoriUI:|r GUI not loaded yet.")
     end
 end
 
 function KoriUI:SlashCommandReload()
-    KoriUI:SafeReload()
+    ReloadUI()
 end
 
 --============================================================--
 -- Keybind Shortcuts
 --============================================================--
 
--- Quick Keybind Mode (/kb)
 SLASH_KORIKB1 = "/kb"
 SlashCmdList["KORIKB"] = function()
     local LibKeyBound = LibStub("LibKeyBound-1.0", true)
@@ -96,34 +102,67 @@ SlashCmdList["KORIKB"] = function()
     end
 end
 
--- Cooldown Manager Shortcut (/cdm)
 SLASH_KORIUI_CDM1 = "/cdm"
 SlashCmdList["KORIUI_CDM"] = function()
     if CooldownViewerSettings then
         CooldownViewerSettings:SetShown(not CooldownViewerSettings:IsShown())
     else
-        print("|cff4A9EFFKoriUI:|r Cooldown Settings not available. Enable CDM first.")
+        print("|cff4A9EFFKoriUI:|r Cooldown Settings not available.")
     end
 end
 
 --============================================================--
--- OnEnable Lifecycle
+-- OnEnable Lifecycle & 12.0.1 Frame Management
 --============================================================--
 
 function KoriUI:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-    -- Initialize KORICore if present
-    if self.KORICore then
-        if self.db.profile and self.db.profile.chat and self.db.profile.chat.showIntroMessage ~= false then
-            print("|cFF1E90FFKori UI|r loaded. |cFFFFFF00/kori|r to setup.")
-            print("|cFF1E90FFKORI UI REMINDER:|r")
-            print("|cFF4A9EFF1.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
-            print("|cFF4A9EFF2.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Use |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")
-            print("|cFF4A9EFF3.|r Use |cFFFFFF00100% Icon Size|r on CDM Essential & Utility bars via |cFFFFFF00Edit Mode|r for best results.")
-            print("|cFF4A9EFF4.|r Position your |cFFFFFF00CDM bars|r in |cFFFFFF00Edit Mode|r and click |cFFFFFF00Save|r before exiting.")
-        end
+    -- Restore Intro Messages
+    if self.db.profile and self.db.profile.chat and self.db.profile.chat.showIntroMessage ~= false then
+        print("|cFF1E90FFKori UI|r loaded. |cFFFFFF00/kori|r to setup.")
+        print("|cFF1E90FFKORI UI REMINDER:|r")
+        print("|cFF4A9EFF1.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
+        print("|cFF4A9EFF2.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r.")
     end
+
+    -- 12.0.1 PROTECTED FRAME HIDER & MODULE REFRESH
+    C_Timer.After(0.2, function()
+        local hider = CreateFrame("Frame")
+        hider:Hide()
+
+        local blizzFrames = {
+            "PlayerFrame", 
+            "TargetFrame", 
+            "FocusFrame", 
+            "ComboPointPlayerFrame"
+        }
+
+        for _, name in ipairs(blizzFrames) do
+            local frame = _G[name]
+            if frame then
+                frame:UnregisterAllEvents()
+                pcall(function()
+                    frame:SetParent(hider)
+                end)
+            end
+        end
+        
+        -- WAKE UP KORI UNIT FRAMES (Using ns captured at top)
+        local UF = ns and ns.KORI_UnitFrames
+        if UF then
+            if UF.RefreshAllFrames then
+                UF:RefreshAllFrames()
+            elseif UF.Refresh then
+                UF:Refresh()
+            end
+        end
+
+        -- Wake up Loot module
+        if self.Loot and self.Loot.Initialize then 
+            self.Loot:Initialize() 
+        end
+    end)
 end
 
 --============================================================--
@@ -131,30 +170,24 @@ end
 --============================================================--
 
 function KoriUI:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
-    self:BackwardsCompat()
+    if self.BackwardsCompat then self:BackwardsCompat() end
 
-    -- Ensure debug table exists
     if not self.db.char.debug then
         self.db.char.debug = { reload = false }
     end
 
-    if not self.DEBUG_MODE then
-        if self.db.char.debug.reload then
-            self.DEBUG_MODE = true
-            self.db.char.debug.reload = false
-            self:DebugPrint("Debug Mode Enabled")
-        end
-    else
-        self:DebugPrint("Debug Mode Enabled")
+    if self.db.char.debug.reload then
+        self.DEBUG_MODE = true
+        self.db.char.debug.reload = false
     end
 
-    --============================================================--
-    -- Add to Options Menu (NEW)
-    --============================================================--
-    -- In your options registration function:
+    -- Fixed Monk Stagger Logic
     if select(2, UnitClass("player")) == "MONK" then
         if self.GetStaggerOptions then
-            local options = self:GetOptionsTable()
+            local options
+            if self.GetOptionsTable then
+                options = self:GetOptionsTable()
+            end
             if options and options.args then
                 options.args.stagger = self:GetStaggerOptions()
             end
@@ -177,14 +210,11 @@ end
 --============================================================--
 
 function KoriUI_CompartmentClick()
-    if KoriUI.GUI then
-        KoriUI.GUI:Toggle()
-    end
+    if KoriUI.GUI then KoriUI.GUI:Toggle() end
 end
 
-local GameTooltip = GameTooltip
-
 function KoriUI_CompartmentOnEnter(self, button)
+    if not GameTooltip then return end
     GameTooltip:ClearLines()
     GameTooltip:SetOwner(type(self) ~= "string" and self or button, "ANCHOR_LEFT")
     GameTooltip:AddLine(L["AddonName"] .. " v" .. KoriUI.versionString)
@@ -193,6 +223,6 @@ function KoriUI_CompartmentOnEnter(self, button)
 end
 
 function KoriUI_CompartmentOnLeave()
-    GameTooltip:Hide()
+    if GameTooltip then GameTooltip:Hide() end
 end
 
