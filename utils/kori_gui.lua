@@ -1,7 +1,7 @@
 --[[
     KoriUI Custom GUI Framework
-    Style: Horizontal tab grid at top
-    Accent Color: #56D1FF
+    Style: Left navigation rail + right content workspace
+    Accent: Ember/Cyan split palette
 ]]
 
 local ADDON_NAME, ns = ...
@@ -12,52 +12,57 @@ local LSM = LibStub("LibSharedMedia-3.0")
 KORI.GUI = KORI.GUI or {}
 local GUI = KORI.GUI
 
----------------------------------------------------------------------------
--- THEME COLORS - "Blue Steel" Palette
+-- THEME COLORS - "Graphite Ember" Palette
 ---------------------------------------------------------------------------
 GUI.Colors = {
     -- Backgrounds
-    bg = {0.055, 0.067, 0.098, 0.97},         -- #0E1119 Deep Blue-Black
-    bgLight = {0.098, 0.118, 0.176, 1},       -- #191E2D Dark Blue Slate
-    bgDark = {0.03, 0.04, 0.07, 1},            -- Even darker for contrast
-    bgContent = {0.098, 0.118, 0.176, 0.5},   -- Dark Blue Slate with alpha
-    
-    -- Accent colors (Blue)
-    accent = {0.290, 0.620, 1.0, 1},          -- #4A9EFF Dodger Blue
-    accentLight = {0.482, 0.722, 1.0, 1},     -- #7BB8FF Lighter Blue
-    accentDark = {0.15, 0.35, 0.7, 1},
-    accentHover = {0.4, 0.7, 1.0, 1},
-    
-    -- Tab colors
-    tabSelected = {0.290, 0.620, 1.0, 1},     -- #4A9EFF Dodger Blue
-    tabSelectedText = {1, 1, 1, 1},            -- White text on selected
-    tabNormal = {0.7, 0.75, 0.82, 1},         -- Cool grey with blue tint
-    tabHover = {0.92, 0.95, 1.0, 1},
+    bg = {0.045, 0.043, 0.055, 0.97},         -- #0B0B0E
+    bgLight = {0.108, 0.098, 0.125, 1},       -- #1B1920
+    bgDark = {0.028, 0.028, 0.036, 1},        -- #070709
+    bgContent = {0.104, 0.096, 0.120, 0.62},  -- Warm charcoal overlay
+
+    -- Accent colors
+    accent = {0.957, 0.506, 0.247, 1},        -- Ember orange
+    accentLight = {1.0, 0.706, 0.427, 1},     -- Soft ember glow
+    accentDark = {0.61, 0.27, 0.12, 1},
+    accentHover = {1.0, 0.58, 0.30, 1},
+
+    -- Tab/nav colors
+    tabSelected = {0.957, 0.506, 0.247, 1},
+    tabSelectedText = {1, 0.93, 0.86, 1},
+    tabNormal = {0.75, 0.74, 0.79, 1},
+    tabHover = {0.97, 0.97, 1.0, 1},
     
     -- Text colors
-    text = {0.922, 0.937, 0.965, 1},          -- #EBF0F7 Off-White
+    text = {0.92, 0.90, 0.95, 1},
     textBright = {1, 1, 1, 1},
-    textMuted = {0.55, 0.60, 0.70, 1},
+    textMuted = {0.62, 0.60, 0.66, 1},
     
     -- Borders
-    border = {0.18, 0.22, 0.30, 1},
-    borderLight = {0.28, 0.32, 0.42, 1},
-    borderAccent = {0.290, 0.620, 1.0, 1},    -- #4A9EFF Blue border
-    
+    border = {0.24, 0.21, 0.27, 1},
+    borderLight = {0.36, 0.31, 0.42, 1},
+    borderAccent = {0.957, 0.506, 0.247, 1},
+
     -- Section headers
-    sectionHeader = {0.482, 0.722, 1.0, 1},   -- #7BB8FF Lighter Blue
+    sectionHeader = {0.55, 0.85, 0.95, 1},    -- Cyan secondary accent
 
     -- Slider colors (Premium redesign)
-    sliderTrack = {0.12, 0.14, 0.20, 1},       -- Dark blue-grey track
+    sliderTrack = {0.14, 0.11, 0.16, 1},
     sliderThumb = {1, 1, 1, 1},                -- White thumb
-    sliderThumbBorder = {0.28, 0.32, 0.42, 1}, -- Subtle blue-grey border
+    sliderThumbBorder = {0.38, 0.29, 0.24, 1},
 
     -- Toggle switch colors
-    toggleOff = {0.14, 0.17, 0.24, 1},         -- Dark blue-grey track
+    toggleOff = {0.16, 0.14, 0.19, 1},
     toggleThumb = {1, 1, 1, 1},                -- White circle
 
     -- Warning/secondary accent
-    warning = {0.961, 0.620, 0.043, 1},        -- #F59E0B Amber
+    warning = {0.961, 0.620, 0.043, 1},
+
+    -- Dedicated nav colors
+    navBg = {0.082, 0.078, 0.096, 1},
+    navItemBg = {0.12, 0.108, 0.136, 1},
+    navItemActiveBg = {0.20, 0.125, 0.098, 1},
+    navActionBg = {0.085, 0.125, 0.145, 1},
 }
 
 local C = GUI.Colors
@@ -3259,21 +3264,16 @@ function GUI:CreateMainFrame()
     if self.MainFrame then
         return self.MainFrame
     end
-    
+
     local FRAME_WIDTH = GUI.PANEL_WIDTH
     local FRAME_HEIGHT = 850
-    local TAB_BUTTON_HEIGHT = 22
-    local TAB_START_X = 10   -- Start tabs from the left edge
-    local TAB_SPACING = 2
-    local TABS_PER_ROW = 5   -- 5 tabs per row (for 4 rows = 20 tabs max)
-    local PADDING = 20       -- Left + right padding (10 each side)
+    local HEADER_HEIGHT = 54
+    local SIDEBAR_WIDTH = 235
+    local NAV_BUTTON_HEIGHT = 26
+    local NAV_SPACING = 5
+    local ACTION_BUTTON_HEIGHT = 25
 
-    -- Load saved width first (so tab width calculation uses actual panel width)
     local savedWidth = KORI.KORICore and KORI.KORICore.db and KORI.KORICore.db.profile.configPanelWidth or FRAME_WIDTH
-
-    -- Calculate button width to fit exactly in frame (use savedWidth, not default)
-    local availableWidth = savedWidth - PADDING - (TAB_SPACING * (TABS_PER_ROW - 1))
-    local TAB_BUTTON_WIDTH = math.floor(availableWidth / TABS_PER_ROW)
     local frame = CreateFrame("Frame", "KoriUI_Options", UIParent, "BackdropTemplate")
     frame:SetSize(savedWidth, FRAME_HEIGHT)
     frame:SetPoint("CENTER")
@@ -3293,46 +3293,67 @@ function GUI:CreateMainFrame()
 
     -- Handle resize events (relayout tabs when width changes)
     frame:SetScript("OnSizeChanged", function(self, width, height)
-        GUI:RelayoutTabs(self)
+        if GUI.RelayoutTabs then
+            GUI:RelayoutTabs(self)
+        end
     end)
 
     -- Note: Registry is NOT cleared on show - deduplication keys prevent duplicates
     -- when tabs are re-clicked. Registry persists to allow searching across all visited tabs.
 
-    -- Title bar area (draggable)
+    -- Header area (draggable)
     local titleBar = CreateFrame("Frame", nil, frame)
     titleBar:SetPoint("TOPLEFT", 0, 0)
     titleBar:SetPoint("TOPRIGHT", 0, 0)
-    titleBar:SetHeight(50)
+    titleBar:SetHeight(HEADER_HEIGHT)
     titleBar:EnableMouse(true)
     titleBar:RegisterForDrag("LeftButton")
     titleBar:SetScript("OnDragStart", function() frame:StartMoving() end)
     titleBar:SetScript("OnDragStop", function() frame:StopMovingOrSizing() end)
-    
-    -- Title bar with title on left, version/close on right (single line)
-    local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    SetFont(title, 14, "OUTLINE", C.accentLight)  -- Lighter blue for title
-    title:SetText("Kori UI")
-    title:SetPoint("TOPLEFT", 12, -10)
-    
-    -- Version text (blue, to the left of close button)
-    local version = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    SetFont(version, 11, "", C.accentLight)  -- Same blue as title
-    version:SetText("Version 2.2.2")
-    version:SetPoint("TOPRIGHT", -30, -10)
 
-    -- Panel Scale (compact inline: label + editbox + slider)
-    -- Uses OnMouseUp pattern to avoid jittery scaling during drag
+    local headerBg = titleBar:CreateTexture(nil, "BACKGROUND")
+    headerBg:SetAllPoints()
+    headerBg:SetColorTexture(0.07, 0.065, 0.08, 0.95)
+
+    local headerAccent = titleBar:CreateTexture(nil, "ARTWORK")
+    headerAccent:SetPoint("LEFT", 0, 0)
+    headerAccent:SetPoint("TOP", 0, 0)
+    headerAccent:SetPoint("BOTTOM", 0, 0)
+    headerAccent:SetWidth(3)
+    headerAccent:SetColorTexture(unpack(C.accent))
+
+    local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    SetFont(title, 15, "OUTLINE", C.accentLight)
+    title:SetText("KoriUI Control Deck")
+    title:SetPoint("TOPLEFT", 14, -10)
+
+    local subtitle = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    SetFont(subtitle, 10, "", C.textMuted)
+    subtitle:SetText("Navigation and profile management")
+    subtitle:SetPoint("TOPLEFT", 14, -29)
+
+    local addonVersion = "Unknown"
+    if C_AddOns and C_AddOns.GetAddOnMetadata then
+        addonVersion = C_AddOns.GetAddOnMetadata("KoriUI", "Version") or addonVersion
+    elseif GetAddOnMetadata then
+        addonVersion = GetAddOnMetadata("KoriUI", "Version") or addonVersion
+    end
+
+    local version = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    SetFont(version, 10, "", C.textMuted)
+    version:SetText("v" .. tostring(addonVersion))
+    version:SetPoint("TOPRIGHT", -28, -10)
+
+    -- Panel scale controls (compact header tool)
     local scaleContainer = CreateFrame("Frame", nil, frame)
-    scaleContainer:SetSize(160, 20)
-    scaleContainer:SetPoint("CENTER", frame, "TOP", 0, -15)
+    scaleContainer:SetSize(180, 20)
+    scaleContainer:SetPoint("TOPRIGHT", -68, -31)
 
     local scaleLabel = scaleContainer:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     SetFont(scaleLabel, 10, "", C.textMuted)
-    scaleLabel:SetText("Panel Scale:")
+    scaleLabel:SetText("Scale")
     scaleLabel:SetPoint("LEFT", scaleContainer, "LEFT", 0, 0)
 
-    -- Editable input field for manual entry
     local scaleEditBox = CreateFrame("EditBox", nil, scaleContainer, "BackdropTemplate")
     scaleEditBox:SetSize(38, 16)
     scaleEditBox:SetPoint("LEFT", scaleLabel, "RIGHT", 5, 0)
@@ -3350,7 +3371,7 @@ function GUI:CreateMainFrame()
     scaleEditBox:SetMaxLetters(4)
 
     local scaleSlider = CreateFrame("Slider", nil, scaleContainer, "BackdropTemplate")
-    scaleSlider:SetSize(70, 12)
+    scaleSlider:SetSize(84, 12)
     scaleSlider:SetPoint("LEFT", scaleEditBox, "RIGHT", 5, 0)
     scaleSlider:SetOrientation("HORIZONTAL")
     scaleSlider:SetMinMaxValues(0.8, 1.5)
@@ -3364,10 +3385,9 @@ function GUI:CreateMainFrame()
     thumb:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 1)
     scaleSlider:SetThumbTexture(thumb)
 
-    -- Helper to apply scale (used on release and manual entry)
     local function ApplyScale(value)
         value = math.max(0.8, math.min(1.5, value))
-        value = math.floor(value * 20 + 0.5) / 20  -- Round to 0.05
+        value = math.floor(value * 20 + 0.5) / 20
         frame:SetScale(value)
         if KORI.KORICore and KORI.KORICore.db then
             KORI.KORICore.db.profile.configPanelScale = value
@@ -3375,33 +3395,27 @@ function GUI:CreateMainFrame()
         return value
     end
 
-    -- Initialize scale from saved value
     local savedScale = KORI.KORICore and KORI.KORICore.db and KORI.KORICore.db.profile.configPanelScale or 1.0
     scaleSlider:SetValue(savedScale)
     scaleEditBox:SetText(string.format("%.2f", savedScale))
     frame:SetScale(savedScale)
 
-    -- Track if we're dragging to defer SetScale until release
     local isDragging = false
 
-    -- OnValueChanged: Update editbox text only, defer SetScale during drag
     scaleSlider:SetScript("OnValueChanged", function(self, value)
-        value = math.floor(value * 20 + 0.5) / 20  -- Round to 0.05
+        value = math.floor(value * 20 + 0.5) / 20
         scaleEditBox:SetText(string.format("%.2f", value))
-        -- Only apply immediately if NOT dragging (e.g., clicking on track)
         if not isDragging then
             ApplyScale(value)
         end
     end)
 
-    -- OnMouseDown: Start tracking drag
     scaleSlider:SetScript("OnMouseDown", function(self, button)
         if button == "LeftButton" then
             isDragging = true
         end
     end)
 
-    -- OnMouseUp: Apply scale smoothly when user releases
     scaleSlider:SetScript("OnMouseUp", function(self, button)
         if button == "LeftButton" and isDragging then
             isDragging = false
@@ -3410,7 +3424,6 @@ function GUI:CreateMainFrame()
         end
     end)
 
-    -- EditBox: Manual entry support
     scaleEditBox:SetScript("OnEnterPressed", function(self)
         local val = tonumber(self:GetText())
         if val then
@@ -3426,7 +3439,6 @@ function GUI:CreateMainFrame()
         self:ClearFocus()
     end)
 
-    -- Hover effect for editbox
     scaleEditBox:SetScript("OnEditFocusGained", function(self)
         pcall(self.SetBackdropBorderColor, self, unpack(C.accent))
     end)
@@ -3440,54 +3452,100 @@ function GUI:CreateMainFrame()
         end
     end)
 
-    -- Close button (X)
     local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -3, -3)
     close:SetScript("OnClick", function() frame:Hide() end)
-    
-    -- Separator line below title
+
     local titleSep = frame:CreateTexture(nil, "ARTWORK")
-    titleSep:SetPoint("TOPLEFT", 10, -30)
-    titleSep:SetPoint("TOPRIGHT", -10, -30)
+    titleSep:SetPoint("TOPLEFT", 0, -HEADER_HEIGHT)
+    titleSep:SetPoint("TOPRIGHT", 0, -HEADER_HEIGHT)
     titleSep:SetHeight(1)
     titleSep:SetColorTexture(unpack(C.border))
-    
-    -- Tab button container (starts right below title line)
-    local tabContainer = CreateFrame("Frame", nil, frame)
-    tabContainer:SetPoint("TOPLEFT", TAB_START_X, -35)
-    tabContainer:SetPoint("TOPRIGHT", -10, -35)
-    tabContainer:SetHeight(100)  -- Height for 4 rows of tabs (22px each + spacing)
-    frame.tabContainer = tabContainer
-    
-    -- Content area (below tabs) - starts after 4 rows of tabs
-    local contentArea = CreateFrame("Frame", nil, frame, "BackdropTemplate")
-    contentArea:SetPoint("TOPLEFT", 10, -140)  -- 35 (title) + 100 (tabs) + 5 (gap)
-    contentArea:SetPoint("BOTTOMRIGHT", -10, 10)
-    contentArea:EnableMouse(false)  -- Container frame - let children handle clicks
 
-    -- Content background (Dark Slate with transparency)
+    -- Left navigation rail
+    local sidebar = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+    sidebar:SetPoint("TOPLEFT", 10, -(HEADER_HEIGHT + 8))
+    sidebar:SetPoint("BOTTOMLEFT", 10, 10)
+    sidebar:SetWidth(SIDEBAR_WIDTH)
+    CreateBackdrop(sidebar, C.navBg, C.border)
+    frame.sidebar = sidebar
+
+    local navTitle = sidebar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    SetFont(navTitle, 11, "OUTLINE", C.sectionHeader)
+    navTitle:SetText("CONFIGURATION")
+    navTitle:SetPoint("TOPLEFT", 10, -9)
+
+    local navDivider = sidebar:CreateTexture(nil, "ARTWORK")
+    navDivider:SetPoint("TOPLEFT", 8, -25)
+    navDivider:SetPoint("TOPRIGHT", -8, -25)
+    navDivider:SetHeight(1)
+    navDivider:SetColorTexture(unpack(C.border))
+
+    local actionContainer = CreateFrame("Frame", nil, sidebar)
+    actionContainer:SetPoint("BOTTOMLEFT", 0, 0)
+    actionContainer:SetPoint("BOTTOMRIGHT", 0, 0)
+    actionContainer:SetHeight(76)
+    frame.actionContainer = actionContainer
+
+    local navScroll = CreateFrame("ScrollFrame", nil, sidebar, "UIPanelScrollFrameTemplate")
+    navScroll:SetPoint("TOPLEFT", 6, -30)
+    navScroll:SetPoint("BOTTOMRIGHT", -26, 78)
+    local navContent = CreateFrame("Frame", nil, navScroll)
+    navContent:SetWidth(SIDEBAR_WIDTH - 34)
+    navContent:SetHeight(1)
+    navScroll:SetScrollChild(navContent)
+    frame.navContainer = navContent
+    frame.navScroll = navScroll
+
+    navScroll:SetScript("OnSizeChanged", function(self, width)
+        navContent:SetWidth(width)
+        if GUI.RelayoutTabs then
+            GUI:RelayoutTabs(frame)
+        end
+    end)
+
+    local navScrollbar = navScroll.ScrollBar
+    if navScrollbar then
+        navScrollbar:SetPoint("TOPLEFT", navScroll, "TOPRIGHT", 4, -14)
+        navScrollbar:SetPoint("BOTTOMLEFT", navScroll, "BOTTOMRIGHT", 4, 14)
+        local thumbTex = navScrollbar:GetThumbTexture()
+        if thumbTex then
+            thumbTex:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 0.7)
+        end
+        local navUp = navScrollbar.ScrollUpButton or navScrollbar.Back
+        local navDown = navScrollbar.ScrollDownButton or navScrollbar.Forward
+        if navUp then navUp:Hide(); navUp:SetAlpha(0) end
+        if navDown then navDown:Hide(); navDown:SetAlpha(0) end
+    end
+
+    -- Main content workspace
+    local contentArea = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+    contentArea:SetPoint("TOPLEFT", sidebar, "TOPRIGHT", 10, 0)
+    contentArea:SetPoint("BOTTOMRIGHT", -10, 10)
+    contentArea:EnableMouse(false)
+    CreateBackdrop(contentArea, C.bgContent, C.border)
+
     local contentBg = contentArea:CreateTexture(nil, "BACKGROUND")
     contentBg:SetAllPoints()
-    contentBg:SetColorTexture(unpack(C.bgContent))
-    
-    -- Top line above content (subtle blue hint)
+    contentBg:SetColorTexture(0.08, 0.075, 0.10, 0.42)
+
     local topLine = contentArea:CreateTexture(nil, "ARTWORK")
-    topLine:SetPoint("BOTTOMLEFT", contentArea, "TOPLEFT", 0, 0)
-    topLine:SetPoint("BOTTOMRIGHT", contentArea, "TOPRIGHT", 0, 0)
+    topLine:SetPoint("TOPLEFT", contentArea, "TOPLEFT", 0, 0)
+    topLine:SetPoint("TOPRIGHT", contentArea, "TOPRIGHT", 0, 0)
     topLine:SetHeight(1)
-    topLine:SetColorTexture(unpack(C.border))
-    
+    topLine:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 0.75)
+
     frame.contentArea = contentArea
-    
+
     -- Store tabs and pages
     frame.tabs = {}
     frame.pages = {}
     frame.activeTab = nil
-    frame.TAB_BUTTON_WIDTH = TAB_BUTTON_WIDTH
-    frame.TAB_BUTTON_HEIGHT = TAB_BUTTON_HEIGHT
-    frame.TAB_SPACING = TAB_SPACING
-    frame.TABS_PER_ROW = TABS_PER_ROW
-    
+    frame.NAV_BUTTON_HEIGHT = NAV_BUTTON_HEIGHT
+    frame.NAV_SPACING = NAV_SPACING
+    frame.ACTION_BUTTON_HEIGHT = ACTION_BUTTON_HEIGHT
+    frame.SIDEBAR_WIDTH = SIDEBAR_WIDTH
+
     ---------------------------------------------------------------------------
     -- RESIZE HANDLE (Bottom-right corner, horizontal and vertical)
     ---------------------------------------------------------------------------
@@ -3598,124 +3656,114 @@ function GUI:CreateMainFrame()
     ---------------------------------------------------------------------------
     function GUI:RelayoutTabs(targetFrame)
         if not targetFrame.tabs or #targetFrame.tabs == 0 then return end
+        if not targetFrame.navContainer or not targetFrame.sidebar or not targetFrame.actionContainer then return end
 
-        local PADDING = 20
-        local TAB_SPACING = targetFrame.TAB_SPACING
-        local TABS_PER_ROW = targetFrame.TABS_PER_ROW
-        local TAB_BUTTON_HEIGHT = targetFrame.TAB_BUTTON_HEIGHT
+        local navY = 0
+        local actionY = -8
+        local navButtonWidth = math.max(120, math.floor(targetFrame.navContainer:GetWidth()) - 2)
+        local actionButtonWidth = targetFrame.sidebar:GetWidth() - 16
 
-        local availableWidth = targetFrame:GetWidth() - PADDING - (TAB_SPACING * (TABS_PER_ROW - 1))
-        local tabWidth = math.floor(availableWidth / TABS_PER_ROW)
-
-        for i, tab in ipairs(targetFrame.tabs) do
-            local row = math.floor((i - 1) / TABS_PER_ROW)
-            local col = (i - 1) % TABS_PER_ROW
-            local x = col * (tabWidth + TAB_SPACING)
-            local y = -row * (TAB_BUTTON_HEIGHT + TAB_SPACING) - 5
-
-            tab:SetWidth(tabWidth)
-            tab:ClearAllPoints()
-            tab:SetPoint("TOPLEFT", targetFrame.tabContainer, "TOPLEFT", x, y)
+        for _, tab in ipairs(targetFrame.tabs) do
+            if tab.isActionButton then
+                tab:SetWidth(actionButtonWidth)
+                tab:ClearAllPoints()
+                tab:SetPoint("TOPLEFT", targetFrame.actionContainer, "TOPLEFT", 8, actionY)
+                actionY = actionY - (targetFrame.ACTION_BUTTON_HEIGHT + 6)
+            else
+                tab:SetWidth(navButtonWidth)
+                tab:ClearAllPoints()
+                tab:SetPoint("TOPLEFT", targetFrame.navContainer, "TOPLEFT", 0, -navY)
+                navY = navY + targetFrame.NAV_BUTTON_HEIGHT + targetFrame.NAV_SPACING
+            end
         end
 
-        targetFrame.TAB_BUTTON_WIDTH = tabWidth
+        targetFrame.navContainer:SetHeight(math.max(1, navY))
     end
 
     return frame
 end
 
----------------------------------------------------------------------------
--- ADD TAB (Clean style - no left bar, blue text when active)
+-- ADD TAB (Sidebar navigation item)
 ---------------------------------------------------------------------------
 function GUI:AddTab(frame, name, pageCreateFunc)
     local index = #frame.tabs + 1
-    
-    local row = math.floor((index - 1) / frame.TABS_PER_ROW)
-    local col = (index - 1) % frame.TABS_PER_ROW
-    
-    local x = col * (frame.TAB_BUTTON_WIDTH + frame.TAB_SPACING)
-    local y = -row * (frame.TAB_BUTTON_HEIGHT + frame.TAB_SPACING) - 5  -- Small top padding
-    
-    -- Create tab button
-    local tab = CreateFrame("Button", nil, frame.tabContainer, "BackdropTemplate")
-    tab:SetSize(frame.TAB_BUTTON_WIDTH, frame.TAB_BUTTON_HEIGHT)
-    tab:SetPoint("TOPLEFT", frame.tabContainer, "TOPLEFT", x, y)
+
+    local tab = CreateFrame("Button", nil, frame.navContainer, "BackdropTemplate")
+    tab:SetSize(math.max(120, math.floor(frame.navContainer:GetWidth()) - 2), frame.NAV_BUTTON_HEIGHT)
     tab:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         edgeFile = "Interface\\Buttons\\WHITE8x8",
         edgeSize = 1,
     })
-    tab:SetBackdropColor(unpack(C.bgLight))  -- Dark Slate inactive
+    tab:SetBackdropColor(unpack(C.navItemBg))
     tab:SetBackdropBorderColor(unpack(C.border))
     tab.index = index
     tab.name = name
-    
-    -- Tab text - centered
+
+    tab.accentBar = tab:CreateTexture(nil, "ARTWORK")
+    tab.accentBar:SetPoint("TOPLEFT", tab, "TOPLEFT", 0, 0)
+    tab.accentBar:SetPoint("BOTTOMLEFT", tab, "BOTTOMLEFT", 0, 0)
+    tab.accentBar:SetWidth(2)
+    tab.accentBar:SetColorTexture(C.accent[1], C.accent[2], C.accent[3], 0)
+
     tab.text = tab:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     SetFont(tab.text, 11, "", C.tabNormal)
     tab.text:SetText(name)
-    tab.text:SetPoint("CENTER", tab, "CENTER", 0, 0)
-    tab.text:SetJustifyH("CENTER")
-    
+    tab.text:SetPoint("LEFT", tab, "LEFT", 9, 0)
+    tab.text:SetPoint("RIGHT", tab, "RIGHT", -6, 0)
+    tab.text:SetJustifyH("LEFT")
+
     frame.tabs[index] = tab
     frame.pages[index] = {
         createFunc = pageCreateFunc,
         frame = nil
     }
-    
-    -- Click handler
+
     tab:SetScript("OnClick", function()
         GUI:SelectTab(frame, index)
     end)
-    
+
     tab:SetScript("OnEnter", function(self)
         if frame.activeTab ~= self.index then
             self.text:SetTextColor(unpack(C.tabHover))
+            pcall(self.SetBackdropColor, self, C.bgLight[1], C.bgLight[2], C.bgLight[3], 1)
             pcall(self.SetBackdropBorderColor, self, unpack(C.borderLight))
         end
     end)
-    
+
     tab:SetScript("OnLeave", function(self)
         if frame.activeTab ~= self.index then
+            pcall(self.SetBackdropColor, self, unpack(C.navItemBg))
             self.text:SetTextColor(unpack(C.tabNormal))
             pcall(self.SetBackdropBorderColor, self, unpack(C.border))
         end
     end)
-    
-    -- Select first tab by default
+
+    GUI:RelayoutTabs(frame)
+
     if index == 1 then
         GUI:SelectTab(frame, 1)
     end
-    
+
     return tab
 end
 
 ---------------------------------------------------------------------------
--- ADD ACTION BUTTON (Special button that executes action instead of opening page)
--- Styled like "CREATE" button - dark bg with thick blue border, centered text
+-- ADD ACTION BUTTON (Footer utility action)
 ---------------------------------------------------------------------------
 function GUI:AddActionButton(frame, name, onClick, accentColor)
     local index = #frame.tabs + 1
-    
-    local row = math.floor((index - 1) / frame.TABS_PER_ROW)
-    local col = (index - 1) % frame.TABS_PER_ROW
-    
-    local x = col * (frame.TAB_BUTTON_WIDTH + frame.TAB_SPACING)
-    local y = -row * (frame.TAB_BUTTON_HEIGHT + frame.TAB_SPACING) - 5
-    
-    -- Create action button (styled like CREATE button)
-    local btn = CreateFrame("Button", nil, frame.tabContainer, "BackdropTemplate")
-    btn:SetSize(frame.TAB_BUTTON_WIDTH, frame.TAB_BUTTON_HEIGHT)
-    btn:SetPoint("TOPLEFT", frame.tabContainer, "TOPLEFT", x, y)
-    
-    -- Dark background with thick blue border (like CREATE button)
-    local bgColor = {0.05, 0.08, 0.12, 1}  -- Very dark
-    local borderColor = {0.290, 0.620, 1.0, 1}  -- Blue accent
-    
+
+    local btn = CreateFrame("Button", nil, frame.actionContainer, "BackdropTemplate")
+    btn:SetSize(frame.sidebar:GetWidth() - 16, frame.ACTION_BUTTON_HEIGHT)
+
+    local bgColor = {unpack(C.navActionBg)}
+    local borderColor = accentColor or C.sectionHeader
+
     btn:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         edgeFile = "Interface\\Buttons\\WHITE8x8",
-        edgeSize = 2,  -- Thicker border
+        edgeSize = 1,
     })
     btn:SetBackdropColor(unpack(bgColor))
     btn:SetBackdropBorderColor(unpack(borderColor))
@@ -3724,37 +3772,36 @@ function GUI:AddActionButton(frame, name, onClick, accentColor)
     btn.isActionButton = true
     btn.bgColor = bgColor
     btn.borderColor = borderColor
-    
-    -- Button text - CENTERED, blue colored
+
     btn.text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    SetFont(btn.text, 11, "", borderColor)  -- Blue text color
+    SetFont(btn.text, 11, "OUTLINE", borderColor)
     btn.text:SetText(name)
     btn.text:SetPoint("CENTER", btn, "CENTER", 0, 0)
     btn.text:SetJustifyH("CENTER")
-    
-    -- Store in tabs array but mark as action button
+
     frame.tabs[index] = btn
-    frame.pages[index] = nil  -- No page for action buttons
-    
-    -- Click handler - execute action
+    frame.pages[index] = nil
+
     btn:SetScript("OnClick", function()
         if onClick then
             onClick()
         end
     end)
-    
+
     btn:SetScript("OnEnter", function(self)
-        self:SetBackdropColor(0.1, 0.15, 0.2, 1)  -- Slightly lighter on hover
-        self:SetBackdropBorderColor(0.4, 0.7, 1.0, 1)  -- Brighter blue on hover
-        self.text:SetTextColor(0.4, 0.7, 1.0, 1)  -- Brighter text
+        self:SetBackdropColor(0.11, 0.16, 0.18, 1)
+        self:SetBackdropBorderColor(C.accentLight[1], C.accentLight[2], C.accentLight[3], 1)
+        self.text:SetTextColor(C.accentLight[1], C.accentLight[2], C.accentLight[3], 1)
     end)
-    
+
     btn:SetScript("OnLeave", function(self)
         self:SetBackdropColor(unpack(self.bgColor))
         self:SetBackdropBorderColor(unpack(self.borderColor))
         self.text:SetTextColor(unpack(self.borderColor))
     end)
-    
+
+    GUI:RelayoutTabs(frame)
+
     return btn
 end
 
@@ -3787,9 +3834,12 @@ function GUI:SelectTab(frame, index)
     if frame.activeTab then
         local prevTab = frame.tabs[frame.activeTab]
         if prevTab and not prevTab.isActionButton then
-            prevTab.text:SetTextColor(unpack(C.tabNormal))  -- Normal grey text
-            pcall(prevTab.SetBackdropColor, prevTab, unpack(C.bgLight))
+            prevTab.text:SetTextColor(unpack(C.tabNormal))
+            pcall(prevTab.SetBackdropColor, prevTab, unpack(C.navItemBg))
             pcall(prevTab.SetBackdropBorderColor, prevTab, unpack(C.border))
+            if prevTab.accentBar then
+                prevTab.accentBar:SetAlpha(0)
+            end
         end
         
         if frame.pages[frame.activeTab] and frame.pages[frame.activeTab].frame then
@@ -3801,9 +3851,12 @@ function GUI:SelectTab(frame, index)
     frame.activeTab = index
     local tab = frame.tabs[index]
     if tab and not tab.isActionButton then
-        tab.text:SetTextColor(unpack(C.accent))  -- Blue text when active
-        pcall(tab.SetBackdropColor, tab, unpack(C.bgLight))
-        pcall(tab.SetBackdropBorderColor, tab, unpack(C.accent))  -- Blue border
+        tab.text:SetTextColor(unpack(C.tabSelectedText))
+        pcall(tab.SetBackdropColor, tab, unpack(C.navItemActiveBg))
+        pcall(tab.SetBackdropBorderColor, tab, unpack(C.accent))
+        if tab.accentBar then
+            tab.accentBar:SetAlpha(1)
+        end
     end
     
     -- Create/show page

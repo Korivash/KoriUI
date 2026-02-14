@@ -116,7 +116,7 @@ function KoriUI:OnEnable()
     -- Initialize KORICore if present
     if self.KORICore then
         if self.db.profile and self.db.profile.chat and self.db.profile.chat.showIntroMessage ~= false then
-            print("|cFF1E90FFKori UI|r loaded. |cFFFFFF00/kori|r to setup.")
+            print("|cFF1E90FFKoriUI Command Deck|r loaded. |cFFFFFF00/kori|r to configure.")
             print("|cFF1E90FFKORI UI REMINDER:|r")
             print("|cFF4A9EFF1.|r ENABLE |cFFFFFF00Cooldown Manager|r in Options > Gameplay Enhancement")
             print("|cFF4A9EFF2.|r Action Bars & Menu Bar |cFFFFFF00HIDDEN|r on mouseover |cFFFFFF00by default|r. Use |cFFFFFF00'Actionbars'|r tab in |cFFFFFF00/kori|r to unhide.")

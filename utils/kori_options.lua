@@ -14520,27 +14520,27 @@ function GUI:InitializeOptions()
     local frame = self:CreateMainFrame()
 
     -- Row 1: Core UI Elements
-    GUI:AddTab(frame, "General & QoL", CreateGeneralQoLPage)
-    GUI:AddTab(frame, "Single Frames & Castbars", CreateUnitFramesPage)
-    GUI:AddTab(frame, "Minimap & Datatext", CreateMinimapPage)
-    GUI:AddTab(frame, "Action Bars", CreateActionBarsPage)
-    GUI:AddTab(frame, "Autohide & Skinning", CreateAutohidesPage)
+    GUI:AddTab(frame, "System, QoL, and Accessibility", CreateGeneralQoLPage)
+    GUI:AddTab(frame, "Unit Frames and Castbars", CreateUnitFramesPage)
+    GUI:AddTab(frame, "Minimap and Datatext", CreateMinimapPage)
+    GUI:AddTab(frame, "Action Bar Layout", CreateActionBarsPage)
+    GUI:AddTab(frame, "Visibility and Skin Studio", CreateAutohidesPage)
 
     -- Row 2: Cooldown System (CDM cluster)
-    GUI:AddTab(frame, "CDM Setup & Class Bars", CreateCDMSetupPage)
-    GUI:AddTab(frame, "CDM GCD & Effects", CreateCDEffectsPage)
-    GUI:AddTab(frame, "CDM Keybind & Rotation", CreateCDKeybindsPage)
-    GUI:AddTab(frame, "Custom Items/Spells/Buffs", CreateCustomTrackersPage)
+    GUI:AddTab(frame, "Cooldown Engine and Class Bars", CreateCDMSetupPage)
+    GUI:AddTab(frame, "Cooldown Effects and GCD", CreateCDEffectsPage)
+    GUI:AddTab(frame, "Keybind and Rotation Assist", CreateCDKeybindsPage)
+    GUI:AddTab(frame, "Custom Item, Spell, and Buff Trackers", CreateCustomTrackersPage)
 
     -- Row 3: Utilities + Action Buttons
-    GUI:AddTab(frame, "HUD Layering", CreateHUDLayeringPage)
-    GUI:AddTab(frame, "Stagger Bar", CreateStaggerBarPage)  -- Monk-only Stagger tracking
-    GUI:AddTab(frame, "Spec Profiles", CreateSpecProfilesPage)
-    GUI:AddTab(frame, "KORI Import/Export", CreateImportExportPage)
-    GUI:AddTab(frame, "Search", CreateSearchPage)
+    GUI:AddTab(frame, "HUD Layer Priorities", CreateHUDLayeringPage)
+    GUI:AddTab(frame, "Brewmaster Stagger", CreateStaggerBarPage)  -- Monk-only Stagger tracking
+    GUI:AddTab(frame, "Specialization Profiles", CreateSpecProfilesPage)
+    GUI:AddTab(frame, "Profile Import and Export", CreateImportExportPage)
+    GUI:AddTab(frame, "Global Settings Search", CreateSearchPage)
     GUI._searchTabIndex = #frame.tabs  -- Store Search tab index for ForceLoadAllTabs trigger
 
-    GUI:AddActionButton(frame, "Cooldown Settings", function()
+    GUI:AddActionButton(frame, "Toggle Cooldown Settings", function()
         if CooldownViewerSettings then
             CooldownViewerSettings:SetShown(not CooldownViewerSettings:IsShown())
         else
@@ -14548,7 +14548,7 @@ function GUI:InitializeOptions()
         end
     end)
 
-    GUI:AddActionButton(frame, "Edit Mode", function()
+    GUI:AddActionButton(frame, "Open Blizzard Edit Mode", function()
         if EditModeManagerFrame then
             ShowUIPanel(EditModeManagerFrame)
         end

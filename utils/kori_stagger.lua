@@ -165,12 +165,9 @@ function KoriUI:CreateStaggerBar()
     bar.StatusBar:SetStatusBarTexture(GetBarTexture(cfg))
     bar.StatusBar:SetFrameLevel(bar:GetFrameLevel())
     
-    local borderSize = cfg.useRawPixels and (cfg.borderSize or 1) or Scale(cfg.borderSize or 1)
-    bar.Border = CreateFrame("Frame", nil, bar, "BackdropTemplate")
-    bar.Border:SetPoint("TOPLEFT", bar, -borderSize, borderSize)
-    bar.Border:SetPoint("BOTTOMRIGHT", bar, borderSize, -borderSize)
-    bar.Border:SetBackdrop({ edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = borderSize })
-    bar.Border:SetBackdropBorderColor(0, 0, 0, 1)
+    -- Border intentionally disabled to keep the stagger bar clean (no white frame).
+    bar.Border = CreateFrame("Frame", nil, bar)
+    bar.Border:Hide()
     
     bar.TextFrame = CreateFrame("Frame", nil, bar)
     bar.TextFrame:SetAllPoints()
@@ -381,11 +378,10 @@ function KoriUI:RefreshStaggerBar()
     bar.Background:SetColorTexture(bgc[1], bgc[2], bgc[3], bgc[4] or 0.9)
     bar.StatusBar:SetStatusBarTexture(GetBarTexture(cfg))
     
-    local borderSize = cfg.useRawPixels and (cfg.borderSize or 1) or Scale(cfg.borderSize or 1)
-    bar.Border:ClearAllPoints()
-    bar.Border:SetPoint("TOPLEFT", bar, -borderSize, borderSize)
-    bar.Border:SetPoint("BOTTOMRIGHT", bar, borderSize, -borderSize)
-    bar.Border:SetBackdrop({ edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = borderSize })
+    -- Border intentionally disabled (kept hidden on refresh).
+    if bar.Border then
+        bar.Border:Hide()
+    end
     
     bar.TextValue:SetFont(GetGeneralFont(), Scale(cfg.textSize or 11), GetGeneralFontOutline())
     bar.TextValue:ClearAllPoints()

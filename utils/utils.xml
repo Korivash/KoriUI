@@ -46,4 +46,5 @@
     <Script file="kori_dungeon_teleport.lua"/>
     <Script file="kori_key_tracker.lua"/>
     <Script file="kori_raidbuffs.lua"/>
+    <Script file="kori_rebuild.lua"/>
 </Ui>
