@@ -11,6 +11,42 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local KORI_BuffBar = {}
 ns.BuffBar = KORI_BuffBar
 
+-- Keep addon state out of Blizzard-owned frame/texture tables to reduce taint risk.
+local IconMeta = setmetatable({}, { __mode = "k" })
+local BarMeta = setmetatable({}, { __mode = "k" })
+local TextureMeta = setmetatable({}, { __mode = "k" })
+local ViewerMeta = setmetatable({}, { __mode = "k" })
+
+local function GetIconMeta(icon)
+    if not icon then return nil end
+    local meta = IconMeta[icon]
+    if not meta then
+        meta = {}
+        IconMeta[icon] = meta
+    end
+    return meta
+end
+
+local function GetBarMeta(frame)
+    if not frame then return nil end
+    local meta = BarMeta[frame]
+    if not meta then
+        meta = {}
+        BarMeta[frame] = meta
+    end
+    return meta
+end
+
+local function GetViewerMeta(viewer)
+    if not viewer then return nil end
+    local meta = ViewerMeta[viewer]
+    if not meta then
+        meta = {}
+        ViewerMeta[viewer] = meta
+    end
+    return meta
+end
+
 ---------------------------------------------------------------------------
 -- HELPER: Get font from general settings
 ---------------------------------------------------------------------------
@@ -285,8 +321,8 @@ local function DisableAtlasBorder(tex)
     if tex.Hide then tex:Hide() end
 
     -- Hook to re-clear on future SetAtlas calls (Blizzard re-applies on buff updates)
-    if tex.SetAtlas and not tex._quiAtlasDisabled then
-        tex._quiAtlasDisabled = true
+    if tex.SetAtlas and not TextureMeta[tex] then
+        TextureMeta[tex] = true
         hooksecurefunc(tex, "SetAtlas", function(self)
             C_Timer.After(0, function()
                 -- Safety check in case texture was released before timer fires
@@ -310,7 +346,8 @@ end
 ---------------------------------------------------------------------------
 
 local function SetupIconOnce(icon)
-    if icon._buffSetup then return end
+    local meta = GetIconMeta(icon)
+    if meta.setupDone then return end
 
     -- Remove ALL of Blizzard's masks (they may have multiple)
     local textures = { icon.Icon, icon.icon, icon.texture, icon.Texture }
@@ -340,7 +377,7 @@ local function SetupIconOnce(icon)
     DisableAtlasBorder(icon.BuffBorder)
     DisableAtlasBorder(icon.TempEnchantBorder)
 
-    icon._buffSetup = true
+    meta.setupDone = true
 end
 
 ---------------------------------------------------------------------------
@@ -371,22 +408,23 @@ local function ApplyIconStyle(icon, settings)
 
     -- Create or update border (using BACKGROUND texture to avoid secret value errors during combat)
     -- BackdropTemplate causes "arithmetic on secret value" crashes when frame is resized during combat
+    local meta = GetIconMeta(icon)
     if borderSize > 0 then
-        if not icon._buffBorder then
-            icon._buffBorder = icon:CreateTexture(nil, "BACKGROUND", nil, -8)
-            icon._buffBorder:SetColorTexture(0, 0, 0, 1)
+        if not meta.borderTexture then
+            meta.borderTexture = icon:CreateTexture(nil, "BACKGROUND", nil, -8)
+            meta.borderTexture:SetColorTexture(0, 0, 0, 1)
         end
 
-        icon._buffBorder:ClearAllPoints()
-        icon._buffBorder:SetPoint("TOPLEFT", icon, "TOPLEFT", -borderSize, borderSize)
-        icon._buffBorder:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", borderSize, -borderSize)
-        icon._buffBorder:Show()
-        icon._buffBorderSize = borderSize
+        meta.borderTexture:ClearAllPoints()
+        meta.borderTexture:SetPoint("TOPLEFT", icon, "TOPLEFT", -borderSize, borderSize)
+        meta.borderTexture:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", borderSize, -borderSize)
+        meta.borderTexture:Show()
+        meta.borderSize = borderSize
     else
-        if icon._buffBorder then
-            icon._buffBorder:Hide()
+        if meta.borderTexture then
+            meta.borderTexture:Hide()
         end
-        icon._buffBorderSize = 0
+        meta.borderSize = 0
     end
 
     -- Calculate texture coordinates (crop-based, no stretching)
@@ -827,23 +865,24 @@ local function ApplyBarStyle(frame, settings)
 
     -- 6. Apply clean backdrop (solid background BEHIND the statusBar fill)
     -- Create on the frame itself, positioned behind statusBar
-    if not frame._trackedBg then
-        frame._trackedBg = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
+    local barMeta = GetBarMeta(frame)
+    if not barMeta.bgTexture then
+        barMeta.bgTexture = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
     end
     -- Apply background color from settings
     local bgR, bgG, bgB = bgColor[1] or 0, bgColor[2] or 0, bgColor[3] or 0
-    frame._trackedBg:SetColorTexture(bgR, bgG, bgB, 1)
+    barMeta.bgTexture:SetColorTexture(bgR, bgG, bgB, 1)
     if statusBar then
-        frame._trackedBg:ClearAllPoints()
-        frame._trackedBg:SetAllPoints(statusBar)
+        barMeta.bgTexture:ClearAllPoints()
+        barMeta.bgTexture:SetAllPoints(statusBar)
     end
-    frame._trackedBg:SetAlpha(bgOpacity)
-    frame._trackedBg:Show()
+    barMeta.bgTexture:SetAlpha(bgOpacity)
+    barMeta.bgTexture:Show()
 
     -- 7. Apply crisp border using 4-edge technique
     -- Parent to the bar frame itself (not viewer) so it hides when bar hides
     if borderSize > 0 then
-        if not frame._trackedBorderContainer then
+        if not barMeta.borderContainer then
             local container = CreateFrame("Frame", nil, frame)
             container:SetFrameLevel((frame.GetFrameLevel and frame:GetFrameLevel() or 1) + 5)
 
@@ -857,10 +896,10 @@ local function ApplyBarStyle(frame, settings)
             container._right = container:CreateTexture(nil, "OVERLAY", nil, 7)
             container._right:SetColorTexture(0, 0, 0, 1)
 
-            frame._trackedBorderContainer = container
+            barMeta.borderContainer = container
         end
 
-        local container = frame._trackedBorderContainer
+        local container = barMeta.borderContainer
         -- Position container to wrap around the bar (extends OUTSIDE by borderSize)
         container:ClearAllPoints()
         container:SetPoint("TOPLEFT", frame, "TOPLEFT", -borderSize, borderSize)
@@ -892,8 +931,8 @@ local function ApplyBarStyle(frame, settings)
 
         container:Show()
     else
-        if frame._trackedBorderContainer then
-            frame._trackedBorderContainer:Hide()
+        if barMeta.borderContainer then
+            barMeta.borderContainer:Hide()
         end
     end
 
@@ -932,7 +971,7 @@ local function ApplyBarStyle(frame, settings)
         end
     end
 
-    frame._trackedBarStyled = true
+    barMeta.styled = true
 end
 
 ---------------------------------------------------------------------------
@@ -1477,13 +1516,15 @@ local function Initialize()
     ForcePopulateBuffIcons()
 
     -- OnUpdate polling at 0.05s (20 FPS) - works alongside UNIT_AURA event detection
-    if BuffIconCooldownViewer and not BuffIconCooldownViewer.__quiOnUpdateHooked then
-        BuffIconCooldownViewer.__quiOnUpdateHooked = true
-        BuffIconCooldownViewer.__quiElapsed = 0
+    if BuffIconCooldownViewer and not GetViewerMeta(BuffIconCooldownViewer).onUpdateHooked then
+        local viewerMeta = GetViewerMeta(BuffIconCooldownViewer)
+        viewerMeta.onUpdateHooked = true
+        viewerMeta.elapsed = 0
         BuffIconCooldownViewer:HookScript("OnUpdate", function(self, elapsed)
-            self.__quiElapsed = (self.__quiElapsed or 0) + elapsed
-            if self.__quiElapsed > 0.05 then  -- 20 FPS polling - hash prevents over-layout
-                self.__quiElapsed = 0
+            local meta = GetViewerMeta(self)
+            meta.elapsed = (meta.elapsed or 0) + elapsed
+            if meta.elapsed > 0.05 then  -- 20 FPS polling - hash prevents over-layout
+                meta.elapsed = 0
                 if self:IsShown() then
                     CheckIconChanges()
                 end
@@ -1491,13 +1532,15 @@ local function Initialize()
         end)
     end
 
-    if BuffBarCooldownViewer and not BuffBarCooldownViewer.__quiOnUpdateHooked then
-        BuffBarCooldownViewer.__quiOnUpdateHooked = true
-        BuffBarCooldownViewer.__quiElapsed = 0
+    if BuffBarCooldownViewer and not GetViewerMeta(BuffBarCooldownViewer).onUpdateHooked then
+        local viewerMeta = GetViewerMeta(BuffBarCooldownViewer)
+        viewerMeta.onUpdateHooked = true
+        viewerMeta.elapsed = 0
         BuffBarCooldownViewer:HookScript("OnUpdate", function(self, elapsed)
-            self.__quiElapsed = (self.__quiElapsed or 0) + elapsed
-            if self.__quiElapsed > 0.05 then  -- 20 FPS for bars
-                self.__quiElapsed = 0
+            local meta = GetViewerMeta(self)
+            meta.elapsed = (meta.elapsed or 0) + elapsed
+            if meta.elapsed > 0.05 then  -- 20 FPS for bars
+                meta.elapsed = 0
                 if self:IsShown() then
                     CheckBarChanges()
                 end
@@ -1564,16 +1607,17 @@ local function Initialize()
     -- (Replaces polling as primary detection - polling becomes fallback only)
     ---------------------------------------------------------------------------
 
-    if BuffIconCooldownViewer and not BuffIconCooldownViewer.__quiAuraHook then
-        BuffIconCooldownViewer.__quiAuraHook = CreateFrame("Frame")
-        BuffIconCooldownViewer.__quiAuraHook:RegisterEvent("UNIT_AURA")
-        BuffIconCooldownViewer.__quiAuraHook:SetScript("OnEvent", function(_, event, unit)
+    if BuffIconCooldownViewer and not GetViewerMeta(BuffIconCooldownViewer).auraHook then
+        local viewerMeta = GetViewerMeta(BuffIconCooldownViewer)
+        viewerMeta.auraHook = CreateFrame("Frame")
+        viewerMeta.auraHook:RegisterEvent("UNIT_AURA")
+        viewerMeta.auraHook:SetScript("OnEvent", function(_, event, unit)
             if unit == "player" and BuffIconCooldownViewer:IsShown() then
                 -- Debounce: only queue one rescan per 0.1s window
-                if not BuffIconCooldownViewer.__quiRescanPending then
-                    BuffIconCooldownViewer.__quiRescanPending = true
+                if not viewerMeta.rescanPending then
+                    viewerMeta.rescanPending = true
                     C_Timer.After(0.1, function()
-                        BuffIconCooldownViewer.__quiRescanPending = nil
+                        viewerMeta.rescanPending = nil
                         -- Re-check visibility after timer (viewer may have hidden)
                         if BuffIconCooldownViewer:IsShown() then
                             if isIconLayoutRunning then return end

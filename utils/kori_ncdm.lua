@@ -71,6 +71,21 @@ local NCDM = {
     settingsVersion = {},  -- Track settings changes per tracker (for optimization)
 }
 
+-- Keep addon state out of Blizzard frame tables to avoid tainting secure fields.
+local IconState = setmetatable({}, { __mode = "k" })
+local AtlasBorderBlocked = setmetatable({}, { __mode = "k" })
+local CooldownFlashHooked = setmetatable({}, { __mode = "k" })
+
+local function GetIconState(icon)
+    if not icon then return nil end
+    local state = IconState[icon]
+    if not state then
+        state = {}
+        IconState[icon] = state
+    end
+    return state
+end
+
 ---------------------------------------------------------------------------
 -- HELPER: Get database
 ---------------------------------------------------------------------------
@@ -154,8 +169,8 @@ end
 -- HELPER: Proactively block atlas borders (CPU attribution shifts to Blizzard)
 ---------------------------------------------------------------------------
 local function PreventAtlasBorder(texture)
-    if not texture or texture.__quiAtlasBlocked then return end
-    texture.__quiAtlasBlocked = true
+    if not texture or AtlasBorderBlocked[texture] then return end
+    AtlasBorderBlocked[texture] = true
 
     -- Hook future SetAtlas calls to block border re-application
     if texture.SetAtlas then
@@ -174,8 +189,9 @@ end
 ---------------------------------------------------------------------------
 local function ApplyTexCoord(icon)
     if not icon then return end
-    local z = icon._ncdmZoom or 0
-    local aspectRatio = icon._ncdmAspectRatio or 1.0
+    local state = GetIconState(icon)
+    local z = (state and state.zoom) or 0
+    local aspectRatio = (state and state.aspectRatio) or 1.0
     local baseCrop = 0.08
 
     -- Start with base crop + zoom
@@ -204,8 +220,10 @@ end
 -- HELPER: One-time setup (things that only need to happen once per icon)
 ---------------------------------------------------------------------------
 local function SetupIconOnce(icon)
-    if not icon or icon._ncdmSetup then return end
-    icon._ncdmSetup = true
+    if not icon then return end
+    local state = GetIconState(icon)
+    if state.setupDone then return end
+    state.setupDone = true
     
     -- Remove Blizzard's mask textures
     local textures = { icon.Icon, icon.icon }
@@ -250,8 +268,9 @@ local function SkinIcon(icon, size, aspectRatioCrop, zoom, borderSize, borderCol
     if not icon then return end
 
     -- Store zoom and aspect ratio for the texture coordinate calculation
-    icon._ncdmZoom = zoom or 0
-    icon._ncdmAspectRatio = aspectRatioCrop or 1.0
+    local state = GetIconState(icon)
+    state.zoom = zoom or 0
+    state.aspectRatio = aspectRatioCrop or 1.0
 
     -- One-time setup (mask removal, overlay strip, SetTexCoord hook)
     SetupIconOnce(icon)
@@ -267,30 +286,30 @@ local function SkinIcon(icon, size, aspectRatioCrop, zoom, borderSize, borderCol
     -- Border (BACKGROUND texture approach)
     borderSize = borderSize or 0
     if borderSize > 0 then
-        if not icon._ncdmBorder then
-            icon._ncdmBorder = icon:CreateTexture(nil, "BACKGROUND", nil, -8)
+        if not state.borderTexture then
+            state.borderTexture = icon:CreateTexture(nil, "BACKGROUND", nil, -8)
         end
         local bc = borderColorTable or {0, 0, 0, 1}
-        icon._ncdmBorder:SetColorTexture(bc[1], bc[2], bc[3], bc[4])
+        state.borderTexture:SetColorTexture(bc[1], bc[2], bc[3], bc[4])
 
-        icon._ncdmBorder:ClearAllPoints()
-        icon._ncdmBorder:SetPoint("TOPLEFT", icon, "TOPLEFT", -borderSize, borderSize)
-        icon._ncdmBorder:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", borderSize, -borderSize)
-        icon._ncdmBorder:Show()
+        state.borderTexture:ClearAllPoints()
+        state.borderTexture:SetPoint("TOPLEFT", icon, "TOPLEFT", -borderSize, borderSize)
+        state.borderTexture:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", borderSize, -borderSize)
+        state.borderTexture:Show()
 
         -- Expand hit area to include border for mouseover detection
         icon:SetHitRectInsets(-borderSize, -borderSize, -borderSize, -borderSize)
     else
-        if icon._ncdmBorder then
-            icon._ncdmBorder:Hide()
+        if state.borderTexture then
+            state.borderTexture:Hide()
         end
         -- Reset hit area when no border
         icon:SetHitRectInsets(0, 0, 0, 0)
     end
     
     -- One-time setup for textures and flash
-    if not icon._ncdmPositioned then
-        icon._ncdmPositioned = true
+    if not state.positioned then
+        state.positioned = true
 
         local textures = { icon.Icon, icon.icon }
         for _, tex in ipairs(textures) do
@@ -304,8 +323,8 @@ local function SkinIcon(icon, size, aspectRatioCrop, zoom, borderSize, borderCol
         if icon.CooldownFlash then
             icon.CooldownFlash:SetAlpha(0)
             -- Hook Show to keep it hidden
-            if not icon.CooldownFlash._ncdmHooked then
-                icon.CooldownFlash._ncdmHooked = true
+            if not CooldownFlashHooked[icon.CooldownFlash] then
+                CooldownFlashHooked[icon.CooldownFlash] = true
                 hooksecurefunc(icon.CooldownFlash, "Show", function(self)
                     self:SetAlpha(0)
                 end)
@@ -354,8 +373,9 @@ local function ProcessPendingIcons()
                 pcall(ApplyIconTextSizes, icon, data.durationSize, data.stackSize,
                     data.durationOffsetX, data.durationOffsetY, data.stackOffsetX, data.stackOffsetY,
                     data.durationTextColor, data.durationAnchor, data.stackTextColor, data.stackAnchor)
-                icon.__cdmSkinned = true
-                icon.__cdmSkinPending = nil
+                local state = GetIconState(icon)
+                state.skinned = true
+                state.skinPending = nil
             end
         end
         NCDM.pendingIcons[icon] = nil
@@ -388,7 +408,8 @@ end)
 local function QueueIconForSkinning(icon, size, aspectRatioCrop, zoom, borderSize, borderColorTable, durationSize, stackSize, durationOffsetX, durationOffsetY, stackOffsetX, stackOffsetY, durationTextColor, durationAnchor, stackTextColor, stackAnchor)
     if not icon then return end
 
-    icon.__cdmSkinPending = true
+    local state = GetIconState(icon)
+    state.skinPending = true
     NCDM.pendingIcons[icon] = {
         size = size,
         aspectRatioCrop = aspectRatioCrop,
@@ -539,7 +560,8 @@ local function CollectIcons(viewer)
         local child = select(i, viewer:GetChildren())
         if child and child ~= viewer.Selection and IsIconFrame(child) then
             -- Collect shown icons OR icons we previously hid
-            if child:IsShown() or child._ncdmHidden then
+            local state = GetIconState(child)
+            if child:IsShown() or state.hidden then
                 table.insert(icons, child)
             end
         end
@@ -595,7 +617,7 @@ local function LayoutViewer(viewerName, trackerKey)
     for i = 1, math.min(#allIcons, totalCapacity) do
         local icon = allIcons[i]
         iconsToLayout[i] = icon
-        icon._ncdmHidden = nil
+        GetIconState(icon).hidden = nil
         icon:Show()
     end
     
@@ -603,7 +625,7 @@ local function LayoutViewer(viewerName, trackerKey)
     for i = totalCapacity + 1, #allIcons do
         local icon = allIcons[i]
         if icon then
-            icon._ncdmHidden = true
+            GetIconState(icon).hidden = true
             icon:Hide()
             icon:ClearAllPoints()
         end
@@ -790,7 +812,8 @@ local function LayoutViewer(viewerName, trackerKey)
             end
 
             -- Only skin if not already skinned with these settings
-            if not icon.__cdmSkinned and not icon.__cdmSkinPending then
+            local state = GetIconState(icon)
+            if not state.skinned and not state.skinPending then
                 if InCombatLockdown() then
                     -- Queue for after combat
                     QueueIconForSkinning(icon, rowConfig.size, rowConfig.aspectRatioCrop, rowConfig.zoom,
@@ -807,7 +830,7 @@ local function LayoutViewer(viewerName, trackerKey)
                             rowConfig.stackOffsetX, rowConfig.stackOffsetY,
                             rowConfig.durationTextColor, rowConfig.durationAnchor,
                             rowConfig.stackTextColor, rowConfig.stackAnchor)
-                        icon.__cdmSkinned = true
+                        state.skinned = true
                     end
                 end
             end
@@ -1037,8 +1060,9 @@ local function HookViewer(viewerName, trackerKey)
             -- Reset skinned/pending flags on all icons when settings change
             if currentVersion ~= lastSettingsVersion then
                 for _, icon in ipairs(icons) do
-                    icon.__cdmSkinned = nil
-                    icon.__cdmSkinPending = nil
+                    local state = GetIconState(icon)
+                    state.skinned = nil
+                    state.skinPending = nil
                     NCDM.pendingIcons[icon] = nil
                 end
             end
@@ -1263,8 +1287,9 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
                     for i = 1, viewer:GetNumChildren() do
                         local child = select(i, viewer:GetChildren())
                         if child and child ~= viewer.Selection then
-                            child.__cdmSkinned = nil
-                            child.__cdmSkinPending = nil
+                            local state = GetIconState(child)
+                            state.skinned = nil
+                            state.skinPending = nil
                         end
                     end
                 end
