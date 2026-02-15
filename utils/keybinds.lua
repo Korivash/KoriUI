@@ -4,6 +4,7 @@
 
 local _, KORI = ...
 local LSM = LibStub("LibSharedMedia-3.0")
+local IS_MODERN_CLIENT = (tonumber((select(4, GetBuildInfo()))) or 0) >= 120000
 
 -- Cache for spell ID to keybind mapping
 local spellToKeybind = {}
@@ -978,6 +979,10 @@ end
 
 -- Update keybinds on all icons in a viewer
 local function UpdateViewerKeybinds(viewerName)
+    if IS_MODERN_CLIENT and (viewerName == "EssentialCooldownViewer" or viewerName == "UtilityCooldownViewer") then
+        return
+    end
+
     local viewer = rawget(_G, viewerName)
     if not viewer then return end
     
@@ -1012,6 +1017,10 @@ end
 
 -- Update keybinds on Essential and Utility viewers
 local function UpdateAllKeybinds()
+    if IS_MODERN_CLIENT then
+        return
+    end
+
     -- Force cache rebuild
     lastCacheUpdate = 0
     RebuildCache()
@@ -1048,6 +1057,10 @@ eventFrame:RegisterEvent("SPELLS_CHANGED")
 eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED") -- Combat ended
 
 eventFrame:SetScript("OnEvent", function(self, event)
+    if IS_MODERN_CLIENT then
+        return
+    end
+
     -- PERFORMANCE: Skip expensive processing if no keybind features are enabled
     -- Exception: PLAYER_ENTERING_WORLD and PLAYER_REGEN_ENABLED are lightweight
     if event ~= "PLAYER_ENTERING_WORLD" and event ~= "PLAYER_REGEN_ENABLED" then
@@ -1140,6 +1153,8 @@ end)
 
 -- Export for NCDM integration (allows LayoutViewer to trigger keybind updates)
 _G.KoriUI_UpdateViewerKeybinds = function(viewerName)
+    if IS_MODERN_CLIENT then return end
+
     -- PERFORMANCE: Skip if no keybind features are enabled
     if not IsAnyKeybindFeatureEnabled() then return end
     UpdateViewerKeybinds(viewerName)
@@ -1702,6 +1717,10 @@ end
 
 -- Apply rotation helper overlay to a single icon
 local function ApplyRotationHelperToIcon(icon, viewerName, nextSpellID)
+    if IS_MODERN_CLIENT then
+        return
+    end
+
     local KORICore = _G.KoriUI and _G.KoriUI.KORICore
     if not KORICore or not KORICore.db or not KORICore.db.profile then return end
     
@@ -1788,6 +1807,10 @@ end
 
 -- Update rotation helper on all viewers
 local function UpdateAllRotationHelpers()
+    if IS_MODERN_CLIENT then
+        return
+    end
+
     -- Check if C_AssistedCombat API is available
     if not C_AssistedCombat or not C_AssistedCombat.GetNextCastSpell then
         return
@@ -1827,6 +1850,10 @@ end
 local ROTATION_HELPER_INTERVAL = 0.1 -- Update every 100ms
 
 local function StartRotationHelperTicker()
+    if IS_MODERN_CLIENT then
+        return
+    end
+
     if rotationHelperTicker then rotationHelperTicker:Cancel() end
     rotationHelperTicker = C_Timer.NewTicker(ROTATION_HELPER_INTERVAL, function()
         if not rotationHelperEnabled then return end
@@ -1844,6 +1871,13 @@ end
 
 -- Start/stop rotation helper based on settings
 local function RefreshRotationHelper()
+    if IS_MODERN_CLIENT then
+        rotationHelperEnabled = false
+        lastNextSpellID = nil
+        StopRotationHelperTicker()
+        return
+    end
+
     rotationHelperEnabled = ShouldRunRotationHelper()
 
     if not rotationHelperEnabled then

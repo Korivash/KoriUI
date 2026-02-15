@@ -1,5 +1,20 @@
 # KoriUI Changelog
 
+## v3.0.1 - CooldownViewer Taint Hotfix (February 2026)
+
+### Fixed
+- Fixed dungeon-instance taint errors originating from KoriUI interaction with Blizzard `CooldownViewer` secret values.
+- Prevented taint chain into Blizzard `CooldownViewerItemData` / `TableUtil` code paths.
+
+### Changed
+- Added 12.x safety gating for custom CDM glow hooks in `utils/customglows.lua`.
+- Added 12.x safety gating for CDM keybind and rotation-helper processing in `utils/keybinds.lua`.
+
+### Notes
+- On WoW 12.x, CDM keybind overlays, CDM rotation-helper overlays, and CDM custom glow hooks are now disabled for taint safety.
+
+---
+
 ## v3.0.0 - Command Deck Rebuild (February 2026)
 
 ### Added

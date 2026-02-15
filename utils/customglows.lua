@@ -4,6 +4,7 @@
 -- Falls back to LibCustomGlow for additional glow styles
 
 local _, KORI = ...
+local IS_MODERN_CLIENT = (tonumber((select(4, GetBuildInfo()))) or 0) >= 120000
 
 -- Get LibCustomGlow for fallback styles
 local LCG = LibStub and LibStub("LibCustomGlow-1.0", true)
@@ -380,6 +381,12 @@ end
 -- Hook into Blizzard's glow system
 -- ======================================================
 local function SetupGlowHooks()
+    -- 12.x: CDM icon internals carry secret values in instanced content.
+    -- Any insecure reads in glow hooks can taint Blizzard's follow-up logic.
+    if IS_MODERN_CLIENT then
+        return
+    end
+
     -- Keep ActionButton hooks as backup for edge cases
     -- These still work for some scenarios where CDM icon methods aren't available
     if type(ActionButton_ShowOverlayGlow) == "function" then
