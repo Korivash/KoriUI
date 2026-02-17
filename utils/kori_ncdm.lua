@@ -75,6 +75,8 @@ local NCDM = {
 local IconState = setmetatable({}, { __mode = "k" })
 local AtlasBorderBlocked = setmetatable({}, { __mode = "k" })
 local CooldownFlashHooked = setmetatable({}, { __mode = "k" })
+local FrameOrderState = setmetatable({}, { __mode = "k" })
+local nextFrameOrder = 0
 
 local function GetIconState(icon)
     if not icon then return nil end
@@ -84,6 +86,17 @@ local function GetIconState(icon)
         IconState[icon] = state
     end
     return state
+end
+
+local function GetStableFrameOrder(frame)
+    if not frame then return math.huge end
+    local order = FrameOrderState[frame]
+    if not order then
+        nextFrameOrder = nextFrameOrder + 1
+        order = nextFrameOrder
+        FrameOrderState[frame] = order
+    end
+    return order
 end
 
 ---------------------------------------------------------------------------
@@ -549,7 +562,7 @@ local function ApplyIconTextSizes(icon, durationSize, stackSize, durationOffsetX
 end
 
 ---------------------------------------------------------------------------
--- HELPER: Collect visible icons from viewer (stable order using layoutIndex)
+-- HELPER: Collect visible icons from viewer (stable order without secure fields)
 ---------------------------------------------------------------------------
 local function CollectIcons(viewer)
     local icons = {}
@@ -567,11 +580,9 @@ local function CollectIcons(viewer)
         end
     end
     
-    -- Sort by Blizzard's layoutIndex (stable order)
+    -- Sort using addon-owned stable order metadata.
     table.sort(icons, function(a, b)
-        local indexA = a.layoutIndex or 9999
-        local indexB = b.layoutIndex or 9999
-        return indexA < indexB
+        return GetStableFrameOrder(a) < GetStableFrameOrder(b)
     end)
     
     return icons

@@ -15,6 +15,19 @@ ns.Addon = KORICore
 
 -- Shared utility functions
 ns.Utils = {}
+local ViewerFrameOrder = setmetatable({}, { __mode = "k" })
+local nextViewerFrameOrder = 0
+
+local function GetViewerStableFrameOrder(frame)
+    if not frame then return math.huge end
+    local order = ViewerFrameOrder[frame]
+    if not order then
+        nextViewerFrameOrder = nextViewerFrameOrder + 1
+        order = nextViewerFrameOrder
+        ViewerFrameOrder[frame] = order
+    end
+    return order
+end
 
 -- Check if player is in instanced content (dungeon or raid)
 function ns.Utils.IsInInstancedContent()
@@ -3961,11 +3974,9 @@ function KORICore:ApplyViewerLayout(viewer)
     local count = #icons
     if count == 0 then return end
 
-    -- Sort icons with fallback to creation order
+    -- Sort icons without touching secure cooldown fields.
     table.sort(icons, function(a, b)
-        local la = a.layoutIndex or a:GetID() or a.__cdmCreationOrder or 0
-        local lb = b.layoutIndex or b:GetID() or b.__cdmCreationOrder or 0
-        return la < lb
+        return GetViewerStableFrameOrder(a) < GetViewerStableFrameOrder(b)
     end)
 
     -- Calculate icon dimensions from iconSize and aspectRatio (crop slider)

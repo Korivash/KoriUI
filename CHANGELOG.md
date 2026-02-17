@@ -1,5 +1,20 @@
 # KoriUI Changelog
 
+## v3.0.2 - CooldownViewer Secret-Value Taint Hardening (February 17, 2026)
+
+### Fixed
+- Fixed additional Retail 12.0.1 taint paths caused by reads/writes to Blizzard CooldownViewer internal fields.
+- Removed taint-prone interactions that were surfacing as secret-value compare/boolean errors in `Blizzard_CooldownViewer`.
+
+### Changed
+- Refactored cooldown frame ordering to addon-owned stable metadata instead of Blizzard `layoutIndex` / `cooldownID` fields.
+- Removed direct writes to Blizzard internal BuffBar layout flags and taint-prone force-layout behavior.
+
+### Notes
+- This release targets the recurring secret-value taint errors reported in buff icon and tracked bar viewers.
+
+---
+
 ## v3.0.1 - CooldownViewer Taint Hotfix (February 2026)
 
 ### Fixed

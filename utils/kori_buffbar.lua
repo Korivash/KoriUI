@@ -16,6 +16,8 @@ local IconMeta = setmetatable({}, { __mode = "k" })
 local BarMeta = setmetatable({}, { __mode = "k" })
 local TextureMeta = setmetatable({}, { __mode = "k" })
 local ViewerMeta = setmetatable({}, { __mode = "k" })
+local FrameOrderMeta = setmetatable({}, { __mode = "k" })
+local nextFrameOrder = 0
 
 local function GetIconMeta(icon)
     if not icon then return nil end
@@ -45,6 +47,17 @@ local function GetViewerMeta(viewer)
         ViewerMeta[viewer] = meta
     end
     return meta
+end
+
+local function GetStableFrameOrder(frame)
+    if not frame then return math.huge end
+    local order = FrameOrderMeta[frame]
+    if not order then
+        nextFrameOrder = nextFrameOrder + 1
+        order = nextFrameOrder
+        FrameOrderMeta[frame] = order
+    end
+    return order
 end
 
 ---------------------------------------------------------------------------
@@ -221,13 +234,13 @@ local function GetBuffIconFrames()
     end
 
     table.sort(all, function(a, b)
-        return (a.layoutIndex or 0) < (b.layoutIndex or 0)
+        return GetStableFrameOrder(a) < GetStableFrameOrder(b)
     end)
 
-    -- Only keep visible icons that have been fully initialized (have cooldownID)
+    -- Only keep visible icons with expected icon/cooldown regions.
     local visible = {}
     for _, icon in ipairs(all) do
-        if icon:IsShown() and icon.cooldownID then
+        if icon:IsShown() and (icon.icon or icon.Icon) and (icon.cooldown or icon.Cooldown) then
             table.insert(visible, icon)
         end
     end
@@ -278,7 +291,7 @@ local function GetBuffBarFrames()
     end
 
     table.sort(active, function(a, b)
-        return (a.layoutIndex or 0) < (b.layoutIndex or 0)
+        return GetStableFrameOrder(a) < GetStableFrameOrder(b)
     end)
 
     return active
@@ -1197,27 +1210,12 @@ LayoutBuffBars = function()
     -- Use settings for dimensions if styling enabled, otherwise use frame defaults
     local barWidth = refBar:GetWidth()
     local barHeight = stylingEnabled and settings.barHeight or refBar:GetHeight()
-    local spacing = stylingEnabled and settings.spacing or (BuffBarCooldownViewer.childYPadding or 0)
+    local spacing = stylingEnabled and settings.spacing or 0
     local growFromBottom = (not stylingEnabled) or (settings.growUp ~= false)
 
     -- Vertical bar support
     local orientation = stylingEnabled and settings.orientation or "horizontal"
     local isVertical = (orientation == "vertical")
-
-    -- CRITICAL: Tell Blizzard's GridLayoutFrameMixin which layout direction to use
-    -- When isHorizontal=true, Blizzard positions bars up/down (Y-axis)
-    -- When isHorizontal=false, Blizzard positions bars left/right (X-axis)
-    -- This prevents Blizzard's Layout() from overriding KORI's positioning with wrong axis
-    -- FEAT-007: Remove combat lockdown check - setting frame properties is safe during combat
-    BuffBarCooldownViewer.isHorizontal = not isVertical
-    -- Also update direction flags to match KORI's growth direction
-    if isVertical then
-        BuffBarCooldownViewer.layoutFramesGoingRight = growFromBottom  -- growUp becomes growRight
-        BuffBarCooldownViewer.layoutFramesGoingUp = false
-    else
-        BuffBarCooldownViewer.layoutFramesGoingRight = true
-        BuffBarCooldownViewer.layoutFramesGoingUp = growFromBottom
-    end
 
     -- For vertical bars, swap dimensions (height setting becomes width)
     local effectiveBarWidth, effectiveBarHeight
@@ -1352,9 +1350,6 @@ LayoutBuffBars = function()
         local currentWidth = BuffBarCooldownViewer:GetWidth()
         BuffBarCooldownViewer:SetSize(currentWidth, roundPixel(effectiveBarHeight))
 
-        -- Ensure isHorizontal flag stays correct for subsequent Layout() calls
-        BuffBarCooldownViewer.isHorizontal = false
-
         UnsuppressLayout()
     else
         -- HORIZONTAL BARS: Fix BOTH dimensions to single bar size
@@ -1364,10 +1359,6 @@ LayoutBuffBars = function()
 
         -- Set both dimensions to single bar size - bars overflow, edges stay fixed
         BuffBarCooldownViewer:SetSize(roundPixel(effectiveBarWidth), roundPixel(effectiveBarHeight))
-
-        -- Ensure Blizzard's Layout() uses correct flags
-        BuffBarCooldownViewer.isHorizontal = true
-        BuffBarCooldownViewer.layoutFramesGoingUp = growFromBottom
 
         UnsuppressLayout()
     end
@@ -1450,14 +1441,7 @@ local function ForcePopulateBuffIcons()
 
     forcePopulateDone = true
 
-    -- Method 1: Call Layout() which triggers Blizzard to populate icons
-    if viewer.Layout and type(viewer.Layout) == "function" then
-        pcall(function()
-            viewer:Layout()
-        end)
-    end
-
-    -- Method 2: If the viewer has systemInfo with spells, it should auto-populate
+    -- If the viewer has systemInfo with spells, it should auto-populate.
     -- Just triggering a size change can help force refresh
     if not InCombatLockdown() then
         local w, h = viewer:GetSize()
@@ -1474,7 +1458,7 @@ local function ForcePopulateBuffIcons()
         end
     end
 
-    -- Method 3: Force a rescan via KORICore if available
+    -- Force a rescan via KORICore if available.
     if _G.KoriUI and _G.KoriUI.KORICore then
         local KORICore = _G.KoriUI.KORICore
         if KORICore.ForceRefreshBuffIcons then
@@ -1494,23 +1478,6 @@ local initialized = false
 local function Initialize()
     if initialized then return end
     initialized = true
-
-    -- CRITICAL: Set isHorizontal IMMEDIATELY at login, before combat can start
-    -- This prevents Blizzard's Layout() from using wrong axis if first buff appears during combat
-    if BuffBarCooldownViewer and not InCombatLockdown() then
-        local settings = GetTrackedBarSettings()
-        local isVertical = (settings.orientation == "vertical")
-        local growFromBottom = (settings.growUp ~= false)
-
-        BuffBarCooldownViewer.isHorizontal = not isVertical
-        if isVertical then
-            BuffBarCooldownViewer.layoutFramesGoingRight = growFromBottom
-            BuffBarCooldownViewer.layoutFramesGoingUp = false
-        else
-            BuffBarCooldownViewer.layoutFramesGoingRight = true
-            BuffBarCooldownViewer.layoutFramesGoingUp = growFromBottom
-        end
-    end
 
     -- Force populate buff icons first (teaches the viewer what spells to show)
     ForcePopulateBuffIcons()
@@ -1581,24 +1548,6 @@ local function Initialize()
             if IsLayoutSuppressed() then return end
             if isBarLayoutRunning then return end
             LayoutBuffBars()
-        end)
-    end
-
-    -- FEAT-007: Hook RefreshLayout to correct isHorizontal after Blizzard sets it
-    -- Blizzard's RefreshLayout() sets isHorizontal based on IsHorizontal() (always true for BuffBar)
-    -- then calls Layout(). We hook RefreshLayout to fix isHorizontal right before Layout() runs.
-    -- Using hooksecurefunc is safer than replacing methods - avoids breaking Blizzard's code paths.
-    if BuffBarCooldownViewer and BuffBarCooldownViewer.RefreshLayout then
-        hooksecurefunc(BuffBarCooldownViewer, "RefreshLayout", function(self)
-            local settings = GetTrackedBarSettings()
-            if settings.enabled and settings.orientation == "vertical" then
-                -- Blizzard just set isHorizontal=true, we need to fix it
-                -- But RefreshLayout already called Layout(), so we just ensure
-                -- the flag is correct for any subsequent Layout() calls
-                self.isHorizontal = false
-                self.layoutFramesGoingRight = settings.growUp ~= false  -- growUp becomes growRight
-                self.layoutFramesGoingUp = false
-            end
         end)
     end
 
@@ -1694,23 +1643,6 @@ function KORI_BuffBar.Refresh()
     iconState.lastCount = 0
     barState.lastCount = 0
     lastIconHash = ""  -- Force hash recalculation for icons
-
-    -- Update isHorizontal when settings change (e.g., orientation toggle)
-    -- Must be done outside combat to take effect
-    if BuffBarCooldownViewer and not InCombatLockdown() then
-        local settings = GetTrackedBarSettings()
-        local isVertical = (settings.orientation == "vertical")
-        local growFromBottom = (settings.growUp ~= false)
-
-        BuffBarCooldownViewer.isHorizontal = not isVertical
-        if isVertical then
-            BuffBarCooldownViewer.layoutFramesGoingRight = growFromBottom
-            BuffBarCooldownViewer.layoutFramesGoingUp = false
-        else
-            BuffBarCooldownViewer.layoutFramesGoingRight = true
-            BuffBarCooldownViewer.layoutFramesGoingUp = growFromBottom
-        end
-    end
 
     LayoutBuffIcons()
     LayoutBuffBars()

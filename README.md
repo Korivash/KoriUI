@@ -9,7 +9,7 @@ Community-maintained World of Warcraft Retail UI addon suite.
 - Features List: `FEATURES.md`
 
 ## Current Release
-- Version: `3.0.0`
+- Version: `3.0.2`
 - Interface: `120001`
 - AddOn Folder: `KoriUI`
 - Slash Command: `/kori`
@@ -54,7 +54,7 @@ Release zip must contain:
 - Inside folder: `.toc`, `load.xml`, `utils/`, `libs/`, `assets/`, and other addon files.
 
 Example release filename:
-- `KoriUI-3.0.0-curseforge.zip`
+- `KoriUI-3.0.2-curseforge.zip`
 
 ## Support
 Use Discord for support, bug reports, and feedback:
