@@ -4,9 +4,9 @@ Community-maintained World of Warcraft Retail UI addon suite.
 
 ## Quick Links
 - Discord: https://discord.gg/JbQQTbH4hR
-- Changelog: `CHANGELOG.md`
-- Installation Guide: `INSTALLATION.md`
-- Features List: `FEATURES.md`
+- [Changelog](CHANGELOG.md)
+- [Features](FEATURES.md)
+- [Install](INSTALLATION.md)
 
 ## Current Release
 - Version: `3.0.2`
