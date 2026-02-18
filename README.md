@@ -48,13 +48,6 @@ Community-maintained World of Warcraft Retail UI addon suite.
 4. Launch the game and enable KoriUI.
 5. Type `/kori` in chat.
 
-## CurseForge Release Packaging
-Release zip must contain:
-- Top-level folder: `KoriUI`
-- Inside folder: `.toc`, `load.xml`, `utils/`, `libs/`, `assets/`, and other addon files.
-
-Example release filename:
-- `KoriUI-3.0.2-curseforge.zip`
 
 ## Support
 Use Discord for support, bug reports, and feedback:
