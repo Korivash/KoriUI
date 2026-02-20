@@ -1174,6 +1174,7 @@ LayoutBuffBars = function()
     if not BuffBarCooldownViewer then return end
     if isBarLayoutRunning then return end  -- Re-entry guard
     if IsLayoutSuppressed() then return end
+    if InCombatLockdown() then return end  -- Protected frame updates are blocked in combat
 
     isBarLayoutRunning = true
 
