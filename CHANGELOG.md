@@ -1,5 +1,17 @@
 # KoriUI Changelog
 
+## v3.0.4 - Taint and Protected Call Hotfix (February 27, 2026)
+
+### Fixed
+- Removed protected `SetFrameStrata()` calls on Blizzard buff cooldown viewers that were causing `ADDON_ACTION_BLOCKED`.
+- Removed tooltip/money function replacements that tainted Blizzard tooltip/widget execution paths.
+- Reduced secret-value taint propagation affecting map tooltip widget layout (`LayoutFrame.lua` / `UIWidgetTemplateTextWithState.lua`).
+
+### Changed
+- Bumped addon version metadata to `3.0.4`.
+
+---
+
 ## v3.0.3 - Retail 12.0.2 Interface Bump (February 25, 2026)
 
 ### Changed

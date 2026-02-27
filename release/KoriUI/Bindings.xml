@@ -1,7 +1,0 @@
-<Bindings>
-  <Binding name="KORIUI_TOGGLE_OPTIONS" category="KoriUI">
-    if KoriUI and KoriUI.GUI then
-      KoriUI.GUI:Toggle()
-    end
-  </Binding>
-</Bindings>

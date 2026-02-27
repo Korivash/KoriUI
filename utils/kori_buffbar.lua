@@ -1186,8 +1186,7 @@ LayoutBuffBars = function()
     if KORICore and KORICore.GetHUDFrameLevel then
         frameLevel = KORICore:GetHUDFrameLevel(layerPriority)
     end
-    -- Set strata to MEDIUM to match power bars, then apply frame level
-    BuffBarCooldownViewer:SetFrameStrata("MEDIUM")
+    -- Avoid protected SetFrameStrata calls on Blizzard cooldown viewers.
     BuffBarCooldownViewer:SetFrameLevel(frameLevel)
 
     local bars = GetBuffBarFrames()
@@ -1328,15 +1327,12 @@ LayoutBuffBars = function()
         if stylingEnabled then
             ApplyBarStyle(bar, settings)
         end
-        -- Apply frame strata/level to each bar AND its .Bar child for proper HUD layering
-        bar:SetFrameStrata("MEDIUM")
+        -- Apply frame level to each bar and child regions for HUD layering.
         bar:SetFrameLevel(frameLevel)
         if bar.Bar then
-            bar.Bar:SetFrameStrata("MEDIUM")
             bar.Bar:SetFrameLevel(frameLevel + 1)
         end
         if bar.Icon then
-            bar.Icon:SetFrameStrata("MEDIUM")
             bar.Icon:SetFrameLevel(frameLevel + 1)
         end
     end

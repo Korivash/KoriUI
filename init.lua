@@ -19,7 +19,7 @@ KoriUI.DEBUG_MODE = false
 -- Version & Defaults
 --============================================================--
 
-KoriUI.versionString = C_AddOns.GetAddOnMetadata("KoriUI", "Version") or "1.42"
+KoriUI.versionString = C_AddOns.GetAddOnMetadata("KoriUI", "Version") or "3.0.4"
 
 ---@type table
 KoriUI.defaults = {
