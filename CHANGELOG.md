@@ -1,5 +1,13 @@
 # KoriUI Changelog
 
+## v3.0.3 - Retail 12.0.2 Interface Bump (February 25, 2026)
+
+### Changed
+- Updated addon TOC interface version to `120002` for Retail `12.0.2` compatibility.
+- Bumped addon version metadata to `3.0.3`.
+
+---
+
 ## v3.0.2 - CooldownViewer Secret-Value Taint Hardening (February 17, 2026)
 
 ### Fixed
