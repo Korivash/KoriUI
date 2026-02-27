@@ -9,7 +9,7 @@ Community-maintained World of Warcraft Retail UI addon suite.
 - [Install](INSTALLATION.md)
 
 ## Current Release
-- Version: `3.0.2`
+- Version: `3.0.4`
 - Interface: `120001`
 - AddOn Folder: `KoriUI`
 - Slash Command: `/kori`
