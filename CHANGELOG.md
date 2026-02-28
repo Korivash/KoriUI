@@ -1,5 +1,17 @@
 # KoriUI Changelog
 
+## v3.0.5 - World Map Hover Taint Fix (February 28, 2026)
+
+### Fixed
+- Removed World Map blackout hooks on `BlackoutFrame:Show` and `BlackoutFrame:SetAlpha` that could taint Blizzard map pin hover flows.
+- Reduced map-hover taint paths causing `ADDON_ACTION_BLOCKED` on `Button:SetPassThroughButtons()` and `Frame:SetPropagateMouseClicks()`.
+
+### Changed
+- Switched blackout persistence to a deferred `WorldMapFrame` `OnShow` refresh and `Blizzard_WorldMap` load reapply path.
+- Bumped addon version metadata to `3.0.5`.
+
+---
+
 ## v3.0.4 - Taint and Protected Call Hotfix (February 27, 2026)
 
 ### Fixed

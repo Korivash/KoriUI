@@ -158,6 +158,31 @@ local function ShouldHideInCurrentInstance(instanceTypes)
     return false
 end
 
+-- Apply World Map blackout state without hooking BlackoutFrame methods.
+-- BlackoutFrame Show/SetAlpha hooks can taint map pin hover paths in Blizzard code.
+local function ApplyWorldMapBlackoutState()
+    local settings = GetSettings()
+    if not settings or not WorldMapFrame or not WorldMapFrame.BlackoutFrame then
+        return
+    end
+
+    if settings.hideWorldMapBlackout then
+        WorldMapFrame.BlackoutFrame:SetAlpha(0)
+        WorldMapFrame.BlackoutFrame:EnableMouse(false)
+    else
+        WorldMapFrame.BlackoutFrame:SetAlpha(1)
+        WorldMapFrame.BlackoutFrame:EnableMouse(true)
+    end
+
+    -- Use deferred OnShow refresh to avoid running in secure UIPanel show flow.
+    if not WorldMapFrame._KORI_BlackoutOnShowHooked then
+        WorldMapFrame._KORI_BlackoutOnShowHooked = true
+        WorldMapFrame:HookScript("OnShow", function()
+            C_Timer.After(0, ApplyWorldMapBlackoutState)
+        end)
+    end
+end
+
 -- Apply hide/show commands based on saved settings
 local function ApplyHideSettings()
     local settings = GetSettings()
@@ -529,39 +554,7 @@ end
     end
 
     -- World Map Blackout (dark overlay behind fullscreen map)
-    if WorldMapFrame and WorldMapFrame.BlackoutFrame then
-        if settings.hideWorldMapBlackout then
-            WorldMapFrame.BlackoutFrame:SetAlpha(0)
-            WorldMapFrame.BlackoutFrame:EnableMouse(false)
-
-            -- Hook the BlackoutFrame to keep it hidden if Blizzard tries to show it
-            -- IMPORTANT: Skip during combat to avoid taint propagation to SetPassThroughButtons
-            if not WorldMapFrame.BlackoutFrame._KORI_BlackoutHooked then
-                WorldMapFrame.BlackoutFrame._KORI_BlackoutHooked = true
-                hooksecurefunc(WorldMapFrame.BlackoutFrame, "Show", function(self)
-                    if InCombatLockdown() then return end  -- Avoid taint during combat
-                    local s = GetSettings()
-                    if s and s.hideWorldMapBlackout then
-                        self:SetAlpha(0)
-                        self:EnableMouse(false)
-                    end
-                end)
-
-                -- Also hook SetAlpha to prevent alpha changes
-                hooksecurefunc(WorldMapFrame.BlackoutFrame, "SetAlpha", function(self, alpha)
-                    if InCombatLockdown() then return end  -- Avoid taint during combat
-                    local s = GetSettings()
-                    if s and s.hideWorldMapBlackout and alpha > 0 then
-                        self:SetAlpha(0)
-                        self:EnableMouse(false)
-                    end
-                end)
-            end
-        else
-            WorldMapFrame.BlackoutFrame:SetAlpha(1)
-            WorldMapFrame.BlackoutFrame:EnableMouse(true)
-        end
-    end
+    ApplyWorldMapBlackoutState()
 end
 
 -- Initialize
@@ -586,6 +579,14 @@ eventFrame:SetScript("OnEvent", function(self, event, addon)
         -- Re-apply settings now that TalkingHeadFrame exists
         if settings then
             _G.KoriUI_RefreshUIHider()
+        end
+        return
+    end
+
+    -- Handle Blizzard_WorldMap loading (it's load-on-demand)
+    if event == "ADDON_LOADED" and addon == "Blizzard_WorldMap" then
+        if settings then
+            C_Timer.After(0, ApplyWorldMapBlackoutState)
         end
         return
     end
