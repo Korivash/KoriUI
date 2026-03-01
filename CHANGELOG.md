@@ -1,5 +1,17 @@
 # KoriUI Changelog
 
+## v3.0.6 - Managed Frame Taint Hardening (March 1, 2026)
+
+### Fixed
+- Hardened Objective Tracker hiding logic to avoid tainting Blizzard managed frame positioning.
+- Removed direct `ObjectiveTrackerFrame:Hide()` / `:Show()` control in favor of deferred, non-protected state updates.
+- Added combat-safe deferral for tracker state reapplication to reduce `ADDON_ACTION_BLOCKED` chains into `UIParentPanelManager`.
+
+### Changed
+- Bumped addon version metadata to `3.0.6`.
+
+---
+
 ## v3.0.5 - World Map Hover Taint Fix (February 28, 2026)
 
 ### Fixed

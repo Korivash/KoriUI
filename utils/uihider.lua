@@ -3,6 +3,7 @@
 -- Settings persist across sessions and apply on reload/login
 
 local _, KORI = ...
+local pendingObjectiveTrackerUpdate = false
 
 -- Get settings from AceDB
 local function GetSettings()
@@ -192,43 +193,79 @@ local function ApplyHideSettings()
     
     -- Objective Tracker (Quest Tracker)
     if ObjectiveTrackerFrame then
-        local shouldHide = false
+        local function ApplyObjectiveTrackerStateDeferred()
+            pendingObjectiveTrackerUpdate = false
 
-        -- Check if should hide always
-        if settings.hideObjectiveTrackerAlways then
-            shouldHide = true
-        -- Check if should hide in specific instance types
-        elseif ShouldHideInCurrentInstance(settings.hideObjectiveTrackerInstanceTypes) then
-            shouldHide = true
-        end
-
-        if shouldHide then
-            ObjectiveTrackerFrame:Hide()
-            ObjectiveTrackerFrame:EnableMouse(false)  -- Prevent hidden frame from blocking clicks
-            -- Hook Show() to prevent Blizzard from showing it again (quest updates, boss fights, etc.)
-            if not ObjectiveTrackerFrame._KORI_ShowHooked then
-                ObjectiveTrackerFrame._KORI_ShowHooked = true
-                hooksecurefunc(ObjectiveTrackerFrame, "Show", function(self)
-                    local s = GetSettings()
-                    if s then
-                        local shouldHideNow = false
-                        if s.hideObjectiveTrackerAlways then
-                            shouldHideNow = true
-                        elseif ShouldHideInCurrentInstance(s.hideObjectiveTrackerInstanceTypes) then
-                            shouldHideNow = true
-                        end
-
-                        if shouldHideNow then
-                            self:Hide()
-                            self:EnableMouse(false)  -- Prevent hidden frame from blocking clicks
-                        end
-                    end
-                end)
+            local s = GetSettings()
+            if not s or not ObjectiveTrackerFrame then
+                return
             end
-        else
-            ObjectiveTrackerFrame:Show()
-            ObjectiveTrackerFrame:EnableMouse(true)  -- Restore mouse when shown
+
+            local shouldHideNow = false
+            if s.hideObjectiveTrackerAlways then
+                shouldHideNow = true
+            elseif ShouldHideInCurrentInstance(s.hideObjectiveTrackerInstanceTypes) then
+                shouldHideNow = true
+            end
+
+            -- Avoid Hide/Show on this Blizzard-managed frame to reduce taint risk.
+            -- "Ghost" it instead: invisible + no mouse when hidden.
+            if shouldHideNow then
+                ObjectiveTrackerFrame:SetAlpha(0)
+                ObjectiveTrackerFrame:EnableMouse(false)
+                if ObjectiveTrackerFrame.SetCollapsed then
+                    ObjectiveTrackerFrame:SetCollapsed(true)
+                end
+            else
+                ObjectiveTrackerFrame:SetAlpha(1)
+                ObjectiveTrackerFrame:EnableMouse(true)
+                if ObjectiveTrackerFrame.SetCollapsed then
+                    ObjectiveTrackerFrame:SetCollapsed(false)
+                end
+            end
         end
+
+        if InCombatLockdown() then
+            pendingObjectiveTrackerUpdate = true
+        else
+            C_Timer.After(0, ApplyObjectiveTrackerStateDeferred)
+        end
+
+        -- Keep state synchronized after Blizzard updates tracker internals.
+        if not ObjectiveTrackerFrame._KORI_UpdateHooked and ObjectiveTrackerFrame.Update then
+            ObjectiveTrackerFrame._KORI_UpdateHooked = true
+            hooksecurefunc(ObjectiveTrackerFrame, "Update", function()
+                local s = GetSettings()
+                if not s then return end
+
+                local shouldHideNow = false
+                if s.hideObjectiveTrackerAlways then
+                    shouldHideNow = true
+                elseif ShouldHideInCurrentInstance(s.hideObjectiveTrackerInstanceTypes) then
+                    shouldHideNow = true
+                end
+
+                if shouldHideNow then
+                    C_Timer.After(0, function()
+                        if InCombatLockdown() then
+                            pendingObjectiveTrackerUpdate = true
+                            return
+                        end
+                        if ObjectiveTrackerFrame then
+                            ObjectiveTrackerFrame:SetAlpha(0)
+                            ObjectiveTrackerFrame:EnableMouse(false)
+                            if ObjectiveTrackerFrame.SetCollapsed then
+                                ObjectiveTrackerFrame:SetCollapsed(true)
+                            end
+                        end
+                    end)
+                end
+            end)
+        end
+
+    else
+        -- ObjectiveTrackerFrame not available yet (load-on-demand in some states).
+        -- Existing event refresh paths will apply settings once it exists.
     end
     
     -- Minimap Border (Top)
@@ -570,8 +607,17 @@ eventFrame:RegisterEvent("PLAYER_ROLES_ASSIGNED")
 eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:RegisterEvent("CHALLENGE_MODE_START")
 eventFrame:RegisterEvent("CHALLENGE_MODE_RESET")
+eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 eventFrame:SetScript("OnEvent", function(self, event, addon)
     local settings = GetSettings()
+
+    if event == "PLAYER_REGEN_ENABLED" then
+        if pendingObjectiveTrackerUpdate then
+            pendingObjectiveTrackerUpdate = false
+            C_Timer.After(0, ApplyHideSettings)
+        end
+        return
+    end
 
     -- Handle Blizzard_TalkingHeadUI loading (it's load-on-demand)
     -- Apply TalkingHeadFrame mouse fix when it loads
@@ -621,4 +667,3 @@ KORI.UIHider = {
 _G.KoriUI_RefreshUIHider = function()
     ApplyHideSettings()
 end
-
