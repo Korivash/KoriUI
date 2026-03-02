@@ -45,6 +45,26 @@ local function GetTopMouseFrame()
     return cachedMouseFrame
 end
 
+local function IsWorldMapOwnedFrame(frame)
+    if not frame then return false end
+    local mapFrame = rawget(_G, "WorldMapFrame")
+
+    local check = frame
+    while check do
+        if mapFrame and check == mapFrame then
+            return true
+        end
+        check = check:GetParent()
+    end
+
+    local name = frame.GetName and frame:GetName() or ""
+    if strfind(name, "WorldMap") or strfind(name, "TaskPOI") or strfind(name, "MapCanvas") then
+        return true
+    end
+
+    return false
+end
+
 -- Check if a UI frame is blocking mouse from the 3D world
 local function IsFrameBlockingMouse()
     local focus = GetTopMouseFrame()
@@ -241,14 +261,18 @@ local function SetupTooltipHook()
             return  -- Module disabled, use default behavior
         end
 
+        -- Avoid altering map-owned tooltip anchor/ownership.
+        -- World map tooltip internals are taint-sensitive in 12.x.
+        if IsWorldMapOwnedFrame(parent) then
+            return
+        end
+
         -- Get context from parent (owner)
         local context = GetTooltipContext(parent)
 
         -- Check visibility for this context (handles combat + modifier key logic)
         if not ShouldShowTooltip(context) then
             tooltip:Hide()
-            tooltip:SetOwner(UIParent, "ANCHOR_NONE")
-            tooltip:ClearLines()
             return
         end
 

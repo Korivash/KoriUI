@@ -1,5 +1,17 @@
 # KoriUI Changelog
 
+## v3.0.7 - World Map Tooltip Taint Hardening (March 2, 2026)
+
+### Fixed
+- Avoided `GameTooltip` anchor/owner mutations for World Map-owned tooltip flows to reduce secret-value taint on map hover rewards.
+- Removed `SetOwner(..., "ANCHOR_NONE")`/`ClearLines()` path from tooltip default-anchor hook when suppressing visibility.
+- Hardened World Map blackout handling to alpha-only updates with combat-safe gating and deferred OnShow reapply timing.
+
+### Changed
+- Bumped addon version metadata to `3.0.7`.
+
+---
+
 ## v3.0.6 - Managed Frame Taint Hardening (March 1, 2026)
 
 ### Fixed

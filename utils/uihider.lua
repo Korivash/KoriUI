@@ -167,19 +167,20 @@ local function ApplyWorldMapBlackoutState()
         return
     end
 
-    if settings.hideWorldMapBlackout then
-        WorldMapFrame.BlackoutFrame:SetAlpha(0)
-        WorldMapFrame.BlackoutFrame:EnableMouse(false)
-    else
-        WorldMapFrame.BlackoutFrame:SetAlpha(1)
-        WorldMapFrame.BlackoutFrame:EnableMouse(true)
+    if InCombatLockdown() then
+        return
+    end
+    local blackout = WorldMapFrame.BlackoutFrame
+    local targetAlpha = settings.hideWorldMapBlackout and 0 or 1
+    if blackout:GetAlpha() ~= targetAlpha then
+        blackout:SetAlpha(targetAlpha)
     end
 
     -- Use deferred OnShow refresh to avoid running in secure UIPanel show flow.
     if not WorldMapFrame._KORI_BlackoutOnShowHooked then
         WorldMapFrame._KORI_BlackoutOnShowHooked = true
         WorldMapFrame:HookScript("OnShow", function()
-            C_Timer.After(0, ApplyWorldMapBlackoutState)
+            C_Timer.After(0.05, ApplyWorldMapBlackoutState)
         end)
     end
 end
