@@ -34,6 +34,32 @@ local URL_PATTERNS = {
     "%f[%S](www%.[-%w_%%]+%.%a%a+)",        -- www.domain.tld
 }
 
+-- Chat events eligible for text processing via message filters.
+local CHAT_FILTER_EVENTS = {
+    "CHAT_MSG_SAY",
+    "CHAT_MSG_YELL",
+    "CHAT_MSG_PARTY",
+    "CHAT_MSG_PARTY_LEADER",
+    "CHAT_MSG_RAID",
+    "CHAT_MSG_RAID_LEADER",
+    "CHAT_MSG_RAID_WARNING",
+    "CHAT_MSG_INSTANCE_CHAT",
+    "CHAT_MSG_INSTANCE_CHAT_LEADER",
+    "CHAT_MSG_GUILD",
+    "CHAT_MSG_OFFICER",
+    "CHAT_MSG_WHISPER",
+    "CHAT_MSG_WHISPER_INFORM",
+    "CHAT_MSG_BN_WHISPER",
+    "CHAT_MSG_BN_WHISPER_INFORM",
+    "CHAT_MSG_CHANNEL",
+    "CHAT_MSG_EMOTE",
+    "CHAT_MSG_TEXT_EMOTE",
+    "CHAT_MSG_SYSTEM",
+    "CHAT_MSG_AFK",
+    "CHAT_MSG_DND",
+    "CHAT_MSG_IGNORED",
+}
+
 -- Edit box textures to remove for clean styling
 local EDITBOX_TEXTURES = {
     "FocusLeft", "FocusMid", "FocusRight",
@@ -189,17 +215,48 @@ end
 ---------------------------------------------------------------------------
 -- Hook chat frame AddMessage to process URLs
 ---------------------------------------------------------------------------
-local function HookChatMessages(chatFrame)
-    if chatFrame.__quiChatMessageHooked then return end
-    chatFrame.__quiChatMessageHooked = true
+local messageFiltersInstalled = false
 
-    local origAddMessage = chatFrame.AddMessage
-    chatFrame.AddMessage = function(self, text, ...)
-        if text and type(text) == "string" then
-            text = AddTimestamp(text)
-            text = MakeURLsClickable(text)
-        end
-        return origAddMessage(self, text, ...)
+local function ProcessChatTextSafely(text)
+    if not text or type(text) ~= "string" then
+        return text
+    end
+
+    local ok, processed = pcall(function()
+        local result = AddTimestamp(text)
+        result = MakeURLsClickable(result)
+        return result
+    end)
+
+    if ok and type(processed) == "string" then
+        return processed
+    end
+
+    return text
+end
+
+local function ChatMessageFilter(self, event, message, author, ...)
+    local settings = GetSettings()
+    if not settings or not settings.enabled then
+        return false, message, author, ...
+    end
+
+    local useTimestamp = settings.timestamps and settings.timestamps.enabled
+    local useURLs = settings.urls and settings.urls.enabled
+    if not useTimestamp and not useURLs then
+        return false, message, author, ...
+    end
+
+    local processed = ProcessChatTextSafely(message)
+    return false, processed, author, ...
+end
+
+local function HookChatMessages()
+    if messageFiltersInstalled then return end
+    messageFiltersInstalled = true
+
+    for _, eventName in ipairs(CHAT_FILTER_EVENTS) do
+        ChatFrame_AddMessageEventFilter(eventName, ChatMessageFilter)
     end
 end
 
@@ -996,9 +1053,9 @@ local function SkinChatFrame(chatFrame)
     -- Apply font styling (always enabled)
     StyleFontStrings(chatFrame)
 
-    -- Hook URL detection
-    if settings.urls and settings.urls.enabled then
-        HookChatMessages(chatFrame)
+    -- Hook chat text processing (timestamp + URLs)
+    if (settings.urls and settings.urls.enabled) or (settings.timestamps and settings.timestamps.enabled) then
+        HookChatMessages()
     end
 
     -- Setup message fade (only if enabled)

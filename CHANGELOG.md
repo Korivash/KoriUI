@@ -1,5 +1,11 @@
 # KoriUI Changelog
 
+## 3.0.8 - 2026-03-05
+- Fixed combat-time chat taint tied to `BN_WHISPER` handling.
+- Replaced direct chat frame `AddMessage` overrides with safe chat message event filters.
+- Added guarded message processing for protected/secret chat strings to prevent conversion errors.
+- Preserved chat timestamps and URL click handling through the new safe filter pipeline.
+
 ## v3.0.7 - World Map Tooltip Taint Hardening (March 2, 2026)
 
 ### Fixed
