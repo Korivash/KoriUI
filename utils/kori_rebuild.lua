@@ -125,7 +125,7 @@ function GUI:CreateMainFrame()
     local discord = header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     discord:SetPoint("TOPRIGHT", -18, -34)
     UseTitleFont(discord, 10, C.sectionHeader)
-    discord:SetText("Discord: discord.gg/JbQQTbH4hR")
+    discord:SetText("Support Me Here: https://ko-fi.com/korivash")
 
     local close = CreateFrame("Button", nil, header, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -4, -3)
