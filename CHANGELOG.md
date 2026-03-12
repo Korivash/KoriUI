@@ -1,5 +1,11 @@
 # KoriUI Changelog
 
+## 3.0.9 - 2026-03-12
+- Fixed Retail 12.x tooltip taint caused by `GameTooltip` owner and anchor mutations during Blizzard reward, loot alert, and map-owned tooltip flows.
+- Stopped KoriUI tooltip suppression hooks from touching taint-sensitive World Map, POI, quest, and alert tooltip owners.
+- Hardened Quick Salvage tooltip post-processing to only modify the active `GameTooltip`, avoiding cross-tooltip contamination.
+- Disabled KoriUI World Map blackout frame mutations for now because they were still surfacing protected map pin errors.
+
 ## 3.0.8 - 2026-03-05
 - Fixed combat-time chat taint tied to `BN_WHISPER` handling.
 - Replaced direct chat frame `AddMessage` overrides with safe chat message event filters.

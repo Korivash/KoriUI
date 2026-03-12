@@ -167,22 +167,9 @@ local function ApplyWorldMapBlackoutState()
         return
     end
 
-    if InCombatLockdown() then
-        return
-    end
-    local blackout = WorldMapFrame.BlackoutFrame
-    local targetAlpha = settings.hideWorldMapBlackout and 0 or 1
-    if blackout:GetAlpha() ~= targetAlpha then
-        blackout:SetAlpha(targetAlpha)
-    end
-
-    -- Use deferred OnShow refresh to avoid running in secure UIPanel show flow.
-    if not WorldMapFrame._KORI_BlackoutOnShowHooked then
-        WorldMapFrame._KORI_BlackoutOnShowHooked = true
-        WorldMapFrame:HookScript("OnShow", function()
-            C_Timer.After(0.05, ApplyWorldMapBlackoutState)
-        end)
-    end
+    -- Temporary hard stop: even alpha-only mutations on BlackoutFrame are still
+    -- surfacing taint into map pin protected calls on Retail 12.x.
+    -- Leave Blizzard's default blackout behavior intact until a safer approach exists.
 end
 
 -- Apply hide/show commands based on saved settings

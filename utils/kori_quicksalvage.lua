@@ -539,10 +539,11 @@ end)
 ---------------------------------------------------------------------------
 local ERR_COLOR = CreateColor(1, 0.125, 0.125)
 
-local function TooltipHelp(msg, color)
-    GameTooltip:AddLine(' ')
-    GameTooltip:AddLine(msg, color and color:GetRGB())
-    GameTooltip:Show()
+local function TooltipHelp(tooltip, msg, color)
+    if not tooltip then return end
+    tooltip:AddLine(' ')
+    tooltip:AddLine(msg, color and color:GetRGB())
+    tooltip:Show()
 end
 
 local function OnTooltipSetItem(tooltip, data)
@@ -550,6 +551,7 @@ local function OnTooltipSetItem(tooltip, data)
     local settings = GetSettings()
     if not settings or not settings.enabled then return end
     if InCombatLockdown() then return end
+    if tooltip ~= GameTooltip then return end
 
     -- Skip our own tooltips
     if tooltip:GetOwner() == SalvageButton then return end
@@ -615,13 +617,13 @@ local function OnTooltipSetItem(tooltip, data)
     local spellID, color, actionType, requiredStack, needsMore = GetSalvageInfo(itemID, stackCount)
 
     if not spellID and not SalvageLookupBuilt then
-        TooltipHelp("Quick Salvage: open Professions once to initialize prospecting/milling.", CreateColor(1, 1, 0.2))
+        TooltipHelp(tooltip, "Quick Salvage: open Professions once to initialize prospecting/milling.", CreateColor(1, 1, 0.2))
         return
     end
 
     if needsMore then
         local itemName = C_Item.GetItemNameByID(itemID) or "item"
-        TooltipHelp(SPELL_FAILED_NEED_MORE_ITEMS:format(requiredStack, itemName), ERR_COLOR)
+        TooltipHelp(tooltip, SPELL_FAILED_NEED_MORE_ITEMS:format(requiredStack, itemName), ERR_COLOR)
         return
     end
 
@@ -629,7 +631,7 @@ local function OnTooltipSetItem(tooltip, data)
         -- Check if player has the spell
         if not PlayerHasSpell(spellID) then
             local spellName = C_Spell.GetSpellName(spellID)
-            TooltipHelp(ERR_USE_LOCKED_WITH_SPELL_S:format(spellName or "Unknown"), ERR_COLOR)
+            TooltipHelp(tooltip, ERR_USE_LOCKED_WITH_SPELL_S:format(spellName or "Unknown"), ERR_COLOR)
             return
         end
 

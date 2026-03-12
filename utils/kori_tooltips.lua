@@ -65,6 +65,25 @@ local function IsWorldMapOwnedFrame(frame)
     return false
 end
 
+local function IsTaintSensitiveTooltipOwner(frame)
+    if not frame then return false end
+    if IsWorldMapOwnedFrame(frame) then
+        return true
+    end
+
+    local name = frame.GetName and frame:GetName() or ""
+    if strfind(name, "AlertFrame") or
+       strfind(name, "LootAlert") or
+       strfind(name, "Scenario") or
+       strfind(name, "Quest") or
+       strfind(name, "BonusObjective") or
+       strfind(name, "POI") then
+        return true
+    end
+
+    return false
+end
+
 -- Check if a UI frame is blocking mouse from the 3D world
 local function IsFrameBlockingMouse()
     local focus = GetTopMouseFrame()
@@ -256,14 +275,18 @@ end
 ---------------------------------------------------------------------------
 local function SetupTooltipHook()
     hooksecurefunc("GameTooltip_SetDefaultAnchor", function(tooltip, parent)
+        if tooltip ~= GameTooltip then
+            return
+        end
+
         local settings = GetSettings()
         if not settings or not settings.enabled then
             return  -- Module disabled, use default behavior
         end
 
-        -- Avoid altering map-owned tooltip anchor/ownership.
-        -- World map tooltip internals are taint-sensitive in 12.x.
-        if IsWorldMapOwnedFrame(parent) then
+        -- Blizzard reward/alert/map tooltip flows in 12.x are taint-sensitive.
+        -- Avoid mutating owner/anchor state for those tooltips from insecure code.
+        if IsTaintSensitiveTooltipOwner(parent) then
             return
         end
 
@@ -276,11 +299,8 @@ local function SetupTooltipHook()
             return
         end
 
-        -- Cursor anchor logic
-        if settings.anchorToCursor then
-            -- Use WoW's built-in cursor anchor (handles positioning automatically)
-            tooltip:SetOwner(parent, "ANCHOR_CURSOR")
-        end
+        -- Retail 12.x reward/item tooltip flows taint easily when insecure code
+        -- reassigns GameTooltip ownership here, so leave Blizzard anchoring intact.
     end)
 
     -- Hook SetUnit to suppress tooltips when a UI frame blocks the mouse
@@ -349,6 +369,7 @@ local function SetupTooltipHook()
         if not settings or not settings.enabled then return end
 
         local owner = tooltip:GetOwner()
+        if IsTaintSensitiveTooltipOwner(owner) then return end
 
         -- Suppress tooltip if owner frame is faded out (e.g., CDM hidden when mounted)
         if owner and owner.GetEffectiveAlpha and owner:GetEffectiveAlpha() < FADED_ALPHA_THRESHOLD then
@@ -372,6 +393,7 @@ local function SetupTooltipHook()
         if not settings or not settings.enabled then return end
 
         local owner = tooltip:GetOwner()
+        if IsTaintSensitiveTooltipOwner(owner) then return end
 
         -- Suppress tooltip if owner frame is faded out (e.g., CDM hidden when mounted)
         if owner and owner.GetEffectiveAlpha and owner:GetEffectiveAlpha() < FADED_ALPHA_THRESHOLD then
